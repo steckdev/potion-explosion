@@ -83,38 +83,67 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="no-print glass-panel" style={{
-      position: 'sticky',
-      top: 0,
-      zIndex: 50,
-      padding: '0.65rem 1.25rem',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-      backgroundColor: 'rgba(13, 10, 26, 0.92)'
-    }}>
-      {/* Fullscreen Toast Notification */}
-      {fullscreenToast && (
-        <div style={{
-          position: 'fixed',
-          top: '65px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          backgroundColor: '#090714',
-          border: '2px solid #39ff14',
-          color: '#39ff14',
-          padding: '6px 18px',
-          borderRadius: '999px',
-          fontSize: '0.85rem',
-          fontWeight: 800,
-          boxShadow: '0 4px 20px rgba(0,0,0,0.7), 0 0 15px rgba(57, 255, 20, 0.4)',
-          zIndex: 1000
-        }}>
-          {fullscreenToast}
-        </div>
+    <>
+      {/* Subtle Floating Exit Tab when in Fullscreen */}
+      {isFullscreen && (
+        <button
+          onClick={toggleFullscreen}
+          className="fullscreen-exit-tab no-print"
+          style={{
+            position: 'fixed',
+            top: '12px',
+            right: '12px',
+            zIndex: 1000,
+            backgroundColor: 'rgba(13, 10, 26, 0.45)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.18)',
+            color: '#e2e8f0',
+            borderRadius: '999px',
+            padding: '6px 14px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.45rem',
+            fontSize: '0.78rem',
+            fontWeight: 700,
+            cursor: 'pointer',
+            opacity: 0.35,
+            transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.5)'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.opacity = '1';
+            e.currentTarget.style.backgroundColor = 'rgba(13, 10, 26, 0.95)';
+            e.currentTarget.style.borderColor = '#39ff14';
+            e.currentTarget.style.transform = 'scale(1.05)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.opacity = '0.35';
+            e.currentTarget.style.backgroundColor = 'rgba(13, 10, 26, 0.45)';
+            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.18)';
+            e.currentTarget.style.transform = 'scale(1)';
+          }}
+          title="Exit Full Screen (or press Esc)"
+        >
+          <Minimize size={14} color="#39ff14" />
+          <span>Exit Full Screen</span>
+        </button>
       )}
-      {/* Brand Title (Always routes to Home) */}
+
+      {/* Main Top Header Bar (Completely Hidden on Full Screen) */}
+      {!isFullscreen && (
+        <header className="no-print glass-panel" style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 50,
+          padding: '0.65rem 1.25rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+          backgroundColor: 'rgba(13, 10, 26, 0.92)'
+        }}>
+          {/* Brand Title (Always routes to Home) */}
       <button
         onClick={() => {
           playBloop(1.0);
@@ -319,12 +348,35 @@ export const Header: React.FC<HeaderProps> = ({
           <span>{isAdmin ? 'Exit Admin' : '🖨️ Poster Studio & Admin'}</span>
         </button>
       </div>
-
-      {/* Audio Settings Modal */}
-      <AudioSettingsModal 
-        isOpen={isAudioModalOpen} 
-        onClose={() => setIsAudioModalOpen(false)} 
-      />
     </header>
+    )}
+
+    {/* Fullscreen Toast Notification */}
+    {fullscreenToast && (
+      <div style={{
+        position: 'fixed',
+        top: isFullscreen ? '16px' : '65px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        backgroundColor: '#090714',
+        border: '2px solid #39ff14',
+        color: '#39ff14',
+        padding: '6px 18px',
+        borderRadius: '999px',
+        fontSize: '0.85rem',
+        fontWeight: 800,
+        boxShadow: '0 4px 20px rgba(0,0,0,0.7), 0 0 15px rgba(57, 255, 20, 0.4)',
+        zIndex: 2000
+      }}>
+        {fullscreenToast}
+      </div>
+    )}
+
+    {/* Audio Settings Modal */}
+    <AudioSettingsModal 
+      isOpen={isAudioModalOpen} 
+      onClose={() => setIsAudioModalOpen(false)} 
+    />
+  </>
   );
 };

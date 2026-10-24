@@ -25,3 +25,6 @@ dist-ssr
 
 # Audio raw source files in root (served from public/audio)
 /audio_*
+
+# Local Netlify folder
+.netlify

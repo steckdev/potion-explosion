@@ -5,6 +5,15 @@
     <link rel="icon" type="image/png" href="/sprites/cauldron_bubble.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta name="theme-color" content="#0d0a1a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Alchemy Quest" />
+    <meta name="application-name" content="Alchemy Quest" />
+
+    <!-- PWA Manifest & App Icons -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+
     <title>The Great Alchemy Quest</title>
     <meta name="description" content="An interactive Halloween office adventure and scavenger hunt! Choose your elemental totem, find magical clue posters, solve riddles, and brew enchanted potions." />
 
@@ -16,5 +25,15 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Register PWA Service Worker
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch((err) => {
+            console.debug('ServiceWorker registration error:', err);
+          });
+        });
+      }
+    </script>
   </body>
 </html>

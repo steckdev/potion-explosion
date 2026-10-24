@@ -118,7 +118,7 @@ body.kiosk-fullscreen-mode #root {
 }
 
 body.kiosk-fullscreen-mode header {
-  padding: 0.45rem 1.25rem !important;
+  display: none !important;
 }
 
 body.kiosk-fullscreen-mode main {

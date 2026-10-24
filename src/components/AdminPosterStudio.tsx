@@ -1502,11 +1502,11 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                   // 2x Moon
                   { name: 'SHADOW MOON', rune: 'moon', icon: '/sprites/rune_moon.png', color: '#9333ea', tag: 'Mystic Relic' },
                   { name: 'SHADOW MOON', rune: 'moon', icon: '/sprites/rune_moon.png', color: '#9333ea', tag: 'Mystic Relic' },
-                  // Guild Avatars & Animal Familiars
+                  // Guild Avatars & Animal Familiars (from avatars.png)
                   { name: 'APPRENTICE', rune: 'guild', icon: '/sprites/avatar_apprentice.png', color: '#ea580c', tag: 'Picture Quest' },
                   { name: 'MASTER MAGE', rune: 'guild', icon: '/sprites/avatar_master.png', color: '#7c3aed', tag: 'Cipher Quest' },
-                  { name: 'WIZARD CAT', rune: 'pet', icon: '/sprites/avatar_cat.png', color: '#2563eb', tag: 'Familiar' },
-                  { name: 'SPOOKY BAT', rune: 'pet', icon: '/sprites/avatar_bat.png', color: '#c026d3', tag: 'Familiar' },
+                  { name: 'GUILD OWL', rune: 'pet', icon: '/sprites/avatar_guildmaster.png', color: '#d97706', tag: 'Guild Master' },
+                  { name: 'SHADOW RACCOON', rune: 'pet', icon: '/sprites/avatar_ranger.png', color: '#4c1d95', tag: 'Shadow Ranger' },
                 ].map((token, idx) => (
                   <div
                     key={idx}

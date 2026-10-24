@@ -3,7 +3,7 @@ import type { GameMode, RuneType } from '../types';
 import { QUESTS } from '../data/quests';
 import { playBloop, playPoof } from '../utils/audio';
 import { ToddlerStirStation } from './ToddlerStirStation';
-import { Sparkles, Wand2, CheckCircle2, Compass } from 'lucide-react';
+import { Sparkles, Wand2, Compass } from 'lucide-react';
 
 interface ScreenHubProps {
   onSelectQuest: (rune: RuneType, mode: GameMode) => void;
@@ -138,7 +138,7 @@ export const ScreenHub: React.FC<ScreenHubProps> = ({
           CHOOSE YOUR MAGICAL QUEST
         </h2>
         <div style={{ fontSize: '0.84rem', color: '#94a3b8', marginTop: '3px', maxWidth: '620px' }}>
-          Select your guild rank, grab your elemental relic, and seek out the enchanted posters hidden across the office!
+          Select your adventurer, grab your elemental relic, and seek out the enchanted posters!
         </div>
       </div>
 
@@ -167,14 +167,14 @@ export const ScreenHub: React.FC<ScreenHubProps> = ({
           <span>Step 1: Choose Your Adventurer Rank</span>
         </div>
 
-        {/* 2 Big Illustrated Guild Cards (The Most Important Choice) */}
+        {/* 2 Big Illustrated Guild Cards */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-          gap: '1rem',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          gap: '1.25rem',
           width: '100%'
         }}>
-          {/* Card 1: Apprentice Alchemist (Ages 3-8 / Seek & Spot) */}
+          {/* Card 1: Apprentice Alchemist */}
           <div
             onClick={() => {
               playBloop(1.15);
@@ -184,111 +184,90 @@ export const ScreenHub: React.FC<ScreenHubProps> = ({
             style={{
               position: 'relative',
               background: selectedMode === 'kids'
-                ? 'linear-gradient(135deg, rgba(28, 52, 24, 0.96), rgba(16, 32, 18, 0.96))'
-                : 'linear-gradient(135deg, rgba(24, 20, 44, 0.85), rgba(16, 12, 32, 0.85))',
+                ? 'linear-gradient(135deg, rgba(28, 55, 24, 0.96), rgba(15, 30, 16, 0.96))'
+                : 'linear-gradient(135deg, rgba(24, 18, 44, 0.85), rgba(14, 10, 28, 0.85))',
               border: selectedMode === 'kids'
-                ? '3px solid #39ff14'
-                : '2px solid rgba(255, 255, 255, 0.16)',
-              borderRadius: '24px',
-              padding: '1.15rem 1.4rem',
+                ? '2.5px solid #39ff14'
+                : '1.5px solid rgba(255, 255, 255, 0.16)',
+              borderRadius: '22px',
+              padding: '1.1rem 1.5rem',
               display: 'flex',
               alignItems: 'center',
-              gap: '1.15rem',
+              gap: '1.2rem',
               cursor: 'pointer',
               boxShadow: selectedMode === 'kids'
-                ? '0 12px 30px rgba(0,0,0,0.65), 0 0 32px rgba(57, 255, 20, 0.45)'
+                ? '0 10px 28px rgba(0,0,0,0.65), 0 0 28px rgba(57, 255, 20, 0.45)'
                 : '0 6px 18px rgba(0,0,0,0.4)',
               transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
               overflow: 'hidden'
             }}
           >
-            {/* Active Guild Badge */}
-            {selectedMode === 'kids' && (
-              <div style={{
-                position: 'absolute',
-                top: '10px',
-                right: '12px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.35rem',
-                backgroundColor: '#39ff14',
-                color: '#090714',
-                padding: '3px 10px',
-                borderRadius: '999px',
-                fontSize: '0.72rem',
-                fontWeight: 900,
-                boxShadow: '0 0 12px rgba(57, 255, 20, 0.7)'
-              }}>
-                <CheckCircle2 size={13} />
-                <span>SELECTED GUILD</span>
-              </div>
-            )}
-
             {/* Prominent Avatar Graphic */}
             <div style={{
-              width: '88px',
-              height: '88px',
+              width: '86px',
+              height: '86px',
               borderRadius: '50%',
-              border: selectedMode === 'kids' ? '3px solid #39ff14' : '2px solid rgba(255, 255, 255, 0.25)',
-              backgroundColor: 'rgba(0, 0, 0, 0.45)',
+              border: selectedMode === 'kids' ? '2.5px solid #39ff14' : '2px solid rgba(255, 255, 255, 0.2)',
+              backgroundColor: 'rgba(0, 0, 0, 0.35)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               flexShrink: 0,
-              boxShadow: selectedMode === 'kids' ? '0 0 20px rgba(57, 255, 20, 0.55)' : 'none',
+              boxShadow: selectedMode === 'kids' ? '0 0 18px rgba(57, 255, 20, 0.5)' : 'none',
               animation: selectedMode === 'kids' ? 'gentleBreathe 4s ease-in-out infinite' : 'none'
             }}>
               <img
                 src="/sprites/avatar_apprentice.png"
                 alt="Apprentice Alchemist"
                 style={{
-                  width: '80px',
-                  height: '80px',
-                  borderRadius: '50%',
-                  objectFit: 'cover'
+                  width: '78px',
+                  height: '78px',
+                  objectFit: 'contain'
                 }}
               />
             </div>
 
-            {/* Clear, Streamlined Info (No clutter, simple Age & message) */}
+            {/* Clear, Streamlined Info */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', textAlign: 'left', flex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
                 <h3 className="font-mystic" style={{
-                  fontSize: '1.25rem',
+                  fontSize: '1.35rem',
                   fontWeight: 900,
-                  color: selectedMode === 'kids' ? '#39ff14' : '#ffffff',
+                  color: selectedMode === 'kids' ? '#39ff14' : '#f8fafc',
                   margin: 0,
-                  letterSpacing: '0.5px',
-                  textShadow: selectedMode === 'kids' ? '0 0 12px rgba(57, 255, 20, 0.6)' : 'none'
+                  letterSpacing: '1px',
+                  textShadow: selectedMode === 'kids' ? '0 0 12px rgba(57, 255, 20, 0.55)' : 'none',
+                  lineHeight: 1.1
                 }}>
-                  Apprentice Alchemist
+                  APPRENTICE
                 </h3>
                 <span style={{
-                  fontSize: '0.75rem',
+                  fontSize: '0.74rem',
                   fontWeight: 900,
-                  backgroundColor: 'rgba(57, 255, 20, 0.22)',
-                  color: '#39ff14',
-                  border: '1.5px solid #39ff14',
+                  backgroundColor: selectedMode === 'kids' ? 'rgba(57, 255, 20, 0.22)' : 'rgba(255, 255, 255, 0.1)',
+                  color: selectedMode === 'kids' ? '#39ff14' : '#cbd5e1',
+                  border: selectedMode === 'kids' ? '1.5px solid #39ff14' : '1px solid rgba(255, 255, 255, 0.2)',
                   padding: '2px 10px',
                   borderRadius: '999px',
-                  boxShadow: '0 0 10px rgba(57, 255, 20, 0.3)'
+                  boxShadow: selectedMode === 'kids' ? '0 0 10px rgba(57, 255, 20, 0.3)' : 'none'
                 }}>
                   Age 3–8
                 </span>
               </div>
 
               <div style={{
-                fontSize: '1rem',
-                color: selectedMode === 'kids' ? '#ffbe0b' : '#cbd5e1',
+                fontSize: '0.98rem',
+                color: selectedMode === 'kids' ? '#ffbe0b' : '#94a3b8',
                 fontWeight: 800,
-                letterSpacing: '0.3px'
+                letterSpacing: '0.3px',
+                marginTop: '1px'
               }}>
-                Seek & Spot (Picture Hunt)
+                (Picture Hunt)
               </div>
             </div>
           </div>
 
-          {/* Card 2: Master Alchemist (Age 9+ / Cryptic Cipher) */}
+          {/* Card 2: Master Alchemist */}
           <div
             onClick={() => {
               playBloop(1.15);
@@ -298,106 +277,85 @@ export const ScreenHub: React.FC<ScreenHubProps> = ({
             style={{
               position: 'relative',
               background: selectedMode === 'adults'
-                ? 'linear-gradient(135deg, rgba(46, 20, 68, 0.96), rgba(24, 10, 40, 0.96))'
-                : 'linear-gradient(135deg, rgba(24, 20, 44, 0.85), rgba(16, 12, 32, 0.85))',
+                ? 'linear-gradient(135deg, rgba(50, 22, 72, 0.96), rgba(24, 10, 42, 0.96))'
+                : 'linear-gradient(135deg, rgba(24, 18, 44, 0.85), rgba(14, 10, 28, 0.85))',
               border: selectedMode === 'adults'
-                ? '3px solid #bf5af2'
-                : '2px solid rgba(255, 255, 255, 0.16)',
-              borderRadius: '24px',
-              padding: '1.15rem 1.4rem',
+                ? '2.5px solid #bf5af2'
+                : '1.5px solid rgba(255, 255, 255, 0.16)',
+              borderRadius: '22px',
+              padding: '1.1rem 1.5rem',
               display: 'flex',
               alignItems: 'center',
-              gap: '1.15rem',
+              gap: '1.2rem',
               cursor: 'pointer',
               boxShadow: selectedMode === 'adults'
-                ? '0 12px 30px rgba(0,0,0,0.65), 0 0 32px rgba(191, 90, 242, 0.45)'
+                ? '0 10px 28px rgba(0,0,0,0.65), 0 0 28px rgba(191, 90, 242, 0.45)'
                 : '0 6px 18px rgba(0,0,0,0.4)',
               transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
               overflow: 'hidden'
             }}
           >
-            {/* Active Guild Badge */}
-            {selectedMode === 'adults' && (
-              <div style={{
-                position: 'absolute',
-                top: '10px',
-                right: '12px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.35rem',
-                backgroundColor: '#bf5af2',
-                color: '#ffffff',
-                padding: '3px 10px',
-                borderRadius: '999px',
-                fontSize: '0.72rem',
-                fontWeight: 900,
-                boxShadow: '0 0 12px rgba(191, 90, 242, 0.7)'
-              }}>
-                <CheckCircle2 size={13} />
-                <span>SELECTED GUILD</span>
-              </div>
-            )}
-
             {/* Prominent Avatar Graphic */}
             <div style={{
-              width: '88px',
-              height: '88px',
+              width: '86px',
+              height: '86px',
               borderRadius: '50%',
-              border: selectedMode === 'adults' ? '3px solid #bf5af2' : '2px solid rgba(255, 255, 255, 0.25)',
-              backgroundColor: 'rgba(0, 0, 0, 0.45)',
+              border: selectedMode === 'adults' ? '2.5px solid #bf5af2' : '2px solid rgba(255, 255, 255, 0.2)',
+              backgroundColor: 'rgba(0, 0, 0, 0.35)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               flexShrink: 0,
-              boxShadow: selectedMode === 'adults' ? '0 0 20px rgba(191, 90, 242, 0.55)' : 'none',
+              boxShadow: selectedMode === 'adults' ? '0 0 18px rgba(191, 90, 242, 0.5)' : 'none',
               animation: selectedMode === 'adults' ? 'gentleBreathe 4s ease-in-out infinite' : 'none'
             }}>
               <img
                 src="/sprites/avatar_master.png"
                 alt="Master Alchemist"
                 style={{
-                  width: '80px',
-                  height: '80px',
-                  borderRadius: '50%',
-                  objectFit: 'cover'
+                  width: '78px',
+                  height: '78px',
+                  objectFit: 'contain'
                 }}
               />
             </div>
 
-            {/* Clear, Streamlined Info (No clutter, simple Age & message) */}
+            {/* Clear, Streamlined Info */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', textAlign: 'left', flex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
                 <h3 className="font-mystic" style={{
-                  fontSize: '1.25rem',
+                  fontSize: '1.35rem',
                   fontWeight: 900,
-                  color: selectedMode === 'adults' ? '#bf5af2' : '#ffffff',
+                  color: selectedMode === 'adults' ? '#bf5af2' : '#f8fafc',
                   margin: 0,
-                  letterSpacing: '0.5px',
-                  textShadow: selectedMode === 'adults' ? '0 0 12px rgba(191, 90, 242, 0.6)' : 'none'
+                  letterSpacing: '1px',
+                  textShadow: selectedMode === 'adults' ? '0 0 12px rgba(191, 90, 242, 0.55)' : 'none',
+                  lineHeight: 1.1
                 }}>
-                  Master Alchemist
+                  MASTER
                 </h3>
                 <span style={{
-                  fontSize: '0.75rem',
+                  fontSize: '0.74rem',
                   fontWeight: 900,
-                  backgroundColor: 'rgba(191, 90, 242, 0.22)',
-                  color: '#bf5af2',
-                  border: '1.5px solid #bf5af2',
+                  backgroundColor: selectedMode === 'adults' ? 'rgba(191, 90, 242, 0.22)' : 'rgba(255, 255, 255, 0.1)',
+                  color: selectedMode === 'adults' ? '#bf5af2' : '#cbd5e1',
+                  border: selectedMode === 'adults' ? '1.5px solid #bf5af2' : '1px solid rgba(255, 255, 255, 0.2)',
                   padding: '2px 10px',
                   borderRadius: '999px',
-                  boxShadow: '0 0 10px rgba(191, 90, 242, 0.3)'
+                  boxShadow: selectedMode === 'adults' ? '0 0 10px rgba(191, 90, 242, 0.3)' : 'none'
                 }}>
                   Age 9+
                 </span>
               </div>
 
               <div style={{
-                fontSize: '1rem',
-                color: selectedMode === 'adults' ? '#38bdf8' : '#cbd5e1',
+                fontSize: '0.98rem',
+                color: selectedMode === 'adults' ? '#38bdf8' : '#94a3b8',
                 fontWeight: 800,
-                letterSpacing: '0.3px'
+                letterSpacing: '0.3px',
+                marginTop: '1px'
               }}>
-                Cryptic Cipher (Riddle Hunt)
+                (Riddle Hunt)
               </div>
             </div>
           </div>
@@ -411,25 +369,22 @@ export const ScreenHub: React.FC<ScreenHubProps> = ({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: '0.35rem',
+        gap: '0.45rem',
         position: 'relative',
         zIndex: 1
       }}>
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '0.4rem',
+          gap: '0.45rem',
           fontSize: '0.78rem',
           fontWeight: 800,
-          letterSpacing: '1px',
+          letterSpacing: '1.2px',
           color: '#cbd5e1',
           textTransform: 'uppercase'
         }}>
           <Compass size={14} color="#00d2ff" />
-          <span>Step 2: Choose Your Elemental Relic Quest</span>
-        </div>
-        <div style={{ fontSize: '0.78rem', color: '#94a3b8', marginTop: '-2px' }}>
-          🎲 Drop your Plinko disc to be assigned your relic quest, or choose your element directly:
+          <span>Step 2: Begin Your Elemental Relic Quest</span>
         </div>
 
         <div style={{

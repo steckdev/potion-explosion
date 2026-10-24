@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="76.2mm" height="76.2mm" viewBox="-38.1 -38.1 76.2 76.2">
+  <title>Shadow Moon - 3" Alchemy Quest 3D Puck</title>
+  <!-- Layer 1: 3-Inch Diameter Disc Base (Object 1: Color Assignment A) -->
+  <g id="disc-base">
+    <circle cx="0" cy="0" r="38.1" fill="#18142a" stroke="#332a52" stroke-width="0.8"/>
+    <circle cx="0" cy="0" r="36.5" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.4" stroke-dasharray="1.5,1.5"/>
+    <circle cx="0" cy="0" r="32.0" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="0.3"/>
+  </g>
+  <!-- Layer 2: Raised Emblem (Object 2: Color Assignment B - #bf5af2) -->
+  <g id="emblem-relief" fill="#bf5af2" stroke="#ffffff" stroke-width="0.35" stroke-linejoin="round">
+    <path d="M -22.602 9.988 L -24.867 2.414 L -24.309 -5.471 L -20.999 -12.650 L -15.366 -18.196 L -8.136 -21.392 L -0.243 -21.827 L 7.294 -19.443 L 13.502 -14.549 L 17.580 -7.776 L 19.000 -0.000 L 17.580 7.776 L 13.502 14.549 L 7.294 19.443 L -0.243 21.827 L -8.136 21.392 L -15.366 18.196 L -20.999 12.650 L -24.309 5.471 L -24.867 -2.414 L -22.602 -9.988 L -13.963 1.162 L -12.743 6.702 L -9.902 11.612 L -5.705 15.430 L -0.550 17.798 L 5.081 18.491 L 10.657 17.445 L 15.654 14.759 L 19.602 10.685 L 22.130 5.606 L 23.000 -0.000 L 22.130 -5.606 L 19.602 -10.685 L 15.654 -14.759 L 10.657 -17.445 L 5.081 -18.491 L -0.550 -17.798 L -5.705 -15.430 L -9.902 -11.612 L -12.743 -6.702 L -13.963 -1.162 Z"/>
+    <path d="M 11.000 -10.000 L 12.697 -3.697 L 19.000 -2.000 L 12.697 -0.303 L 11.000 6.000 L 9.303 -0.303 L 3.000 -2.000 L 9.303 -3.697 Z"/>
+  </g>
+</svg>

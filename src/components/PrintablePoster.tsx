@@ -86,18 +86,19 @@ export const PrintablePoster: React.FC<PrintablePosterProps> = ({
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: '4px',
-            width: '110px'
+            gap: '6px',
+            width: '130px'
           }}>
             <div style={{
-              width: '92px',
-              height: '92px',
+              width: '114px',
+              height: '114px',
               borderRadius: '50%',
               backgroundColor: 'transparent',
-              filter: `drop-shadow(0 0 10px ${leftRune.color})`,
+              filter: `drop-shadow(0 0 12px ${leftRune.color}) drop-shadow(0 4px 8px rgba(0,0,0,0.35))`,
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              transition: 'transform 0.2s ease'
             }}>
               <img
                 src={leftRune.icon}
@@ -105,22 +106,22 @@ export const PrintablePoster: React.FC<PrintablePosterProps> = ({
                 style={{ width: '100%', height: '100%', objectFit: 'contain' }}
               />
             </div>
-            <span style={{ fontSize: '0.82rem', fontWeight: 900, color: leftRune.color, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            <span style={{ fontSize: '0.92rem', fontWeight: 900, color: leftRune.color, textTransform: 'uppercase', letterSpacing: '0.6px' }}>
               {leftRune.rune} Rune
             </span>
           </div>
-        ) : <div style={{ width: '110px' }} />}
+        ) : <div style={{ width: '130px' }} />}
 
         {/* Center Card Number & Title Pin */}
         <div style={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: '3px',
+          gap: '4px',
           textAlign: 'center'
         }}>
           <div style={{
-            fontSize: '0.8rem',
+            fontSize: '0.85rem',
             fontWeight: 800,
             letterSpacing: '2px',
             color: '#78350f',
@@ -131,9 +132,9 @@ export const PrintablePoster: React.FC<PrintablePosterProps> = ({
           <div style={{
             backgroundColor: '#3d2314',
             color: '#ffbe0b',
-            padding: '4px 18px',
+            padding: '5px 20px',
             borderRadius: '999px',
-            fontSize: '0.95rem',
+            fontSize: '1.02rem',
             fontWeight: 900,
             letterSpacing: '1px',
             boxShadow: '0 3px 8px rgba(0,0,0,0.2)'
@@ -143,7 +144,7 @@ export const PrintablePoster: React.FC<PrintablePosterProps> = ({
           {thirdRune && (
             <div style={{
               marginTop: '4px',
-              fontSize: '0.72rem',
+              fontSize: '0.75rem',
               fontWeight: 800,
               color: thirdRune.color,
               backgroundColor: '#090714',
@@ -162,18 +163,19 @@ export const PrintablePoster: React.FC<PrintablePosterProps> = ({
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: '4px',
-            width: '110px'
+            gap: '6px',
+            width: '130px'
           }}>
             <div style={{
-              width: '92px',
-              height: '92px',
+              width: '114px',
+              height: '114px',
               borderRadius: '50%',
               backgroundColor: 'transparent',
-              filter: `drop-shadow(0 0 10px ${rightRune.color})`,
+              filter: `drop-shadow(0 0 12px ${rightRune.color}) drop-shadow(0 4px 8px rgba(0,0,0,0.35))`,
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              transition: 'transform 0.2s ease'
             }}>
               <img
                 src={rightRune.icon}
@@ -181,11 +183,11 @@ export const PrintablePoster: React.FC<PrintablePosterProps> = ({
                 style={{ width: '100%', height: '100%', objectFit: 'contain' }}
               />
             </div>
-            <span style={{ fontSize: '0.82rem', fontWeight: 900, color: rightRune.color, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            <span style={{ fontSize: '0.92rem', fontWeight: 900, color: rightRune.color, textTransform: 'uppercase', letterSpacing: '0.6px' }}>
               {rightRune.rune} Rune
             </span>
           </div>
-        ) : <div style={{ width: '110px' }} />}
+        ) : <div style={{ width: '130px' }} />}
       </div>
 
       {/* CENTER STAGE: Clean Kawaii Illustration & Bold Title */}

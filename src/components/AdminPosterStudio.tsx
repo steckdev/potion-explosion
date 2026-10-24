@@ -17,7 +17,10 @@ import {
   Eye,
   EyeOff,
   MapPin,
-  Copy
+  Copy,
+  Box,
+  Layers,
+  Disc
 } from 'lucide-react';
 
 interface AdminPosterStudioProps {
@@ -32,10 +35,11 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
   onExitAdmin
 }) => {
   const [selectedCardIndex, setSelectedCardIndex] = useState(0);
-  const [viewMode, setViewMode] = useState<'editor' | 'print_all' | 'cheat_sheet' | 'table_sign' | 'certificates' | 'plinko_discs' | 'prompts'>('editor');
+  const [viewMode, setViewMode] = useState<'editor' | 'print_all' | 'cheat_sheet' | 'table_sign' | 'certificates' | 'plinko_discs' | 'prompts' | 'puck_3d'>('editor');
   const [isImporting, setIsImporting] = useState(false);
   const [jsonInput, setJsonInput] = useState('');
   const [saveToast, setSaveToast] = useState(false);
+  const [puckBaseColor, setPuckBaseColor] = useState('#151324');
   
   // Wall printing vs Answer Key toggles
   const [showAnswerKey, setShowAnswerKey] = useState(false);
@@ -306,7 +310,28 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
             }}
           >
             <Sparkles size={15} />
-            <span>AI Asset Prompter & Style Guide</span>
+            <span>AI Prompter & Style</span>
+          </button>
+
+          <button
+            onClick={() => { playBloop(1.0); setViewMode('puck_3d'); }}
+            style={{
+              padding: '0.45rem 0.9rem',
+              borderRadius: '999px',
+              border: 'none',
+              cursor: 'pointer',
+              fontWeight: 800,
+              fontSize: '0.82rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              backgroundColor: viewMode === 'puck_3d' ? '#39ff14' : 'rgba(255,255,255,0.08)',
+              color: viewMode === 'puck_3d' ? '#090714' : '#ffffff',
+              boxShadow: viewMode === 'puck_3d' ? '0 0 12px rgba(57, 255, 20, 0.4)' : 'none'
+            }}
+          >
+            <Box size={15} />
+            <span>🖨️ 3D Print Pucks (3" Discs)</span>
           </button>
         </div>
 
@@ -978,23 +1003,42 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                          <span style={{ fontSize: '1.3rem' }}>
-                            {r === 'fire' ? '🔴' : r === 'frost' ? '🔵' : r === 'venom' ? '🟢' : '🟣'}
-                          </span>
-                          <strong style={{ fontSize: '1.1rem', color: '#1e1b4b' }}>
-                            {quest.title} ({quest.totemName})
-                          </strong>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                          <div style={{
+                            width: '42px',
+                            height: '42px',
+                            borderRadius: '50%',
+                            filter: `drop-shadow(0 2px 8px ${quest.color})`,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            backgroundColor: '#090714'
+                          }}>
+                            <img
+                              src={quest.icon}
+                              alt={quest.title}
+                              style={{ width: '36px', height: '36px', objectFit: 'contain' }}
+                            />
+                          </div>
+                          <div>
+                            <strong style={{ fontSize: '1.15rem', color: '#1e1b4b', display: 'block' }}>
+                              {quest.title} ({quest.totemName})
+                            </strong>
+                            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: quest.color, textTransform: 'uppercase' }}>
+                              {quest.rune} Rune • {quest.color}
+                            </span>
+                          </div>
                         </div>
                         <div style={{
                           backgroundColor: '#0f172a',
                           color: '#ffffff',
-                          padding: '3px 12px',
-                          borderRadius: '6px',
+                          padding: '4px 14px',
+                          borderRadius: '8px',
                           fontFamily: 'monospace',
                           fontWeight: 900,
-                          fontSize: '1rem',
-                          letterSpacing: '2px'
+                          fontSize: '1.05rem',
+                          letterSpacing: '2px',
+                          boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
                         }}>
                           SECRET WORD: {quest.secretWord}
                         </div>
@@ -1076,9 +1120,25 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                 }}>
                   <div style={{ fontSize: '2.5rem' }}>🏮</div>
                   <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#3d2314' }}>1. Pick a Totem</h3>
-                  <p style={{ margin: 0, fontSize: '0.88rem', color: '#78350f', lineHeight: 1.35 }}>
-                    Grab one available Elemental Totem from the desk (🔴 Fire, 🔵 Frost, 🟢 Venom, or 🟣 Moon).
+                  <p style={{ margin: 0, fontSize: '0.88rem', color: '#78350f', lineHeight: 1.35, textAlign: 'center' }}>
+                    Grab one available Elemental Totem from the desk:
                   </p>
+                  <div style={{ display: 'flex', gap: '6px', marginTop: '4px' }}>
+                    {(['fire', 'frost', 'venom', 'moon'] as RuneType[]).map(r => (
+                      <div key={r} style={{
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '50%',
+                        backgroundColor: '#1e1b2e',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        filter: `drop-shadow(0 2px 4px ${QUESTS[r].color})`
+                      }}>
+                        <img src={QUESTS[r].icon} alt={r} style={{ width: '26px', height: '26px', objectFit: 'contain' }} />
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 <div style={{
@@ -1553,10 +1613,10 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                         src={token.icon}
                         alt={token.name}
                         style={{
-                          width: '1.05in',
-                          height: '1.05in',
+                          width: '1.2in',
+                          height: '1.2in',
                           objectFit: 'contain',
-                          filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.6))'
+                          filter: 'drop-shadow(0 3px 8px rgba(0,0,0,0.65))'
                         }}
                       />
 
@@ -1770,6 +1830,415 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                 }}>
                   --no text, letters, watermarks, frames, borders, dark background boxes, photorealistic humans, blurry, cropped
                 </code>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* VIEW 7: 3D-Printable Pucks Studio (3" Discs with Dual-Object Color Assignment) */}
+        {viewMode === 'puck_3d' && (
+          <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+            {/* Studio Header Banner */}
+            <div className="glass-panel" style={{
+              padding: '1.75rem 2rem',
+              borderRadius: '24px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1rem',
+              border: '1px solid rgba(57, 255, 20, 0.35)',
+              background: 'radial-gradient(circle at 10% 10%, rgba(57, 255, 20, 0.12) 0%, transparent 50%), rgba(18, 14, 36, 0.95)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                    <span style={{ fontSize: '2rem' }}>🖨️</span>
+                    <h2 className="font-mystic" style={{ margin: 0, fontSize: '1.85rem', color: '#39ff14', letterSpacing: '1px' }}>
+                      3D PRINT PUCK STUDIO (3" DUAL-MATERIAL DISCS)
+                    </h2>
+                  </div>
+                  <p style={{ margin: '6px 0 0 0', fontSize: '0.92rem', color: '#cbd5e1', maxWidth: '820px', lineHeight: 1.5 }}>
+                    Production-ready 3D printable models for the 4 Elemental Relics: <strong>Venom</strong> (Leaf with stem), <strong>Fire</strong> (Flame), <strong>Frost</strong> (Glacier crystals), and <strong>Shadow</strong> (Crescent Moon). Each design is modeled as <strong>two separate objects</strong> sharing origin <code style={{ color: '#ffbe0b' }}>(0,0,0)</code> so you can effortlessly assign filament colors in your slicer!
+                  </p>
+                </div>
+
+                {/* Quick Spec Badges */}
+                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                  <div style={{ backgroundColor: 'rgba(255,255,255,0.08)', padding: '8px 14px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.15)', textAlign: 'center' }}>
+                    <div style={{ fontSize: '0.68rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 800 }}>Disc Diameter</div>
+                    <div style={{ fontSize: '1.05rem', fontWeight: 900, color: '#39ff14' }}>3.00" (76.2 mm)</div>
+                  </div>
+                  <div style={{ backgroundColor: 'rgba(255,255,255,0.08)', padding: '8px 14px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.15)', textAlign: 'center' }}>
+                    <div style={{ fontSize: '0.68rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 800 }}>Base Height</div>
+                    <div style={{ fontSize: '1.05rem', fontWeight: 900, color: '#38bdf8' }}>4.0 mm (Beveled)</div>
+                  </div>
+                  <div style={{ backgroundColor: 'rgba(255,255,255,0.08)', padding: '8px 14px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.15)', textAlign: 'center' }}>
+                    <div style={{ fontSize: '0.68rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 800 }}>Emblem Height</div>
+                    <div style={{ fontSize: '1.05rem', fontWeight: 900, color: '#ffbe0b' }}>2.0 mm Relief</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Filament Base Color Simulator Controls */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem',
+                borderTop: '1px solid rgba(255,255,255,0.12)',
+                paddingTop: '0.9rem',
+                flexWrap: 'wrap'
+              }}>
+                <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#cbd5e1' }}>
+                  🎨 Preview Disc Base Filament Color:
+                </span>
+                {[
+                  { name: 'Obsidian Black', hex: '#151324' },
+                  { name: 'Arcane Navy', hex: '#10172a' },
+                  { name: 'Slate Gray', hex: '#334155' },
+                  { name: 'Mystic Purple', hex: '#261238' },
+                  { name: 'Marble White', hex: '#f1f5f9' },
+                ].map(col => (
+                  <button
+                    key={col.hex}
+                    onClick={() => setPuckBaseColor(col.hex)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                      padding: '4px 12px',
+                      borderRadius: '999px',
+                      border: puckBaseColor === col.hex ? '2px solid #39ff14' : '1px solid rgba(255,255,255,0.2)',
+                      backgroundColor: 'rgba(0,0,0,0.4)',
+                      color: '#ffffff',
+                      fontSize: '0.78rem',
+                      fontWeight: 700,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <span style={{
+                      width: '12px',
+                      height: '12px',
+                      borderRadius: '50%',
+                      backgroundColor: col.hex,
+                      border: '1px solid rgba(255,255,255,0.4)'
+                    }} />
+                    <span>{col.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* 4 Puck Models Grid */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              gap: '1.5rem'
+            }}>
+              {[
+                {
+                  id: 'venom',
+                  name: 'VENOM RELIC PUCK',
+                  shape: 'leaf',
+                  element: 'Toxic Venom Leaf',
+                  color: '#39ff14',
+                  glow: 'rgba(57, 255, 20, 0.45)',
+                  description: 'Clean sculpted leaf with small stem on 3" disc. 2 objects for dual-color assignment.',
+                  svgPath: '/models/puck_venom.svg',
+                  baseStl: '/models/puck_base_3in.stl',
+                  emblemStl: '/models/puck_venom_leaf.stl',
+                  comboStl: '/models/puck_venom_combo.stl'
+                },
+                {
+                  id: 'fire',
+                  name: 'FIRE RELIC PUCK',
+                  shape: 'flame',
+                  element: 'Crimson Flame',
+                  color: '#ff5722',
+                  glow: 'rgba(255, 87, 34, 0.45)',
+                  description: 'Stylized 3-tier leaping flame with inner heat core on 3" disc.',
+                  svgPath: '/models/puck_fire.svg',
+                  baseStl: '/models/puck_base_3in.stl',
+                  emblemStl: '/models/puck_fire_flame.stl',
+                  comboStl: '/models/puck_fire_combo.stl'
+                },
+                {
+                  id: 'frost',
+                  name: 'FROST RELIC PUCK',
+                  shape: 'glacier',
+                  element: 'Glacial Ice Crystals',
+                  color: '#00d2ff',
+                  glow: 'rgba(0, 210, 255, 0.45)',
+                  description: 'Faceted geometric glacier crystal spire and flanking shards on 3" disc.',
+                  svgPath: '/models/puck_frost.svg',
+                  baseStl: '/models/puck_base_3in.stl',
+                  emblemStl: '/models/puck_frost_glacier.stl',
+                  comboStl: '/models/puck_frost_combo.stl'
+                },
+                {
+                  id: 'shadow',
+                  name: 'SHADOW RELIC PUCK',
+                  shape: 'moon',
+                  element: 'Crescent Moon & Star',
+                  color: '#bf5af2',
+                  glow: 'rgba(191, 90, 242, 0.45)',
+                  description: 'Elegant crescent moon with cradled 4-point cosmic star on 3" disc.',
+                  svgPath: '/models/puck_shadow.svg',
+                  baseStl: '/models/puck_base_3in.stl',
+                  emblemStl: '/models/puck_shadow_moon.stl',
+                  comboStl: '/models/puck_shadow_combo.stl'
+                }
+              ].map(puck => (
+                <div
+                  key={puck.id}
+                  className="glass-panel"
+                  style={{
+                    borderRadius: '24px',
+                    padding: '1.5rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '1rem',
+                    border: `2px solid ${puck.color}`,
+                    boxShadow: `0 8px 32px ${puck.glow}`,
+                    position: 'relative',
+                    overflow: 'hidden'
+                  }}
+                >
+                  {/* Header Badge */}
+                  <div style={{ textAlign: 'center', width: '100%' }}>
+                    <div style={{ fontSize: '0.72rem', fontWeight: 800, color: puck.color, letterSpacing: '1px', textTransform: 'uppercase' }}>
+                      {puck.element}
+                    </div>
+                    <h3 className="font-mystic" style={{ margin: '2px 0 0 0', fontSize: '1.35rem', color: '#ffffff' }}>
+                      {puck.name}
+                    </h3>
+                  </div>
+
+                  {/* 3D Simulated Visualizer Disc */}
+                  <div style={{
+                    width: '210px',
+                    height: '210px',
+                    borderRadius: '50%',
+                    backgroundColor: puckBaseColor,
+                    border: `4px solid ${puckBaseColor === '#f1f5f9' ? '#cbd5e1' : 'rgba(255,255,255,0.25)'}`,
+                    boxShadow: `
+                      0 16px 36px rgba(0,0,0,0.65),
+                      inset 0 4px 8px rgba(255,255,255,0.25),
+                      inset 0 -6px 14px rgba(0,0,0,0.8),
+                      0 0 24px ${puck.glow}
+                    `,
+                    position: 'relative',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0.5rem 0',
+                    transition: 'all 0.3s ease'
+                  }}>
+                    {/* Concentric Chamfer Rings */}
+                    <div style={{
+                      position: 'absolute',
+                      inset: '10px',
+                      borderRadius: '50%',
+                      border: '1.5px dashed rgba(255,255,255,0.18)',
+                      pointerEvents: 'none'
+                    }} />
+
+                    {/* Vector Emblem Rendered Directly from SVG */}
+                    <img
+                      src={puck.svgPath}
+                      alt={puck.name}
+                      style={{
+                        width: '185px',
+                        height: '185px',
+                        objectFit: 'contain',
+                        filter: `drop-shadow(0 4px 10px rgba(0,0,0,0.7)) drop-shadow(0 0 12px ${puck.color})`,
+                        transform: 'scale(1.05)'
+                      }}
+                    />
+
+                    {/* Real Size Marker */}
+                    <div style={{
+                      position: 'absolute',
+                      bottom: '8px',
+                      backgroundColor: 'rgba(0,0,0,0.75)',
+                      color: '#ffffff',
+                      fontSize: '0.68rem',
+                      fontWeight: 800,
+                      padding: '2px 8px',
+                      borderRadius: '999px',
+                      border: '1px solid rgba(255,255,255,0.2)'
+                    }}>
+                      Ø 76.2mm • 3" Disc
+                    </div>
+                  </div>
+
+                  <p style={{ margin: 0, fontSize: '0.82rem', color: '#cbd5e1', textAlign: 'center', minHeight: '38px', lineHeight: 1.4 }}>
+                    {puck.description}
+                  </p>
+
+                  {/* Dimension Specs */}
+                  <div style={{
+                    width: '100%',
+                    backgroundColor: 'rgba(0,0,0,0.3)',
+                    borderRadius: '12px',
+                    padding: '8px 12px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    fontSize: '0.74rem',
+                    color: '#94a3b8'
+                  }}>
+                    <span>Base: <strong style={{ color: '#ffffff' }}>4.0mm</strong></span>
+                    <span>Emblem: <strong style={{ color: puck.color }}>+2.0mm</strong></span>
+                    <span>Total: <strong style={{ color: '#ffbe0b' }}>6.0mm</strong></span>
+                  </div>
+
+                  {/* 1-Click Download Actions */}
+                  <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    {/* Primary Button: Download Both STLs for Multi-Color */}
+                    <button
+                      onClick={() => {
+                        playBloop(1.1);
+                        // Download base
+                        const a1 = document.createElement('a');
+                        a1.href = puck.baseStl;
+                        a1.download = 'puck_base_3in.stl';
+                        a1.click();
+                        // Download emblem
+                        setTimeout(() => {
+                          const a2 = document.createElement('a');
+                          a2.href = puck.emblemStl;
+                          a2.download = `puck_${puck.id}_${puck.shape}.stl`;
+                          a2.click();
+                        }, 300);
+                      }}
+                      style={{
+                        background: `linear-gradient(135deg, ${puck.color}, #090714)`,
+                        border: 'none',
+                        color: puck.id === 'venom' || puck.id === 'frost' ? '#090714' : '#ffffff',
+                        padding: '0.65rem 1rem',
+                        borderRadius: '12px',
+                        fontWeight: 900,
+                        fontSize: '0.85rem',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.45rem',
+                        boxShadow: `0 4px 14px ${puck.glow}`
+                      }}
+                    >
+                      <Download size={15} />
+                      <span>Download Both STLs (Multi-Part)</span>
+                    </button>
+
+                    {/* Secondary Action Grid */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem' }}>
+                      <a
+                        href={puck.comboStl}
+                        download={`puck_${puck.id}_combo.stl`}
+                        style={{
+                          backgroundColor: 'rgba(255,255,255,0.08)',
+                          color: '#ffffff',
+                          border: '1px solid rgba(255,255,255,0.15)',
+                          borderRadius: '8px',
+                          padding: '0.45rem 0.5rem',
+                          fontSize: '0.74rem',
+                          fontWeight: 700,
+                          textAlign: 'center',
+                          textDecoration: 'none',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '0.3rem'
+                        }}
+                      >
+                        <Layers size={13} />
+                        <span>Combo STL</span>
+                      </a>
+
+                      <a
+                        href={puck.svgPath}
+                        download={`puck_${puck.id}.svg`}
+                        style={{
+                          backgroundColor: 'rgba(255,255,255,0.08)',
+                          color: '#ffffff',
+                          border: '1px solid rgba(255,255,255,0.15)',
+                          borderRadius: '8px',
+                          padding: '0.45rem 0.5rem',
+                          fontSize: '0.74rem',
+                          fontWeight: 700,
+                          textAlign: 'center',
+                          textDecoration: 'none',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '0.3rem'
+                        }}
+                      >
+                        <Disc size={13} />
+                        <span>Vector SVG</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Slicing Quick-Start Guide (Bambu Studio / Prusa / Single Extruder) */}
+            <div className="glass-panel" style={{
+              padding: '1.75rem 2rem',
+              borderRadius: '24px',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1.25rem'
+            }}>
+              <h3 className="font-mystic" style={{ margin: 0, fontSize: '1.35rem', color: '#ffbe0b' }}>
+                💡 HOW TO 3D PRINT YOUR MULTI-COLOR PUCKS
+              </h3>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem' }}>
+                {/* Workflow A: Bambu Studio AMS / OrcaSlicer */}
+                <div style={{ backgroundColor: 'rgba(0,0,0,0.3)', padding: '1.2rem', borderRadius: '16px', border: '1px solid rgba(57, 255, 20, 0.3)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                    <span style={{ fontSize: '1.2rem' }}>🟢</span>
+                    <strong style={{ color: '#39ff14', fontSize: '1rem' }}>Bambu Studio & OrcaSlicer (AMS)</strong>
+                  </div>
+                  <ol style={{ margin: 0, paddingLeft: '1.2rem', fontSize: '0.84rem', color: '#cbd5e1', lineHeight: 1.6 }}>
+                    <li>Click <strong>"Download Both STLs (Multi-Part)"</strong> above.</li>
+                    <li>Select both files in your Downloads and drag them simultaneously into Bambu Studio.</li>
+                    <li>When prompted: <em>"Load these files as a single object with multiple parts?"</em>, choose <strong>YES</strong>.</li>
+                    <li>In the left Object hierarchy, right-click the Base to assign <strong>Filament 1</strong> (e.g. Black), and the Emblem to assign <strong>Filament 2</strong> (e.g. Green, Red, Cyan, or Purple).</li>
+                    <li>Slice and print with standard 0.20mm Standard profile!</li>
+                  </ol>
+                </div>
+
+                {/* Workflow B: Single Extruder Layer-Swap (Zero Purge Waste!) */}
+                <div style={{ backgroundColor: 'rgba(0,0,0,0.3)', padding: '1.2rem', borderRadius: '16px', border: '1px solid rgba(0, 210, 255, 0.3)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                    <span style={{ fontSize: '1.2rem' }}>🔵</span>
+                    <strong style={{ color: '#00d2ff', fontSize: '1rem' }}>Single Extruder (Ender, Neptune, Prusa)</strong>
+                  </div>
+                  <ol style={{ margin: 0, paddingLeft: '1.2rem', fontSize: '0.84rem', color: '#cbd5e1', lineHeight: 1.6 }}>
+                    <li>Download the <strong>Combo STL</strong> for your element.</li>
+                    <li>Load into Cura, PrusaSlicer, or Bambu Studio at <strong>0.20mm layer height</strong>.</li>
+                    <li>In the preview layer slider, go to <strong>Layer 20 (Z = 4.0 mm)</strong>.</li>
+                    <li>Right-click the layer slider and select <strong>"Add Pause"</strong> or <strong>"Add Filament Change (M600)"</strong>.</li>
+                    <li>The printer will print the 4mm base in black/navy, pause for a 15-second spool swap, and finish the raised 2mm emblem in your vibrant color!</li>
+                  </ol>
+                </div>
+
+                {/* Workflow C: Laser Cutter / CAD Extrusions */}
+                <div style={{ backgroundColor: 'rgba(0,0,0,0.3)', padding: '1.2rem', borderRadius: '16px', border: '1px solid rgba(255, 190, 11, 0.3)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                    <span style={{ fontSize: '1.2rem' }}>🟡</span>
+                    <strong style={{ color: '#ffbe0b', fontSize: '1rem' }}>Laser Cutter / Fusion 360 / TinkerCAD</strong>
+                  </div>
+                  <ol style={{ margin: 0, paddingLeft: '1.2rem', fontSize: '0.84rem', color: '#cbd5e1', lineHeight: 1.6 }}>
+                    <li>Download the <strong>Vector SVG</strong> for the element.</li>
+                    <li>The SVG is formatted in exact real-world millimeters (<code style={{ color: '#ffbe0b' }}>76.2mm x 76.2mm</code>) with separate layer groups for Base and Emblem.</li>
+                    <li>Import into LightBurn or Glowforge for acrylic cutting & engraving, or import into Fusion 360 / Tinkercad to customize further!</li>
+                  </ol>
+                </div>
               </div>
             </div>
           </div>

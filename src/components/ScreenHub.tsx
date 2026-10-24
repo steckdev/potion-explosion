@@ -217,7 +217,7 @@ export const ScreenHub: React.FC<ScreenHubProps> = ({
               animation: selectedMode === 'kids' ? 'gentleBreathe 4s ease-in-out infinite' : 'none'
             }}>
               <img
-                src="/sprites/avatar_apprentice.png"
+                src="/sprites/avatar_apprentice.png?v=solid"
                 alt="Apprentice Alchemist"
                 style={{
                   width: '78px',
@@ -310,7 +310,7 @@ export const ScreenHub: React.FC<ScreenHubProps> = ({
               animation: selectedMode === 'adults' ? 'gentleBreathe 4s ease-in-out infinite' : 'none'
             }}>
               <img
-                src="/sprites/avatar_master.png"
+                src="/sprites/avatar_master.png?v=solid"
                 alt="Master Alchemist"
                 style={{
                   width: '78px',

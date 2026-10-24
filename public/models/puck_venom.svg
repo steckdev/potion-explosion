@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="76.2mm" height="76.2mm" viewBox="-38.1 -38.1 76.2 76.2">
+  <title>Venom Leaf - 3" Alchemy Quest 3D Puck</title>
+  <!-- Layer 1: 3-Inch Diameter Disc Base (Object 1: Color Assignment A) -->
+  <g id="disc-base">
+    <circle cx="0" cy="0" r="38.1" fill="#18142a" stroke="#332a52" stroke-width="0.8"/>
+    <circle cx="0" cy="0" r="36.5" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.4" stroke-dasharray="1.5,1.5"/>
+    <circle cx="0" cy="0" r="32.0" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="0.3"/>
+  </g>
+  <!-- Layer 2: Raised Emblem (Object 2: Color Assignment B - #39ff14) -->
+  <g id="emblem-relief" fill="#39ff14" stroke="#ffffff" stroke-width="0.35" stroke-linejoin="round">
+    <path d="M 0.000 -22.000 L 3.169 -19.750 L 6.117 -17.500 L 8.737 -15.250 L 10.938 -13.000 L 12.647 -10.750 L 13.815 -8.500 L 14.413 -6.250 L 14.438 -4.000 L 13.907 -1.750 L 12.862 0.500 L 11.361 2.750 L 9.480 5.000 L 7.305 7.250 L 4.933 9.500 L 2.465 11.750 L 0.000 14.000 L -2.465 11.750 L -4.933 9.500 L -7.305 7.250 L -9.480 5.000 L -11.361 2.750 L -12.862 0.500 L -13.907 -1.750 L -14.438 -4.000 L -14.413 -6.250 L -13.815 -8.500 L -12.647 -10.750 L -10.938 -13.000 L -8.737 -15.250 L -6.117 -17.500 L -3.169 -19.750 Z"/>
+    <path d="M -2.200 13.000 L -2.000 18.000 L -4.000 23.000 L -3.200 26.000 L -1.200 26.200 L 0.200 23.500 L 1.800 18.000 L 2.000 13.000 Z"/>
+  </g>
+</svg>

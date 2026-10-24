@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Audio raw source files in root (served from public/audio)
+/audio_*

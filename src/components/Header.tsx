@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Volume2, VolumeX, Printer, HelpCircle, Maximize, Minimize } from 'lucide-react';
-import { setMuted, playBloop } from '../utils/audio';
+import { Volume2, VolumeX, Printer, HelpCircle, Maximize, Minimize, Music, Sliders } from 'lucide-react';
+import { setMuted, playBloop, subscribeAudioState, getAudioState, MUSIC_TRACKS, type AudioState } from '../utils/audio';
+import { AudioSettingsModal } from './AudioSettingsModal';
 
 interface HeaderProps {
   isAdmin: boolean;
@@ -14,13 +15,22 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   isAdmin,
   onToggleAdmin,
-  isMuted,
+  isMuted: _isMuted,
   onToggleMute,
   onOpenHelp,
   onHome
 }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [fullscreenToast, setFullscreenToast] = useState<string | null>(null);
+  const [isAudioModalOpen, setIsAudioModalOpen] = useState(false);
+  const [audioState, setAudioState] = useState<AudioState>(() => getAudioState());
+
+  useEffect(() => {
+    const unsub = subscribeAudioState((state) => {
+      setAudioState(state);
+    });
+    return unsub;
+  }, []);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -203,30 +213,78 @@ export const Header: React.FC<HeaderProps> = ({
           <span>Rules</span>
         </button>
 
-        {/* Audio Mute/Unmute */}
-        <button
-          onClick={() => {
-            setMuted(!isMuted);
-            onToggleMute();
-          }}
-          title={isMuted ? 'Unmute Sound' : 'Mute Sound'}
-          style={{
-            background: 'rgba(255, 255, 255, 0.08)',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
-            color: isMuted ? '#94a3b8' : '#39ff14',
-            padding: '0.45rem',
-            borderRadius: '50%',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'all 0.2s ease'
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.16)'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)'}
-        >
-          {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
-        </button>
+        {/* Audio Sound Chamber & Mixer */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          backgroundColor: 'rgba(255, 255, 255, 0.08)',
+          borderRadius: '999px',
+          border: audioState.isPlayingMusic && !audioState.isMuted
+            ? '1px solid rgba(255, 190, 11, 0.5)'
+            : '1px solid rgba(255, 255, 255, 0.15)',
+          overflow: 'hidden',
+          transition: 'all 0.2s ease',
+          boxShadow: audioState.isPlayingMusic && !audioState.isMuted
+            ? '0 0 12px rgba(255, 190, 11, 0.25)'
+            : 'none'
+        }}>
+          {/* Open Audio Mixer Button */}
+          <button
+            onClick={() => {
+              playBloop(1.0);
+              setIsAudioModalOpen(true);
+            }}
+            title="Open Alchemical Sound Chamber (Adjust Songs & Volume)"
+            style={{
+              background: 'none',
+              border: 'none',
+              color: audioState.isPlayingMusic && !audioState.isMuted ? '#ffbe0b' : '#e2e8f0',
+              padding: '0.45rem 0.65rem 0.45rem 0.8rem',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              fontSize: '0.82rem',
+              fontWeight: 600
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+          >
+            <Music size={15} color={audioState.isPlayingMusic && !audioState.isMuted ? '#ffbe0b' : '#38bdf8'} />
+            <span style={{ maxWidth: '100px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {audioState.isPlayingMusic && !audioState.isMuted 
+                ? (MUSIC_TRACKS.find(t => t.id === audioState.currentTrackId)?.name || 'Music')
+                : 'Audio & Music'}
+            </span>
+            <Sliders size={13} color="#94a3b8" />
+          </button>
+
+          <div style={{ width: '1px', height: '18px', backgroundColor: 'rgba(255, 255, 255, 0.15)' }} />
+
+          {/* Quick Mute Toggle */}
+          <button
+            onClick={() => {
+              const nextMute = !audioState.isMuted;
+              setMuted(nextMute);
+              onToggleMute();
+            }}
+            title={audioState.isMuted ? 'Unmute Sound' : 'Mute All Sound'}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: audioState.isMuted ? '#f87171' : '#39ff14',
+              padding: '0.45rem 0.65rem',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+          >
+            {audioState.isMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
+          </button>
+        </div>
 
         {/* Poster Studio & Admin Toggle */}
         <button
@@ -261,6 +319,12 @@ export const Header: React.FC<HeaderProps> = ({
           <span>{isAdmin ? 'Exit Admin' : '🖨️ Poster Studio & Admin'}</span>
         </button>
       </div>
+
+      {/* Audio Settings Modal */}
+      <AudioSettingsModal 
+        isOpen={isAudioModalOpen} 
+        onClose={() => setIsAudioModalOpen(false)} 
+      />
     </header>
   );
 };

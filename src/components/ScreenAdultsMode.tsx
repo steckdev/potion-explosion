@@ -11,6 +11,35 @@ interface ScreenAdultsModeProps {
   onWin: (attempts: number, purity: number) => void;
 }
 
+interface QuestHintData {
+  title: string;
+  wordMeaning: string;
+  riddleTip: string;
+}
+
+const QUEST_HINTS: Record<RuneType, QuestHintData> = {
+  fire: {
+    title: 'Crimson Fire Torch Riddle Clue',
+    wordMeaning: 'An eight-legged web spinner lurking in dusty corners (6 letters).',
+    riddleTip: 'Check the first letters of your red torch cards: S-P-I-D-E-R!'
+  },
+  frost: {
+    title: 'Glacial Frost Crystal Riddle Clue',
+    wordMeaning: 'A dark silhouette cast by light that mimics your every move (6 letters).',
+    riddleTip: 'Check the first letters of your blue crystal cards: S-H-A-D-O-W!'
+  },
+  venom: {
+    title: 'Toxic Venom Leaf Riddle Clue',
+    wordMeaning: 'Finely ground alchemical dust or crushed reagent mixed in cauldrons (6 letters).',
+    riddleTip: 'Check the first letters of your green leaf cards: P-O-W-D-E-R!'
+  },
+  moon: {
+    title: 'Mystic Shadow Moon Riddle Clue',
+    wordMeaning: 'Spoken incantations, magical enchantments, or lucky amulets (6 letters).',
+    riddleTip: 'Check the first letters of your purple moon cards: C-H-A-R-M-S!'
+  }
+};
+
 export const ScreenAdultsMode: React.FC<ScreenAdultsModeProps> = ({
   questRune,
   cards,
@@ -19,12 +48,15 @@ export const ScreenAdultsMode: React.FC<ScreenAdultsModeProps> = ({
 }) => {
   const quest = QUESTS[questRune];
   const targetWord = quest.secretWord.toUpperCase(); // 6 letters (e.g. SPIDER, SHADOW, etc.)
+  const currentHint = QUEST_HINTS[questRune];
 
   // Cards that carry this rune in the office
   const questCards = cards.filter(c => c.runes.includes(questRune));
 
   // Game state
   const [attempts, setAttempts] = useState(1);
+  const [failedAttempts, setFailedAttempts] = useState(0);
+  const [cursorIndex, setCursorIndex] = useState(0);
   const [purity, setPurity] = useState(100);
   
   // Permanent green locked letters by index (0-5)
@@ -58,28 +90,90 @@ export const ScreenAdultsMode: React.FC<ScreenAdultsModeProps> = ({
     });
   }, [lockedSlots]);
 
-  // Handle typing a letter
+  // Handle typing a letter with smart skip-locked-letter flow
   const handleInputLetter = useCallback((char: string) => {
     const letter = char.toUpperCase();
     if (!/^[A-Z]$/.test(letter)) return;
 
-    // Find the next slot that isn't locked
-    for (let i = 0; i < 6; i++) {
-      if (!lockedSlots[i] && !currentSlots[i]) {
-        playBloop(1.1);
-        setCurrentSlots(prev => {
-          const next = [...prev];
-          next[i] = letter;
-          return next;
-        });
+    let targetSlot = cursorIndex;
+
+    // If cursor is past slot 5, reset to first empty unlocked slot if any
+    if (targetSlot >= 6) {
+      const firstEmpty = currentSlots.findIndex((c, i) => !lockedSlots[i] && !c);
+      if (firstEmpty !== -1) {
+        targetSlot = firstEmpty;
+      } else {
+        playPoof();
         return;
       }
     }
-  }, [lockedSlots, currentSlots]);
+
+    // 1. If targetSlot is locked and matches the letter typed:
+    // (e.g. slot 0 is locked with 'S' and user presses 'S')
+    // Acknowledge the locked letter, skip it as already pressed, and advance cursor!
+    if (lockedSlots[targetSlot] === letter) {
+      playBloop(1.15);
+      setCursorIndex(Math.min(6, targetSlot + 1));
+      return;
+    }
+
+    // 2. If targetSlot is locked with a different letter, scan forward past locked slots:
+    // If the user typed a letter matching an upcoming locked slot, acknowledge that locked slot.
+    // Otherwise stop at the first unlocked slot!
+    while (targetSlot < 6 && lockedSlots[targetSlot]) {
+      if (lockedSlots[targetSlot] === letter) {
+        // User typed an upcoming locked slot letter!
+        playBloop(1.15);
+        setCursorIndex(Math.min(6, targetSlot + 1));
+        return;
+      }
+      targetSlot++;
+    }
+
+    // 3. Now targetSlot is at an unlocked slot (< 6)
+    if (targetSlot < 6 && !lockedSlots[targetSlot]) {
+      playBloop(1.1);
+      setCurrentSlots(prev => {
+        const next = [...prev];
+        next[targetSlot] = letter;
+        return next;
+      });
+      setCursorIndex(Math.min(6, targetSlot + 1));
+      return;
+    }
+
+    // 4. If we reached slot 6 without filling, find any other open slot on the board
+    const firstEmpty = currentSlots.findIndex((c, i) => !lockedSlots[i] && !c);
+    if (firstEmpty !== -1) {
+      playBloop(1.1);
+      setCurrentSlots(prev => {
+        const next = [...prev];
+        next[firstEmpty] = letter;
+        return next;
+      });
+      setCursorIndex(Math.min(6, firstEmpty + 1));
+    } else {
+      playPoof();
+    }
+  }, [lockedSlots, currentSlots, cursorIndex]);
 
   // Handle backspace
   const handleBackspace = useCallback(() => {
-    // Find the right-most slot that is NOT locked and has a letter
+    // Find rightmost unlocked slot with a letter up to cursorIndex - 1
+    for (let i = Math.min(5, cursorIndex - 1); i >= 0; i--) {
+      if (!lockedSlots[i] && currentSlots[i]) {
+        playBloop(0.85);
+        setCurrentSlots(prev => {
+          const next = [...prev];
+          next[i] = '';
+          return next;
+        });
+        setCursorIndex(i);
+        return;
+      }
+    }
+
+    // Or anywhere on board
     for (let i = 5; i >= 0; i--) {
       if (!lockedSlots[i] && currentSlots[i]) {
         playBloop(0.85);
@@ -88,10 +182,14 @@ export const ScreenAdultsMode: React.FC<ScreenAdultsModeProps> = ({
           next[i] = '';
           return next;
         });
+        setCursorIndex(i);
         return;
       }
     }
-  }, [lockedSlots, currentSlots]);
+
+    // Reset cursor to 0
+    setCursorIndex(0);
+  }, [cursorIndex, lockedSlots, currentSlots]);
 
   // Handle clear non-locked
   const handleClear = useCallback(() => {
@@ -105,6 +203,7 @@ export const ScreenAdultsMode: React.FC<ScreenAdultsModeProps> = ({
       }
       return next;
     });
+    setCursorIndex(0);
   }, [lockedSlots]);
 
   // Handle Incantation Submission (Word-Lock Check)
@@ -157,6 +256,9 @@ export const ScreenAdultsMode: React.FC<ScreenAdultsModeProps> = ({
       return;
     }
 
+    // Failed attempt tracked here
+    setFailedAttempts(f => f + 1);
+
     // Audio feedback for partial result
     if (greenCount > Object.keys(lockedSlots).length) {
       playStoneLock();
@@ -180,6 +282,9 @@ export const ScreenAdultsMode: React.FC<ScreenAdultsModeProps> = ({
         }
         return reset;
       });
+      // Set cursor to the first unlocked slot
+      const firstUnlocked = [0, 1, 2, 3, 4, 5].find(i => !newLocked[i]) ?? 0;
+      setCursorIndex(firstUnlocked);
     }, 1200);
   }, [currentSlots, lockedSlots, targetWord, discoveredLetters, eliminatedLetters, attempts, purity, onWin]);
 
@@ -320,6 +425,7 @@ export const ScreenAdultsMode: React.FC<ScreenAdultsModeProps> = ({
             const letter = currentSlots[idx];
             const isLocked = !!lockedSlots[idx];
             const feedback = slotFeedback[idx];
+            const isActiveCursor = cursorIndex === idx && !isLocked;
 
             let bgColor = 'rgba(255, 255, 255, 0.05)';
             let borderColor = 'rgba(255, 255, 255, 0.18)';
@@ -340,6 +446,10 @@ export const ScreenAdultsMode: React.FC<ScreenAdultsModeProps> = ({
               bgColor = 'rgba(30, 20, 30, 0.8)';
               borderColor = '#ef4444';
               textColor = '#94a3b8';
+            } else if (isActiveCursor) {
+              borderColor = '#38bdf8';
+              shadow = '0 0 20px rgba(56, 189, 248, 0.7)';
+              bgColor = 'rgba(56, 189, 248, 0.12)';
             } else if (letter) {
               borderColor = quest.color;
               shadow = `0 0 12px ${quest.glowColor}`;
@@ -348,6 +458,12 @@ export const ScreenAdultsMode: React.FC<ScreenAdultsModeProps> = ({
             return (
               <div
                 key={idx}
+                onClick={() => {
+                  if (!isLocked) {
+                    playBloop(1.0);
+                    setCursorIndex(idx);
+                  }
+                }}
                 style={{
                   width: 'clamp(52px, 12vw, 84px)',
                   height: 'clamp(64px, 14vw, 96px)',
@@ -360,9 +476,11 @@ export const ScreenAdultsMode: React.FC<ScreenAdultsModeProps> = ({
                   alignItems: 'center',
                   justifyContent: 'center',
                   position: 'relative',
-                  transform: isLocked ? 'scale(1.02)' : 'scale(1)',
-                  transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)'
+                  transform: isLocked ? 'scale(1.02)' : isActiveCursor ? 'scale(1.06)' : 'scale(1)',
+                  transition: 'all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  cursor: isLocked ? 'default' : 'pointer'
                 }}
+                title={isLocked ? `Slot #${idx + 1} locked!` : `Slot #${idx + 1} - Tap to type here`}
               >
                 {/* Slot index number */}
                 <span style={{
@@ -370,7 +488,7 @@ export const ScreenAdultsMode: React.FC<ScreenAdultsModeProps> = ({
                   top: '4px',
                   left: '8px',
                   fontSize: '0.65rem',
-                  color: isLocked ? '#39ff14' : 'rgba(255, 255, 255, 0.35)',
+                  color: isLocked ? '#39ff14' : isActiveCursor ? '#38bdf8' : 'rgba(255, 255, 255, 0.35)',
                   fontWeight: 700
                 }}>
                   #{idx + 1}
@@ -381,13 +499,13 @@ export const ScreenAdultsMode: React.FC<ScreenAdultsModeProps> = ({
                   fontSize: 'clamp(1.6rem, 4vw, 2.4rem)',
                   fontWeight: 900,
                   color: textColor,
-                  textShadow: isLocked ? '0 0 12px #39ff14' : 'none'
+                  textShadow: isLocked ? '0 0 12px #39ff14' : isActiveCursor ? '0 0 12px #38bdf8' : 'none'
                 }}>
                   {letter || '_'}
                 </span>
 
-                {/* Locked chains icon indicator */}
-                {isLocked && (
+                {/* Locked chains or active cursor pointer */}
+                {isLocked ? (
                   <div style={{
                     position: 'absolute',
                     bottom: '4px',
@@ -398,7 +516,17 @@ export const ScreenAdultsMode: React.FC<ScreenAdultsModeProps> = ({
                   }}>
                     LOCKED
                   </div>
-                )}
+                ) : isActiveCursor ? (
+                  <div style={{
+                    position: 'absolute',
+                    bottom: '-10px',
+                    color: '#38bdf8',
+                    fontSize: '0.75rem',
+                    lineHeight: 1
+                  }}>
+                    ▲
+                  </div>
+                ) : null}
               </div>
             );
           })}
@@ -437,6 +565,113 @@ export const ScreenAdultsMode: React.FC<ScreenAdultsModeProps> = ({
             </div>
           </div>
         )}
+
+        {/* Arch-Mage Alchemical Clue / Hint Banner */}
+        {(() => {
+          const firstMissingSlot = [0, 1, 2, 3, 4, 5].find(i => !lockedSlots[i]) ?? -1;
+
+          if (failedAttempts >= 2) {
+            return (
+              <div className="glass-panel" style={{
+                width: '100%',
+                maxWidth: '750px',
+                padding: '0.85rem 1.25rem',
+                borderRadius: '16px',
+                border: '2px solid #f59e0b',
+                background: 'linear-gradient(135deg, rgba(69, 26, 3, 0.88), rgba(28, 18, 48, 0.94))',
+                boxShadow: '0 0 25px rgba(245, 158, 11, 0.35)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.5rem',
+                marginTop: '0.4rem'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Sparkles size={18} color="#ffbe0b" />
+                    <span className="font-mystic" style={{ fontSize: '0.95rem', color: '#ffbe0b', fontWeight: 800, letterSpacing: '0.5px' }}>
+                      ✨ ARCH-MAGE HINT UNLOCKED (AFTER 2 FAILED CASTS)
+                    </span>
+                  </div>
+                  <span style={{ fontSize: '0.72rem', color: '#fde68a', backgroundColor: 'rgba(245, 158, 11, 0.25)', padding: '2px 8px', borderRadius: '999px', fontWeight: 700 }}>
+                    Attempt #{attempts} • {failedAttempts} Failed
+                  </span>
+                </div>
+
+                <div style={{ fontSize: '0.92rem', color: '#f8fafc', fontStyle: 'italic', lineHeight: 1.4 }}>
+                  "{currentHint.wordMeaning}"
+                </div>
+
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: '0.5rem',
+                  borderTop: '1px solid rgba(255, 255, 255, 0.12)',
+                  paddingTop: '0.45rem'
+                }}>
+                  <div style={{ fontSize: '0.78rem', color: '#fbbf24' }}>
+                    💡 <strong>Clue:</strong> {currentHint.riddleTip}
+                  </div>
+
+                  {firstMissingSlot !== -1 && (
+                    <button
+                      onClick={() => {
+                        playStoneLock();
+                        const missingLetter = targetWord[firstMissingSlot];
+                        setCurrentSlots(prev => {
+                          const next = [...prev];
+                          next[firstMissingSlot] = missingLetter;
+                          return next;
+                        });
+                        setLockedSlots(prev => ({
+                          ...prev,
+                          [firstMissingSlot]: missingLetter
+                        }));
+                        const nextMissing = [0, 1, 2, 3, 4, 5].find(i => i > firstMissingSlot && !lockedSlots[i]) ?? 0;
+                        setCursorIndex(nextMissing);
+                      }}
+                      style={{
+                        background: 'linear-gradient(135deg, #10b981, #059669)',
+                        border: 'none',
+                        color: '#ffffff',
+                        borderRadius: '8px',
+                        padding: '4px 12px',
+                        fontSize: '0.75rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.35rem',
+                        boxShadow: '0 2px 8px rgba(16, 185, 129, 0.4)'
+                      }}
+                    >
+                      <span>✨ Auto-Lock Slot #{firstMissingSlot + 1} ({targetWord[firstMissingSlot]})</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          }
+
+          return (
+            <div style={{
+              fontSize: '0.75rem',
+              color: '#94a3b8',
+              textAlign: 'center',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.4rem',
+              marginTop: '0.2rem'
+            }}>
+              <Sparkles size={12} color="#f59e0b" />
+              <span>
+                Arch-Mage Riddle Clue unlocks automatically after 2 failed attempts ({failedAttempts}/2 failed)
+              </span>
+            </div>
+          );
+        })()}
       </div>
 
       {/* Reference Card Strip (Clean 6-Card Grid Aligned with Slots & Keyboard) */}

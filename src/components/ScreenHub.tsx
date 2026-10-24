@@ -262,7 +262,7 @@ export const ScreenHub: React.FC<ScreenHubProps> = ({
                 letterSpacing: '0.3px',
                 marginTop: '1px'
               }}>
-                (Picture Hunt)
+                Ingredients
               </div>
             </div>
           </div>
@@ -355,7 +355,7 @@ export const ScreenHub: React.FC<ScreenHubProps> = ({
                 letterSpacing: '0.3px',
                 marginTop: '1px'
               }}>
-                (Riddle Hunt)
+                Riddles
               </div>
             </div>
           </div>

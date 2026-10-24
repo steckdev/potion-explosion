@@ -1053,10 +1053,13 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
         {viewMode === 'table_sign' && (
           <div style={{ maxWidth: '8.5in', margin: '0.1in auto', padding: '0.1in 0.15in' }}>
             <div className="print-page-container" style={{
+              width: '8.0in',
+              height: '10.4in',
+              margin: '0 auto',
               backgroundColor: '#fbf7ea',
               border: '12px solid #3d2314',
               borderRadius: '16px',
-              padding: '0.5in 0.45in',
+              padding: '0.45in 0.4in',
               color: '#2d1810',
               display: 'flex',
               flexDirection: 'column',
@@ -1267,8 +1270,9 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
 
             {/* Printable 8.5" x 11" Certificate Container */}
             <div className="print-page-container" style={{
-              width: '8.5in',
-              height: '11in',
+              width: '8.0in',
+              height: '10.4in',
+              margin: '0 auto',
               backgroundColor: '#fbf5e5',
               backgroundImage: `
                 radial-gradient(circle at 10% 10%, rgba(217, 119, 6, 0.08) 0%, transparent 40%),
@@ -1489,9 +1493,10 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
 
             {/* Standard 8.5" x 11" Printable Page Container */}
             <div className="print-page-container" style={{
-              width: '8.2in',
-              height: '10.8in',
-              padding: '0.35in 0.45in',
+              width: '8.0in',
+              height: '10.4in',
+              margin: '0 auto',
+              padding: '0.3in 0.4in',
               backgroundColor: '#fbf5e5',
               border: '2px solid #8b5e34',
               borderRadius: '12px',

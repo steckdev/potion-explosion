@@ -198,7 +198,7 @@ export const ScreenKidsMode: React.FC<ScreenKidsModeProps> = ({
             />
             <div>
               <div style={{ fontSize: '0.72rem', color: quest.color, fontWeight: 700, textTransform: 'uppercase' }}>
-                Apprentice Alchemist Quest (10 Ingredients)
+                Apprentice Alchemist Quest
               </div>
               <h2 className="font-mystic" style={{ fontSize: '1.2rem', margin: 0, color: '#f8fafc' }}>
                 {quest.title}

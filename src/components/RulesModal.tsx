@@ -128,9 +128,9 @@ export const RulesModal: React.FC<RulesModalProps> = ({ isOpen, onClose }) => {
           }}>
             <span style={{ fontSize: '1.4rem' }}>🧒✨</span>
             <div>
-              <strong style={{ color: '#39ff14' }}>Apprentice Alchemist (Kids Picture Mode)</strong>
+              <strong style={{ color: '#39ff14' }}>Apprentice Alchemist (Age 3–8 • Seek & Spot)</strong>
               <div style={{ color: '#cbd5e1', marginTop: '2px' }}>
-                Remember the 6 cute ingredient pictures (like Spider Venom or Candy Corn) on your cards, then return to the iPad and tap them on the grid!
+                Remember the 6 cute ingredient pictures on your cards, return to the iPad, and tap them on the grid to brew your potion!
               </div>
             </div>
           </div>
@@ -145,7 +145,7 @@ export const RulesModal: React.FC<RulesModalProps> = ({ isOpen, onClose }) => {
           }}>
             <span style={{ fontSize: '1.4rem' }}>🧩</span>
             <div>
-              <strong style={{ color: '#bf5af2' }}>Adults & Engineers Mode (Master Alchemist)</strong>
+              <strong style={{ color: '#bf5af2' }}>Master Alchemist (Age 9+ • Cryptic Cipher)</strong>
               <div style={{ color: '#cbd5e1', marginTop: '2px' }}>
                 Solve the 6 rhyming riddles on your cards. Take the 1st letter of each riddle answer, return to the iPad, and unscramble the 6-letter mystery word! Correct letters lock into green stone slots!
               </div>

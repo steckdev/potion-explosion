@@ -32,7 +32,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
   onExitAdmin
 }) => {
   const [selectedCardIndex, setSelectedCardIndex] = useState(0);
-  const [viewMode, setViewMode] = useState<'editor' | 'print_all' | 'cheat_sheet' | 'table_sign' | 'certificates' | 'prompts'>('editor');
+  const [viewMode, setViewMode] = useState<'editor' | 'print_all' | 'cheat_sheet' | 'table_sign' | 'certificates' | 'plinko_discs' | 'prompts'>('editor');
   const [isImporting, setIsImporting] = useState(false);
   const [jsonInput, setJsonInput] = useState('');
   const [saveToast, setSaveToast] = useState(false);
@@ -267,6 +267,26 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
           >
             <Award size={15} />
             <span>Alchemist Certificates</span>
+          </button>
+
+          <button
+            onClick={() => { playBloop(1.0); setViewMode('plinko_discs'); }}
+            style={{
+              padding: '0.45rem 0.9rem',
+              borderRadius: '999px',
+              border: 'none',
+              cursor: 'pointer',
+              fontWeight: 700,
+              fontSize: '0.82rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              backgroundColor: viewMode === 'plinko_discs' ? '#00d2ff' : 'rgba(255,255,255,0.08)',
+              color: viewMode === 'plinko_discs' ? '#090714' : '#ffffff'
+            }}
+          >
+            <span>🎲</span>
+            <span>Plinko Disc Tokens (Print)</span>
           </button>
 
           <button
@@ -1381,6 +1401,206 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                     Quest Master Office Station
                   </span>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* VIEW 5.5: Printable Circular Plinko Discs (8.5" x 11" Sheet) */}
+        {viewMode === 'plinko_discs' && (
+          <div style={{ maxWidth: '8.5in', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem', alignItems: 'center' }}>
+            {/* Toolbar Banner */}
+            <div className="no-print glass-panel" style={{
+              width: '100%',
+              padding: '1rem 1.4rem',
+              borderRadius: '16px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '1rem',
+              border: '1px solid rgba(0, 210, 255, 0.3)'
+            }}>
+              <div>
+                <h3 className="font-mystic" style={{ margin: 0, color: '#00d2ff', fontSize: '1.2rem' }}>
+                  🎲 PLINKO DISC LABELS & RELIC QUEST TOKENS
+                </h3>
+                <p style={{ margin: '3px 0 0 0', fontSize: '0.84rem', color: '#cbd5e1' }}>
+                  Print on standard Letter Cardstock or Label Sticker Paper. Cut out along the dotted circles to stick onto wooden or plastic Plinko discs so players can be assigned their Elemental Quest!
+                </p>
+              </div>
+
+              <button
+                onClick={handlePrint}
+                style={{
+                  background: 'linear-gradient(135deg, #00d2ff, #0077b6)',
+                  border: 'none',
+                  color: '#090714',
+                  borderRadius: '999px',
+                  padding: '0.65rem 1.5rem',
+                  fontSize: '0.95rem',
+                  fontWeight: 900,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  boxShadow: '0 0 18px rgba(0, 210, 255, 0.5)'
+                }}
+              >
+                <Printer size={18} />
+                <span>Print Plinko Discs Sheet</span>
+              </button>
+            </div>
+
+            {/* Standard 8.5" x 11" Printable Page Container */}
+            <div className="print-page-container" style={{
+              width: '8.2in',
+              height: '10.8in',
+              padding: '0.35in 0.45in',
+              backgroundColor: '#fbf5e5',
+              border: '2px solid #8b5e34',
+              borderRadius: '12px',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              boxSizing: 'border-box',
+              color: '#1e293b'
+            }}>
+              {/* Page Title & Instructions */}
+              <div style={{ textAlign: 'center', borderBottom: '2px solid #b45309', paddingBottom: '0.2in' }}>
+                <div style={{ fontSize: '0.72rem', fontWeight: 900, letterSpacing: '2px', color: '#92400e', textTransform: 'uppercase' }}>
+                  The Great Alchemy Quest • Official Game Tokens
+                </div>
+                <h2 className="font-mystic" style={{ fontSize: '1.5rem', fontWeight: 900, color: '#78350f', margin: '2px 0' }}>
+                  ELEMENTAL PLINKO DISCS & FAMILIARS
+                </h2>
+                <div style={{ fontSize: '0.78rem', color: '#78350f', fontStyle: 'italic' }}>
+                  ✂️ Cut along the outer dotted lines to attach to 2.25" – 2.5" Plinko chips or player badges
+                </div>
+              </div>
+
+              {/* 3 x 4 Grid of 12 Circular Plinko Tokens */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: '0.35in 0.3in',
+                padding: '0.2in 0.1in',
+                justifyItems: 'center',
+                alignItems: 'center',
+                flex: 1
+              }}>
+                {[
+                  // 2x Fire
+                  { name: 'FIRE TORCH', rune: 'fire', icon: '/sprites/rune_fire.png', color: '#dc2626', tag: 'Crimson Relic' },
+                  { name: 'FIRE TORCH', rune: 'fire', icon: '/sprites/rune_fire.png', color: '#dc2626', tag: 'Crimson Relic' },
+                  // 2x Frost
+                  { name: 'FROST CRYSTAL', rune: 'frost', icon: '/sprites/rune_frost.png', color: '#0284c7', tag: 'Glacial Relic' },
+                  { name: 'FROST CRYSTAL', rune: 'frost', icon: '/sprites/rune_frost.png', color: '#0284c7', tag: 'Glacial Relic' },
+                  // 2x Venom
+                  { name: 'VENOM LEAF', rune: 'venom', icon: '/sprites/rune_venom.png', color: '#16a34a', tag: 'Toxic Relic' },
+                  { name: 'VENOM LEAF', rune: 'venom', icon: '/sprites/rune_venom.png', color: '#16a34a', tag: 'Toxic Relic' },
+                  // 2x Moon
+                  { name: 'SHADOW MOON', rune: 'moon', icon: '/sprites/rune_moon.png', color: '#9333ea', tag: 'Mystic Relic' },
+                  { name: 'SHADOW MOON', rune: 'moon', icon: '/sprites/rune_moon.png', color: '#9333ea', tag: 'Mystic Relic' },
+                  // Guild Avatars & Animal Familiars
+                  { name: 'APPRENTICE', rune: 'guild', icon: '/sprites/avatar_apprentice.png', color: '#ea580c', tag: 'Picture Quest' },
+                  { name: 'MASTER MAGE', rune: 'guild', icon: '/sprites/avatar_master.png', color: '#7c3aed', tag: 'Cipher Quest' },
+                  { name: 'WIZARD CAT', rune: 'pet', icon: '/sprites/avatar_cat.png', color: '#2563eb', tag: 'Familiar' },
+                  { name: 'SPOOKY BAT', rune: 'pet', icon: '/sprites/avatar_bat.png', color: '#c026d3', tag: 'Familiar' },
+                ].map((token, idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      width: '2.15in',
+                      height: '2.15in',
+                      borderRadius: '50%',
+                      border: '1.5px dashed #64748b',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '4px',
+                      boxSizing: 'border-box'
+                    }}
+                  >
+                    {/* Inner Token Disc */}
+                    <div style={{
+                      width: '100%',
+                      height: '100%',
+                      borderRadius: '50%',
+                      border: `3px solid ${token.color}`,
+                      backgroundColor: '#1e1b2e',
+                      backgroundImage: 'radial-gradient(circle, #2d244a 0%, #130f24 100%)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      position: 'relative',
+                      boxShadow: 'inset 0 0 10px rgba(0,0,0,0.8)',
+                      padding: '6px',
+                      boxSizing: 'border-box'
+                    }}>
+                      {/* Metallic Ring Accent */}
+                      <div style={{
+                        position: 'absolute',
+                        inset: '3px',
+                        borderRadius: '50%',
+                        border: '1px solid rgba(255, 215, 0, 0.45)',
+                        pointerEvents: 'none'
+                      }} />
+
+                      {/* Icon */}
+                      <img
+                        src={token.icon}
+                        alt={token.name}
+                        style={{
+                          width: '1.05in',
+                          height: '1.05in',
+                          objectFit: 'contain',
+                          filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.6))'
+                        }}
+                      />
+
+                      {/* Name Banner */}
+                      <div style={{
+                        backgroundColor: token.color,
+                        color: '#ffffff',
+                        fontSize: '0.62rem',
+                        fontWeight: 900,
+                        letterSpacing: '0.8px',
+                        padding: '1px 8px',
+                        borderRadius: '999px',
+                        marginTop: '2px',
+                        textTransform: 'uppercase',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                        whiteSpace: 'nowrap'
+                      }}>
+                        {token.name}
+                      </div>
+
+                      {/* Sub-tag */}
+                      <div style={{
+                        fontSize: '0.52rem',
+                        color: '#cbd5e1',
+                        fontWeight: 700,
+                        marginTop: '1px'
+                      }}>
+                        {token.tag}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Page Footer */}
+              <div style={{
+                textAlign: 'center',
+                borderTop: '1px solid #b45309',
+                paddingTop: '0.1in',
+                fontSize: '0.68rem',
+                color: '#78350f',
+                fontWeight: 700
+              }}>
+                🏰 The Great Alchemy Quest • Suitable for Plinko Drop Discs, Table Markers & Player Team Badges
               </div>
             </div>
           </div>

@@ -167,14 +167,14 @@ export const ScreenHub: React.FC<ScreenHubProps> = ({
           <span>Step 1: Choose Your Adventurer Rank</span>
         </div>
 
-        {/* 2 Big Illustrated Guild Cards */}
+        {/* 2 Big Illustrated Guild Cards (The Most Important Choice) */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '0.85rem',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
+          gap: '1rem',
           width: '100%'
         }}>
-          {/* Card 1: Apprentice Alchemist (Ages 3-8 / Picture Matching) */}
+          {/* Card 1: Apprentice Alchemist (Ages 3-8 / Seek & Spot) */}
           <div
             onClick={() => {
               playBloop(1.15);
@@ -184,19 +184,19 @@ export const ScreenHub: React.FC<ScreenHubProps> = ({
             style={{
               position: 'relative',
               background: selectedMode === 'kids'
-                ? 'linear-gradient(135deg, rgba(34, 55, 30, 0.95), rgba(18, 28, 20, 0.95))'
+                ? 'linear-gradient(135deg, rgba(28, 52, 24, 0.96), rgba(16, 32, 18, 0.96))'
                 : 'linear-gradient(135deg, rgba(24, 20, 44, 0.85), rgba(16, 12, 32, 0.85))',
               border: selectedMode === 'kids'
-                ? '2.5px solid #39ff14'
-                : '1.5px solid rgba(255, 255, 255, 0.16)',
-              borderRadius: '20px',
-              padding: '0.85rem 1rem',
+                ? '3px solid #39ff14'
+                : '2px solid rgba(255, 255, 255, 0.16)',
+              borderRadius: '24px',
+              padding: '1.15rem 1.4rem',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.85rem',
+              gap: '1.15rem',
               cursor: 'pointer',
               boxShadow: selectedMode === 'kids'
-                ? '0 10px 25px rgba(0,0,0,0.6), 0 0 25px rgba(57, 255, 20, 0.4)'
+                ? '0 12px 30px rgba(0,0,0,0.65), 0 0 32px rgba(57, 255, 20, 0.45)'
                 : '0 6px 18px rgba(0,0,0,0.4)',
               transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
               overflow: 'hidden'
@@ -206,98 +206,89 @@ export const ScreenHub: React.FC<ScreenHubProps> = ({
             {selectedMode === 'kids' && (
               <div style={{
                 position: 'absolute',
-                top: '8px',
-                right: '10px',
+                top: '10px',
+                right: '12px',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.3rem',
+                gap: '0.35rem',
                 backgroundColor: '#39ff14',
                 color: '#090714',
-                padding: '2px 8px',
+                padding: '3px 10px',
                 borderRadius: '999px',
-                fontSize: '0.68rem',
+                fontSize: '0.72rem',
                 fontWeight: 900,
-                boxShadow: '0 0 10px rgba(57, 255, 20, 0.6)'
+                boxShadow: '0 0 12px rgba(57, 255, 20, 0.7)'
               }}>
-                <CheckCircle2 size={12} />
-                <span>ACTIVE GUILD</span>
+                <CheckCircle2 size={13} />
+                <span>SELECTED GUILD</span>
               </div>
             )}
 
-            {/* Avatar Graphic with Floating Animation */}
+            {/* Prominent Avatar Graphic */}
             <div style={{
-              width: '74px',
-              height: '74px',
+              width: '88px',
+              height: '88px',
               borderRadius: '50%',
-              border: selectedMode === 'kids' ? '2.5px solid #39ff14' : '2px solid rgba(255, 255, 255, 0.25)',
-              backgroundColor: 'rgba(0, 0, 0, 0.4)',
+              border: selectedMode === 'kids' ? '3px solid #39ff14' : '2px solid rgba(255, 255, 255, 0.25)',
+              backgroundColor: 'rgba(0, 0, 0, 0.45)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               flexShrink: 0,
-              boxShadow: selectedMode === 'kids' ? '0 0 18px rgba(57, 255, 20, 0.5)' : 'none',
+              boxShadow: selectedMode === 'kids' ? '0 0 20px rgba(57, 255, 20, 0.55)' : 'none',
               animation: selectedMode === 'kids' ? 'gentleBreathe 4s ease-in-out infinite' : 'none'
             }}>
               <img
                 src="/sprites/avatar_apprentice.png"
                 alt="Apprentice Alchemist"
                 style={{
-                  width: '68px',
-                  height: '68px',
+                  width: '80px',
+                  height: '80px',
                   borderRadius: '50%',
                   objectFit: 'cover'
                 }}
               />
             </div>
 
-            {/* Lore and Details */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', textAlign: 'left', flex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+            {/* Clear, Streamlined Info (No clutter, simple Age & message) */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', textAlign: 'left', flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                 <h3 className="font-mystic" style={{
-                  fontSize: '1.1rem',
+                  fontSize: '1.25rem',
                   fontWeight: 900,
                   color: selectedMode === 'kids' ? '#39ff14' : '#ffffff',
                   margin: 0,
-                  letterSpacing: '0.5px'
+                  letterSpacing: '0.5px',
+                  textShadow: selectedMode === 'kids' ? '0 0 12px rgba(57, 255, 20, 0.6)' : 'none'
                 }}>
                   Apprentice Alchemist
                 </h3>
                 <span style={{
-                  fontSize: '0.68rem',
-                  fontWeight: 800,
-                  backgroundColor: 'rgba(57, 255, 20, 0.18)',
+                  fontSize: '0.75rem',
+                  fontWeight: 900,
+                  backgroundColor: 'rgba(57, 255, 20, 0.22)',
                   color: '#39ff14',
-                  border: '1px solid rgba(57, 255, 20, 0.4)',
-                  padding: '1px 7px',
-                  borderRadius: '999px'
+                  border: '1.5px solid #39ff14',
+                  padding: '2px 10px',
+                  borderRadius: '999px',
+                  boxShadow: '0 0 10px rgba(57, 255, 20, 0.3)'
                 }}>
-                  Ages 3–8
+                  Age 3–8
                 </span>
               </div>
 
-              <div style={{ fontSize: '0.76rem', color: '#cbd5e1', lineHeight: 1.35 }}>
-                <strong style={{ color: '#ffbe0b' }}>Seek & Spot:</strong> Find 6 colorful picture cards hidden on office posters. Pure tap-to-match fun—no reading required!
-              </div>
-
               <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                fontSize: '0.7rem',
-                color: selectedMode === 'kids' ? '#39ff14' : '#94a3b8',
-                fontWeight: 700,
-                marginTop: '1px'
+                fontSize: '1rem',
+                color: selectedMode === 'kids' ? '#ffbe0b' : '#cbd5e1',
+                fontWeight: 800,
+                letterSpacing: '0.3px'
               }}>
-                <span>🎨 6 Picture Cards</span>
-                <span>•</span>
-                <span>🚫 No Reading</span>
-                <span>•</span>
-                <span>🧪 Cauldron Brew</span>
+                Seek & Spot (Picture Hunt)
               </div>
             </div>
           </div>
 
-          {/* Card 2: Master Alchemist (Ages 9-Adult / Cryptic Cipher) */}
+          {/* Card 2: Master Alchemist (Age 9+ / Cryptic Cipher) */}
           <div
             onClick={() => {
               playBloop(1.15);
@@ -307,19 +298,19 @@ export const ScreenHub: React.FC<ScreenHubProps> = ({
             style={{
               position: 'relative',
               background: selectedMode === 'adults'
-                ? 'linear-gradient(135deg, rgba(48, 22, 65, 0.95), rgba(24, 12, 38, 0.95))'
+                ? 'linear-gradient(135deg, rgba(46, 20, 68, 0.96), rgba(24, 10, 40, 0.96))'
                 : 'linear-gradient(135deg, rgba(24, 20, 44, 0.85), rgba(16, 12, 32, 0.85))',
               border: selectedMode === 'adults'
-                ? '2.5px solid #bf5af2'
-                : '1.5px solid rgba(255, 255, 255, 0.16)',
-              borderRadius: '20px',
-              padding: '0.85rem 1rem',
+                ? '3px solid #bf5af2'
+                : '2px solid rgba(255, 255, 255, 0.16)',
+              borderRadius: '24px',
+              padding: '1.15rem 1.4rem',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.85rem',
+              gap: '1.15rem',
               cursor: 'pointer',
               boxShadow: selectedMode === 'adults'
-                ? '0 10px 25px rgba(0,0,0,0.6), 0 0 25px rgba(191, 90, 242, 0.4)'
+                ? '0 12px 30px rgba(0,0,0,0.65), 0 0 32px rgba(191, 90, 242, 0.45)'
                 : '0 6px 18px rgba(0,0,0,0.4)',
               transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
               overflow: 'hidden'
@@ -329,93 +320,84 @@ export const ScreenHub: React.FC<ScreenHubProps> = ({
             {selectedMode === 'adults' && (
               <div style={{
                 position: 'absolute',
-                top: '8px',
-                right: '10px',
+                top: '10px',
+                right: '12px',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.3rem',
+                gap: '0.35rem',
                 backgroundColor: '#bf5af2',
                 color: '#ffffff',
-                padding: '2px 8px',
+                padding: '3px 10px',
                 borderRadius: '999px',
-                fontSize: '0.68rem',
+                fontSize: '0.72rem',
                 fontWeight: 900,
-                boxShadow: '0 0 10px rgba(191, 90, 242, 0.6)'
+                boxShadow: '0 0 12px rgba(191, 90, 242, 0.7)'
               }}>
-                <CheckCircle2 size={12} />
-                <span>ACTIVE GUILD</span>
+                <CheckCircle2 size={13} />
+                <span>SELECTED GUILD</span>
               </div>
             )}
 
-            {/* Avatar Graphic with Floating Animation */}
+            {/* Prominent Avatar Graphic */}
             <div style={{
-              width: '74px',
-              height: '74px',
+              width: '88px',
+              height: '88px',
               borderRadius: '50%',
-              border: selectedMode === 'adults' ? '2.5px solid #bf5af2' : '2px solid rgba(255, 255, 255, 0.25)',
-              backgroundColor: 'rgba(0, 0, 0, 0.4)',
+              border: selectedMode === 'adults' ? '3px solid #bf5af2' : '2px solid rgba(255, 255, 255, 0.25)',
+              backgroundColor: 'rgba(0, 0, 0, 0.45)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               flexShrink: 0,
-              boxShadow: selectedMode === 'adults' ? '0 0 18px rgba(191, 90, 242, 0.5)' : 'none',
+              boxShadow: selectedMode === 'adults' ? '0 0 20px rgba(191, 90, 242, 0.55)' : 'none',
               animation: selectedMode === 'adults' ? 'gentleBreathe 4s ease-in-out infinite' : 'none'
             }}>
               <img
                 src="/sprites/avatar_master.png"
                 alt="Master Alchemist"
                 style={{
-                  width: '68px',
-                  height: '68px',
+                  width: '80px',
+                  height: '80px',
                   borderRadius: '50%',
                   objectFit: 'cover'
                 }}
               />
             </div>
 
-            {/* Lore and Details */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', textAlign: 'left', flex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+            {/* Clear, Streamlined Info (No clutter, simple Age & message) */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', textAlign: 'left', flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                 <h3 className="font-mystic" style={{
-                  fontSize: '1.1rem',
+                  fontSize: '1.25rem',
                   fontWeight: 900,
                   color: selectedMode === 'adults' ? '#bf5af2' : '#ffffff',
                   margin: 0,
-                  letterSpacing: '0.5px'
+                  letterSpacing: '0.5px',
+                  textShadow: selectedMode === 'adults' ? '0 0 12px rgba(191, 90, 242, 0.6)' : 'none'
                 }}>
                   Master Alchemist
                 </h3>
                 <span style={{
-                  fontSize: '0.68rem',
-                  fontWeight: 800,
-                  backgroundColor: 'rgba(191, 90, 242, 0.18)',
+                  fontSize: '0.75rem',
+                  fontWeight: 900,
+                  backgroundColor: 'rgba(191, 90, 242, 0.22)',
                   color: '#bf5af2',
-                  border: '1px solid rgba(191, 90, 242, 0.4)',
-                  padding: '1px 7px',
-                  borderRadius: '999px'
+                  border: '1.5px solid #bf5af2',
+                  padding: '2px 10px',
+                  borderRadius: '999px',
+                  boxShadow: '0 0 10px rgba(191, 90, 242, 0.3)'
                 }}>
-                  Ages 9–Adult
+                  Age 9+
                 </span>
               </div>
 
-              <div style={{ fontSize: '0.76rem', color: '#cbd5e1', lineHeight: 1.35 }}>
-                <strong style={{ color: '#00d2ff' }}>Cryptic Cipher:</strong> Solve 6 rhyming clue riddles on posters, extract initial letters, and unscramble the 6-letter secret cipher lock!
-              </div>
-
               <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                fontSize: '0.7rem',
-                color: selectedMode === 'adults' ? '#bf5af2' : '#94a3b8',
-                fontWeight: 700,
-                marginTop: '1px'
+                fontSize: '1rem',
+                color: selectedMode === 'adults' ? '#38bdf8' : '#cbd5e1',
+                fontWeight: 800,
+                letterSpacing: '0.3px'
               }}>
-                <span>📜 6 Rhyming Riddles</span>
-                <span>•</span>
-                <span>🔤 1st Letter Clues</span>
-                <span>•</span>
-                <span>🔐 6-Letter Cipher</span>
+                Cryptic Cipher (Riddle Hunt)
               </div>
             </div>
           </div>
@@ -429,7 +411,7 @@ export const ScreenHub: React.FC<ScreenHubProps> = ({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: '0.45rem',
+        gap: '0.35rem',
         position: 'relative',
         zIndex: 1
       }}>
@@ -437,14 +419,17 @@ export const ScreenHub: React.FC<ScreenHubProps> = ({
           display: 'flex',
           alignItems: 'center',
           gap: '0.4rem',
-          fontSize: '0.76rem',
+          fontSize: '0.78rem',
           fontWeight: 800,
           letterSpacing: '1px',
           color: '#cbd5e1',
           textTransform: 'uppercase'
         }}>
-          <Compass size={13} color="#00d2ff" />
+          <Compass size={14} color="#00d2ff" />
           <span>Step 2: Choose Your Elemental Relic Quest</span>
+        </div>
+        <div style={{ fontSize: '0.78rem', color: '#94a3b8', marginTop: '-2px' }}>
+          🎲 Drop your Plinko disc to be assigned your relic quest, or choose your element directly:
         </div>
 
         <div style={{
@@ -538,14 +523,6 @@ export const ScreenHub: React.FC<ScreenHubProps> = ({
                   }}>
                     {quest.title}
                   </h3>
-                  <div style={{
-                    fontSize: '0.72rem',
-                    color: '#e2e8f0',
-                    fontWeight: 700,
-                    marginTop: '2px'
-                  }}>
-                    {quest.totemName}
-                  </div>
                 </div>
               </button>
             );

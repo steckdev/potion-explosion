@@ -4,7 +4,7 @@ export const QUESTS: Record<RuneType, QuestInfo> = {
   fire: {
     rune: 'fire',
     title: 'Crimson Fire Torch',
-    totemName: 'The Fire Torch (Red)',
+    totemName: 'Crimson Fire Torch (Red)',
     icon: '/sprites/rune_fire.png',
     color: '#ff3b30',
     accentColor: '#ff9500',
@@ -17,7 +17,7 @@ export const QUESTS: Record<RuneType, QuestInfo> = {
   frost: {
     rune: 'frost',
     title: 'Glacial Frost Crystal',
-    totemName: 'The Frost Crystal (Blue)',
+    totemName: 'Glacial Frost Crystal (Blue)',
     icon: '/sprites/rune_frost.png',
     color: '#00c8ff',
     accentColor: '#5ac8fa',
@@ -30,7 +30,7 @@ export const QUESTS: Record<RuneType, QuestInfo> = {
   venom: {
     rune: 'venom',
     title: 'Toxic Venom Leaf',
-    totemName: 'The Venom Leaf (Green)',
+    totemName: 'Toxic Venom Leaf (Green)',
     icon: '/sprites/rune_venom.png',
     color: '#39ff14',
     accentColor: '#30d158',
@@ -43,7 +43,7 @@ export const QUESTS: Record<RuneType, QuestInfo> = {
   moon: {
     rune: 'moon',
     title: 'Mystic Shadow Moon',
-    totemName: 'The Shadow Moon (Purple)',
+    totemName: 'Mystic Shadow Moon (Purple)',
     icon: '/sprites/rune_moon.png',
     color: '#bf5af2',
     accentColor: '#da8fff',

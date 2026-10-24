@@ -85,7 +85,7 @@ const stateListeners = new Set<(state: AudioState) => void>();
 
 let audioState: AudioState = {
   isMuted: initialSaved.isMuted ?? false,
-  musicEnabled: initialSaved.musicEnabled ?? false,
+  musicEnabled: true, // Always start music automatically when loading!
   isPlayingMusic: false,
   currentTrackId: initialSaved.currentTrackId || 'silver_mortar',
   musicVolume: typeof initialSaved.musicVolume === 'number' ? initialSaved.musicVolume : 0.45,
@@ -179,23 +179,42 @@ function setupUnlockAudioOnFirstGesture() {
       }
     } catch {}
 
-    // If music was set as enabled by user preference, start playback
-    if (audioState.musicEnabled && !audioState.isPlayingMusic) {
+    // Start music on first touch/interaction if not playing yet
+    if (!audioState.isMuted && !audioState.isPlayingMusic) {
       playMusic(audioState.currentTrackId).catch(() => {});
     }
 
+    window.removeEventListener('pointerdown', handleFirstGesture);
+    window.removeEventListener('touchstart', handleFirstGesture);
+    window.removeEventListener('mousedown', handleFirstGesture);
     window.removeEventListener('click', handleFirstGesture);
     window.removeEventListener('keydown', handleFirstGesture);
-    window.removeEventListener('touchstart', handleFirstGesture);
   };
 
+  window.addEventListener('pointerdown', handleFirstGesture, { once: true, passive: true });
+  window.addEventListener('touchstart', handleFirstGesture, { once: true, passive: true });
+  window.addEventListener('mousedown', handleFirstGesture, { once: true, passive: true });
   window.addEventListener('click', handleFirstGesture, { once: true });
   window.addEventListener('keydown', handleFirstGesture, { once: true });
-  window.addEventListener('touchstart', handleFirstGesture, { once: true });
 }
 
+// Immediate autoplay attempt when script loads
 if (typeof window !== 'undefined') {
   setupUnlockAudioOnFirstGesture();
+  // Attempt immediate playback on document ready / script execution
+  const attemptAutoplay = () => {
+    playMusic().catch(() => {
+      // Browser autoplay policy requires user interaction first;
+      // setupUnlockAudioOnFirstGesture ensures it begins on the first touch/click.
+    });
+  };
+
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    attemptAutoplay();
+  } else {
+    window.addEventListener('DOMContentLoaded', attemptAutoplay, { once: true });
+    window.addEventListener('load', attemptAutoplay, { once: true });
+  }
 }
 
 export async function playMusic(trackId?: string): Promise<void> {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { CardData, GameMode, RuneType, ScreenState } from './types';
 import { getStoredCards, saveStoredCards } from './utils/storage';
 import { Header } from './components/Header';
@@ -8,6 +8,7 @@ import { ScreenAdultsMode } from './components/ScreenAdultsMode';
 import { ScreenVictory } from './components/ScreenVictory';
 import { AdminPosterStudio } from './components/AdminPosterStudio';
 import { RulesModal } from './components/RulesModal';
+import { playMusic } from './utils/audio';
 
 export const App: React.FC = () => {
   // Load card data from localStorage or fallback to default
@@ -32,6 +33,11 @@ export const App: React.FC = () => {
 
   // Rules modal state
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+
+  // Start background music automatically on load
+  useEffect(() => {
+    playMusic().catch(() => {});
+  }, []);
 
   // Sync admin state with URL query param
   const handleToggleAdmin = () => {

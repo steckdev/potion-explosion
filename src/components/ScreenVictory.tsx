@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import confetti from 'canvas-confetti';
 import type { GameMode, RuneType } from '../types';
 import { QUESTS } from '../data/quests';
 import { playVictoryFanfare, playStoneLock, playBloop } from '../utils/audio';
-import { Sparkles, RotateCcw, Check } from 'lucide-react';
+import { Sparkles, RotateCcw, Check, ChevronRight } from 'lucide-react';
 
 interface ScreenVictoryProps {
   questRune: RuneType;
@@ -21,6 +21,11 @@ export const ScreenVictory: React.FC<ScreenVictoryProps> = ({
   const quest = QUESTS[questRune];
   const [isCauldronBouncing, setIsCauldronBouncing] = useState(false);
   const [isRedeemed, setIsRedeemed] = useState(false);
+  
+  // Drag to Redeem state
+  const [dragProgress, setDragProgress] = useState(0); // 0.0 to 1.0
+  const [isDragging, setIsDragging] = useState(false);
+  const sliderTrackRef = useRef<HTMLDivElement>(null);
 
   // Trigger celebration on victory mount
   useEffect(() => {
@@ -66,18 +71,65 @@ export const ScreenVictory: React.FC<ScreenVictoryProps> = ({
     });
   };
 
-  // Direct Tap to Redeem Prize (Zero drag frustration on iPads!)
-  const handleRedeemPrize = () => {
-    if (isRedeemed) return;
+  // Direct approval trigger (confetti + stone lock)
+  const triggerRedemption = useCallback(() => {
     setIsRedeemed(true);
+    setDragProgress(1);
     playStoneLock();
 
     confetti({
-      particleCount: 60,
+      particleCount: 65,
       spread: 100,
       origin: { y: 0.7 },
       colors: ['#39ff14', '#ffbe0b', '#00c8ff', '#bf5af2', '#ffffff']
     });
+  }, []);
+
+  // Pointer drag event handlers (Works on mouse, iPad touch, Apple Pencil)
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (isRedeemed) return;
+    setIsDragging(true);
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {
+      /* ignore if not supported */
+    }
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging || isRedeemed || !sliderTrackRef.current) return;
+    const rect = sliderTrackRef.current.getBoundingClientRect();
+    const knobWidth = 56;
+    const maxDrag = rect.width - knobWidth - 12;
+    if (maxDrag <= 0) return;
+
+    const currentX = e.clientX - rect.left - knobWidth / 2 - 6;
+    const progress = Math.max(0, Math.min(1, currentX / maxDrag));
+    setDragProgress(progress);
+  };
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging || isRedeemed) return;
+    setIsDragging(false);
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    } catch {
+      /* ignore */
+    }
+
+    if (dragProgress >= 0.72) {
+      triggerRedemption();
+    } else {
+      // Smoothly snap back to origin
+      setDragProgress(0);
+    }
+  };
+
+  const handlePointerCancel = () => {
+    if (!isRedeemed) {
+      setIsDragging(false);
+      setDragProgress(0);
+    }
   };
 
   return (
@@ -193,7 +245,7 @@ export const ScreenVictory: React.FC<ScreenVictoryProps> = ({
           </span>
         </div>
 
-        {/* QUEST MASTER TOUCH REDEMPTION (Zero drag frustration on iPads!) */}
+        {/* QUEST MASTER: DRAG TO THE RIGHT TO REDEEM SLIDER */}
         <div style={{
           width: '100%',
           maxWidth: '520px',
@@ -227,37 +279,85 @@ export const ScreenVictory: React.FC<ScreenVictoryProps> = ({
               <span>QUEST MASTER APPROVED 🎁 PRIZE REDEEMED!</span>
             </div>
           ) : (
-            /* Big, Tactile, High-Contrast Touch Button */
-            <button
-              onClick={handleRedeemPrize}
+            /* Interactive Pointer-Captured Drag Slider */
+            <div
+              ref={sliderTrackRef}
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onPointerCancel={handlePointerCancel}
               style={{
+                position: 'relative',
                 width: '100%',
-                minHeight: '66px',
-                padding: '0.9rem 1.6rem',
+                height: '68px',
                 borderRadius: '999px',
-                background: 'linear-gradient(135deg, #ffbe0b, #f59e0b)',
-                border: 'none',
-                color: '#090714',
-                fontSize: '1.18rem',
-                fontWeight: 900,
-                cursor: 'pointer',
+                backgroundColor: 'rgba(16, 12, 34, 0.95)',
+                border: '2px solid rgba(255, 255, 255, 0.25)',
+                boxShadow: 'inset 0 3px 12px rgba(0, 0, 0, 0.7), 0 6px 18px rgba(0, 0, 0, 0.45)',
+                userSelect: 'none',
+                touchAction: 'none',
+                overflow: 'hidden',
+                cursor: isDragging ? 'grabbing' : 'grab'
+              }}
+            >
+              {/* Dynamic Gradient Fill Track as slider advances */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                bottom: 0,
+                width: `${dragProgress * 100}%`,
+                background: `linear-gradient(90deg, ${quest.color}, #39ff14)`,
+                opacity: 0.55,
+                transition: isDragging ? 'none' : 'width 0.25s ease'
+              }} />
+
+              {/* Shimmering Center Text Prompt */}
+              <div style={{
+                position: 'absolute',
+                inset: 0,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '0.65rem',
-                boxShadow: '0 8px 24px rgba(255, 190, 11, 0.5), 0 0 20px rgba(255, 190, 11, 0.4)',
-                transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                gap: '0.45rem',
+                fontSize: '0.98rem',
+                fontWeight: 800,
+                color: '#cbd5e1',
+                pointerEvents: 'none',
+                opacity: Math.max(0.15, 1 - dragProgress * 0.85),
                 letterSpacing: '0.5px'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.03)'}
-              onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-            >
-              <span style={{ fontSize: '1.6rem' }}>🎁</span>
-              <span>QUEST MASTER: TAP TO REDEEM PRIZE!</span>
-            </button>
+              }}>
+                <span>👉 Quest Master: Drag to Right to Redeem</span>
+                <ChevronRight size={18} color="#ffbe0b" />
+                <ChevronRight size={18} color="#39ff14" style={{ marginLeft: '-8px' }} />
+              </div>
+
+              {/* Draggable Golden Gift Thumb Knob */}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '6px',
+                  left: '6px',
+                  transform: `translateX(${dragProgress * (sliderTrackRef.current ? sliderTrackRef.current.clientWidth - 68 : 440)}px)`,
+                  width: '54px',
+                  height: '54px',
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #ffbe0b, #f59e0b)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 0 18px rgba(255, 190, 11, 0.85), 0 4px 10px rgba(0,0,0,0.5)',
+                  transition: isDragging ? 'none' : 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  zIndex: 10,
+                  pointerEvents: 'none'
+                }}
+              >
+                <span style={{ fontSize: '1.75rem' }}>🎁</span>
+              </div>
+            </div>
           )}
 
-          {/* Helper Note & Reset Option */}
+          {/* Helper Note & Manual Approve Fallback */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
@@ -268,14 +368,15 @@ export const ScreenVictory: React.FC<ScreenVictoryProps> = ({
             <div style={{ fontSize: '0.78rem', color: '#94a3b8' }}>
               {isRedeemed 
                 ? '✓ Potion clicker prize verified and issued!' 
-                : 'Show to Quest Master at prize table to tap & redeem'}
+                : 'Show to Quest Master at prize table to drag & redeem'}
             </div>
 
-            {isRedeemed && (
+            {isRedeemed ? (
               <button
                 onClick={() => {
                   playBloop(0.9);
                   setIsRedeemed(false);
+                  setDragProgress(0);
                 }}
                 style={{
                   background: 'none',
@@ -288,6 +389,24 @@ export const ScreenVictory: React.FC<ScreenVictoryProps> = ({
                 title="Reset redemption status for testing"
               >
                 (Staff: Reset)
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  triggerRedemption();
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#ffbe0b',
+                  fontSize: '0.74rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  textDecoration: 'underline'
+                }}
+                title="Direct tap approval option"
+              >
+                (Or Tap to Approve)
               </button>
             )}
           </div>

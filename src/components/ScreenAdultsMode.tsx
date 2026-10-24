@@ -534,8 +534,13 @@ export const ScreenAdultsMode: React.FC<ScreenAdultsModeProps> = ({
               <div style={{ fontSize: '0.75rem', color: quest.color, fontWeight: 700 }}>
                 CARD #{inspectedCard.number} • {inspectedCard.location || 'Office'}
               </div>
-              <div style={{ fontSize: '0.92rem', color: '#ffffff', fontWeight: 600, fontStyle: 'italic' }}>
-                "{inspectedCard.riddle}"
+              <div>
+                <div style={{ fontSize: '0.92rem', color: '#ffffff', fontWeight: 600, fontStyle: 'italic', lineHeight: 1.35 }}>
+                  "{inspectedCard.riddle.replace(/\s*\(Take my 1st letter!\)/i, '')}"
+                </div>
+                <div style={{ fontSize: '0.82rem', color: '#ffbe0b', fontWeight: 800, marginTop: '4px' }}>
+                  ✨ (Take my 1st letter!)
+                </div>
               </div>
             </div>
           </div>

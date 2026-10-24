@@ -1012,17 +1012,18 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
 
         {/* VIEW 4: Printable Table Sign for iPad Desk */}
         {viewMode === 'table_sign' && (
-          <div style={{ maxWidth: '8.5in', margin: '0 auto' }}>
+          <div style={{ maxWidth: '8.5in', margin: '0.1in auto', padding: '0.1in 0.15in' }}>
             <div className="print-page-container" style={{
               backgroundColor: '#fbf7ea',
               border: '12px solid #3d2314',
               borderRadius: '16px',
-              padding: '0.6in',
+              padding: '0.5in 0.45in',
               color: '#2d1810',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
-              textAlign: 'center'
+              textAlign: 'center',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
             }}>
               <div>
                 <div style={{ fontSize: '1rem', fontWeight: 800, color: '#b45309', letterSpacing: '2px' }}>
@@ -1261,7 +1262,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                   color: '#78350f',
                   textTransform: 'uppercase'
                 }}>
-                  THE ANCIENT GUILD OF HALLOWEEN ALCHEMISTS
+                  THE ANCIENT GUILD OF ALCHEMISTS
                 </div>
                 <h1 className="font-mystic" style={{
                   fontSize: '2.5rem',
@@ -1307,7 +1308,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
 
               {/* Body Text */}
               <div style={{ zIndex: 5, maxWidth: '6in', fontSize: '1.15rem', lineHeight: 1.5, color: '#3d2314' }}>
-                has braved the enchanted corridors, attuned the sacred Totem, and decoded the hidden ingredients of the office to attain the rank of:
+                has braved the enchanted corridors, attuned the sacred path, and decoded the hidden ingredients of the office to attain the rank of:
                 <div style={{
                   fontSize: '1.65rem',
                   fontWeight: 900,
@@ -1318,7 +1319,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                 }}>
                   ★ {certRank.toUpperCase()} ★
                 </div>
-                and is hereby granted full honors and rightful possession of the 3D-Printed Mini Potion Clicker!
+                and is hereby granted full honors of Master Potion Explorer!
               </div>
 
               {/* Signatures & Seal Stage */}
@@ -1362,8 +1363,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                   color: '#ffffff',
                   border: '3px solid #fef3c7'
                 }}>
-                  <div style={{ fontSize: '1.6rem' }}>⚗️</div>
-                  <div style={{ fontSize: '0.55rem', fontWeight: 900, letterSpacing: '0.5px' }}>OFFICIAL</div>
+                  <div style={{ fontSize: '4rem' }}>⚗️</div>
                 </div>
 
                 {/* Quest Master Date */}

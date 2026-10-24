@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import type { CardData, GameMode, RuneType, ScreenState } from './types';
-import { QUESTS } from './data/quests';
 import { getStoredCards, saveStoredCards } from './utils/storage';
 import { Header } from './components/Header';
 import { ScreenHub } from './components/ScreenHub';
@@ -72,9 +71,6 @@ export const App: React.FC = () => {
     setSelectedQuestRune(null);
   };
 
-  // Active quest info if playing
-  const activeQuest = selectedQuestRune ? QUESTS[selectedQuestRune] : undefined;
-
   return (
     <div className="spooky-ambient-bg" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       {/* App Header */}
@@ -85,8 +81,6 @@ export const App: React.FC = () => {
         onToggleMute={() => setIsMuted(m => !m)}
         onOpenHelp={() => setIsHelpOpen(true)}
         onHome={handleResetToHub}
-        activeRuneTitle={activeQuest?.title}
-        activeRuneColor={activeQuest?.color}
       />
 
       {/* Main View Area */}

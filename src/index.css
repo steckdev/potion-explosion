@@ -252,7 +252,7 @@ body.kiosk-fullscreen-mode main {
    ========================================================= */
 @page {
   size: letter portrait;
-  margin: 0.35in;
+  margin: 0.1in 0.15in;
 }
 
 @media print {
@@ -280,11 +280,11 @@ body.kiosk-fullscreen-mode main {
     display: flex !important;
     flex-direction: column !important;
     justifyContent: space-between !important;
-    width: 7.75in !important;
-    height: 10.25in !important;
-    max-width: 7.75in !important;
-    max-height: 10.25in !important;
-    margin: 0 auto !important;
+    width: 8.2in !important;
+    height: 10.8in !important;
+    max-width: 8.2in !important;
+    max-height: 10.8in !important;
+    margin: 0.1in 0.15in !important;
     padding: 0.35in 0.45in !important;
     box-sizing: border-box !important;
     page-break-after: always !important;

@@ -29,8 +29,12 @@ export const ToddlerStirStation: React.FC<ToddlerStirStationProps> = ({ onClose 
   const [spoonAngle, setSpoonAngle] = useState(-20);
   const [isCauldronBouncing, setIsCauldronBouncing] = useState(false);
   const [isStirringActive, setIsStirringActive] = useState(false);
+  
   const lastStirTimeRef = useRef(0);
-  const touchStartPosRef = useRef<{ x: number; y: number } | null>(null);
+  const isPointerDownRef = useRef(false);
+  const lastAngleRef = useRef<number | null>(null);
+  const accumulatedAngleRef = useRef(0);
+  const cauldronCenterRef = useRef<{ cx: number; cy: number } | null>(null);
 
   // Add ingredient
   const handleAddIngredient = (item: IngredientOption) => {
@@ -50,20 +54,20 @@ export const ToddlerStirStation: React.FC<ToddlerStirStationProps> = ({ onClose 
     setStirCount(0);
   };
 
-  // Perform a stir (either via touch drag or tap on cauldron / spoon / stir button)
-  const handleStirAction = () => {
+  // Perform a stir (either via mouse swirl, touch swirl, or tap)
+  const triggerStirStep = () => {
     if (selectedIngredients.length < 3 || isBrewed) return;
 
-    // Debounce fast touches slightly (140ms)
+    // Debounce fast touches slightly (180ms)
     const now = Date.now();
-    if (now - lastStirTimeRef.current < 140) return;
+    if (now - lastStirTimeRef.current < 180) return;
     lastStirTimeRef.current = now;
 
     const nextStir = stirCount + 1;
     setIsStirringActive(true);
     setTimeout(() => setIsStirringActive(false), 300);
 
-    setSpoonAngle(prev => (prev === -20 ? 30 : prev === 30 ? -15 : 25));
+    setSpoonAngle(prev => (prev <= 0 ? 35 : -25));
     setIsCauldronBouncing(true);
     setTimeout(() => setIsCauldronBouncing(false), 220);
 
@@ -71,7 +75,7 @@ export const ToddlerStirStation: React.FC<ToddlerStirStationProps> = ({ onClose 
 
     // Mini bubbles confetti
     confetti({
-      particleCount: 12,
+      particleCount: 14,
       spread: 60,
       origin: { y: 0.52 },
       colors: ['#39ff14', '#ffbe0b', '#bf5af2', '#38bdf8']
@@ -86,33 +90,75 @@ export const ToddlerStirStation: React.FC<ToddlerStirStationProps> = ({ onClose 
         setIsBrewed(true);
 
         confetti({
-          particleCount: 65,
-          spread: 100,
+          particleCount: 75,
+          spread: 110,
           origin: { y: 0.48 },
           colors: ['#ffbe0b', '#39ff14', '#bf5af2', '#ff3b30', '#00c8ff']
         });
-      }, 450);
+      }, 400);
     } else {
       setStirCount(nextStir);
     }
   };
 
-  // Touch Move Gestures for stirring
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (e.touches.length > 0) {
-      touchStartPosRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  // Pointer Event Handlers for Swirling / Dragging (Mouse & Touch compatible!)
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (selectedIngredients.length < 3 || isBrewed) return;
+    isPointerDownRef.current = true;
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {
+      /* ignore */
     }
-    handleStirAction();
+
+    const rect = e.currentTarget.getBoundingClientRect();
+    cauldronCenterRef.current = {
+      cx: rect.left + rect.width / 2,
+      cy: rect.top + rect.height / 2
+    };
+
+    const dx = e.clientX - cauldronCenterRef.current.cx;
+    const dy = e.clientY - cauldronCenterRef.current.cy;
+    lastAngleRef.current = Math.atan2(dy, dx) * (180 / Math.PI);
+    accumulatedAngleRef.current = 0;
   };
 
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!touchStartPosRef.current || e.touches.length === 0) return;
-    const currentX = e.touches[0].clientX;
-    const currentY = e.touches[0].clientY;
-    const dist = Math.hypot(currentX - touchStartPosRef.current.x, currentY - touchStartPosRef.current.y);
-    if (dist > 35) {
-      touchStartPosRef.current = { x: currentX, y: currentY };
-      handleStirAction();
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isPointerDownRef.current || !cauldronCenterRef.current || isBrewed) return;
+
+    const dx = e.clientX - cauldronCenterRef.current.cx;
+    const dy = e.clientY - cauldronCenterRef.current.cy;
+    const currentAngle = Math.atan2(dy, dx) * (180 / Math.PI);
+
+    // Update spoon rotation visually to track hand / cursor
+    setSpoonAngle(currentAngle / 2);
+
+    if (lastAngleRef.current !== null) {
+      let delta = currentAngle - lastAngleRef.current;
+      // Handle 180 -> -180 wrap
+      if (delta > 180) delta -= 360;
+      if (delta < -180) delta += 360;
+
+      accumulatedAngleRef.current += Math.abs(delta);
+
+      // Once user has swirled approximately 140 degrees, trigger a stir!
+      if (accumulatedAngleRef.current >= 140) {
+        accumulatedAngleRef.current = 0;
+        triggerStirStep();
+      }
+    }
+
+    lastAngleRef.current = currentAngle;
+  };
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    isPointerDownRef.current = false;
+    lastAngleRef.current = null;
+    accumulatedAngleRef.current = 0;
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    } catch {
+      /* ignore */
     }
   };
 
@@ -127,13 +173,9 @@ export const ToddlerStirStation: React.FC<ToddlerStirStationProps> = ({ onClose 
   return (
     <div style={{
       position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'rgba(8, 6, 18, 0.97)',
-      backdropFilter: 'blur(25px)',
-      zIndex: 200,
+      inset: 0,
+      backgroundColor: '#090714',
+      zIndex: 500,
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
@@ -141,7 +183,7 @@ export const ToddlerStirStation: React.FC<ToddlerStirStationProps> = ({ onClose 
       padding: '0.85rem 1.25rem',
       color: '#ffffff',
       userSelect: 'none',
-      touchAction: 'manipulation'
+      touchAction: 'none'
     }}>
       {/* Top Header */}
       <div style={{
@@ -152,7 +194,7 @@ export const ToddlerStirStation: React.FC<ToddlerStirStationProps> = ({ onClose 
         justifyContent: 'space-between'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-          <span style={{ fontSize: '1.9rem' }}>🧙‍♀️</span>
+          <span style={{ fontSize: '1.9rem' }}>🧒✨</span>
           <div>
             <h2 className="font-mystic" style={{
               fontSize: '1.35rem',
@@ -164,7 +206,7 @@ export const ToddlerStirStation: React.FC<ToddlerStirStationProps> = ({ onClose 
               LITTLE ALCHEMIST STIR STATION
             </h2>
             <div style={{ fontSize: '0.8rem', color: '#cbd5e1' }}>
-              Apprentice Potion Brewing • Tap 3 Ingredients & Stir!
+              Apprentice Potion Brewing • Tap 3 Ingredients & Swirl!
             </div>
           </div>
         </div>
@@ -250,7 +292,7 @@ export const ToddlerStirStation: React.FC<ToddlerStirStationProps> = ({ onClose 
           })}
         </div>
 
-        {/* Clear Action Prompt Banner */}
+        {/* Action Prompt Banner */}
         <div style={{
           fontSize: '1.2rem',
           fontWeight: 900,
@@ -266,14 +308,16 @@ export const ToddlerStirStation: React.FC<ToddlerStirStationProps> = ({ onClose 
             ? '🎉 KABOOM! YOUR POTION IS READY!'
             : selectedIngredients.length < 3
               ? `👇 Tap ${3 - selectedIngredients.length} Ingredients to add to the Cauldron!`
-              : `🥄 Now Tap or Swirl the Spoon to Stir! (${stirCount}/3)`}
+              : `🥄 Drag/Swirl your finger or mouse over the pot to Stir! (${stirCount}/3)`}
         </div>
 
-        {/* Interactive Cauldron & Spoon Arena */}
+        {/* Interactive Cauldron & Spoon Arena with Pointer Swirl Tracking */}
         <div
-          onClick={handleStirAction}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
+          onClick={triggerStirStep}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
           style={{
             position: 'relative',
             width: '270px',
@@ -281,9 +325,10 @@ export const ToddlerStirStation: React.FC<ToddlerStirStationProps> = ({ onClose 
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            cursor: selectedIngredients.length === 3 && !isBrewed ? 'pointer' : 'default',
+            cursor: selectedIngredients.length === 3 && !isBrewed ? 'grab' : 'default',
             transform: isCauldronBouncing ? 'scale(1.09) translateY(-6px)' : 'scale(1)',
-            transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)'
+            transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            touchAction: 'none'
           }}
         >
           {/* Expansive Pulsing Radial Aura */}
@@ -302,7 +347,7 @@ export const ToddlerStirStation: React.FC<ToddlerStirStationProps> = ({ onClose 
             animation: 'pulseGlow 2.5s infinite ease-in-out'
           }} />
 
-          {/* Full Cauldron Artwork (Clean, unclipped with complete feet!) */}
+          {/* Full Crisp Cauldron Artwork */}
           <img
             src={isBrewed ? '/sprites/cauldron_poof.png' : selectedIngredients.length === 3 ? '/sprites/cauldron_churning.png' : '/sprites/cauldron_bubble.png'}
             alt="Cauldron"
@@ -312,6 +357,7 @@ export const ToddlerStirStation: React.FC<ToddlerStirStationProps> = ({ onClose 
               objectFit: 'contain',
               position: 'relative',
               zIndex: 5,
+              pointerEvents: 'none',
               filter: isBrewed
                 ? 'drop-shadow(0 0 28px #39ff14) drop-shadow(0 10px 20px rgba(0,0,0,0.7))'
                 : 'drop-shadow(0 0 20px rgba(191, 90, 242, 0.65)) drop-shadow(0 10px 20px rgba(0,0,0,0.6))'
@@ -329,7 +375,7 @@ export const ToddlerStirStation: React.FC<ToddlerStirStationProps> = ({ onClose 
             zIndex: 2
           }} />
 
-          {/* Interactive Wooden Stir Spoon (When 3 ingredients are loaded) */}
+          {/* Interactive Wooden Stir Spoon (Smoothly angles with user gesture) */}
           {selectedIngredients.length === 3 && !isBrewed && (
             <div style={{
               position: 'absolute',
@@ -339,7 +385,7 @@ export const ToddlerStirStation: React.FC<ToddlerStirStationProps> = ({ onClose 
               fontSize: '4.2rem',
               transform: `rotate(${spoonAngle}deg) ${isStirringActive ? 'scale(1.15)' : 'scale(1)'}`,
               transformOrigin: 'bottom center',
-              transition: 'transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1)',
+              transition: isPointerDownRef.current ? 'none' : 'transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1)',
               filter: 'drop-shadow(0 6px 14px rgba(0,0,0,0.65)) drop-shadow(0 0 10px #ffbe0b)',
               pointerEvents: 'none'
             }}>
@@ -347,7 +393,7 @@ export const ToddlerStirStation: React.FC<ToddlerStirStationProps> = ({ onClose 
             </div>
           )}
 
-          {/* Animated Swirl Prompt Ring */}
+          {/* Animated Swirl Guide Ring */}
           {selectedIngredients.length === 3 && !isBrewed && (
             <div style={{
               position: 'absolute',
@@ -356,7 +402,7 @@ export const ToddlerStirStation: React.FC<ToddlerStirStationProps> = ({ onClose 
               height: '60px',
               borderRadius: '50%',
               border: '3.5px dashed #ffbe0b',
-              animation: 'spin 2.5s linear infinite',
+              animation: 'spin 3s linear infinite',
               zIndex: 8,
               opacity: 0.85,
               pointerEvents: 'none'
@@ -386,10 +432,10 @@ export const ToddlerStirStation: React.FC<ToddlerStirStationProps> = ({ onClose 
           </div>
         )}
 
-        {/* Direct Stir Action Button (Toddler Friendly Tap Target) */}
+        {/* Direct Stir Action Button (Also lets toddler tap easily) */}
         {selectedIngredients.length === 3 && !isBrewed && (
           <button
-            onClick={handleStirAction}
+            onClick={triggerStirStep}
             style={{
               background: 'linear-gradient(135deg, #ffbe0b, #f59e0b)',
               border: 'none',
@@ -407,7 +453,7 @@ export const ToddlerStirStation: React.FC<ToddlerStirStationProps> = ({ onClose 
               transition: 'transform 0.15s ease'
             }}
           >
-            <span>🥄 Tap to Stir the Cauldron! ({stirCount}/3)</span>
+            <span>🥄 Tap or Swirl to Stir Pot! ({stirCount}/3)</span>
           </button>
         )}
       </div>

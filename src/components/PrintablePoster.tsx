@@ -270,16 +270,25 @@ export const PrintablePoster: React.FC<PrintablePosterProps> = ({
         </div>
 
         {/* Riddle Rhyme */}
-        <p className="font-scroll" style={{
+        <div className="font-scroll" style={{
           fontSize: '1.38rem',
-          lineHeight: 1.48,
+          lineHeight: 1.45,
           color: '#2d1810',
           textAlign: 'center',
           margin: 0,
           fontWeight: 600
         }}>
-          "{card.riddle}"
-        </p>
+          "{card.riddle.replace(/\s*\(Take my 1st letter!\)/i, '')}"
+          <div style={{
+            marginTop: '8px',
+            fontSize: '1.18rem',
+            color: '#78350f',
+            fontWeight: 800,
+            letterSpacing: '0.5px'
+          }}>
+            ✨ (Take my 1st letter!)
+          </div>
+        </div>
 
         {/* Staff Answer Key (Only shown when printing the Staff Answer Key) */}
         {showAnswerKey && (

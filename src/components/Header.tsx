@@ -9,8 +9,6 @@ interface HeaderProps {
   onToggleMute: () => void;
   onOpenHelp: () => void;
   onHome: () => void;
-  activeRuneTitle?: string;
-  activeRuneColor?: string;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -19,9 +17,7 @@ export const Header: React.FC<HeaderProps> = ({
   isMuted,
   onToggleMute,
   onOpenHelp,
-  onHome,
-  activeRuneTitle,
-  activeRuneColor
+  onHome
 }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [fullscreenToast, setFullscreenToast] = useState<string | null>(null);
@@ -149,21 +145,6 @@ export const Header: React.FC<HeaderProps> = ({
           }}>
             THE GREAT ALCHEMY QUEST
           </h1>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', color: '#cbd5e1' }}>
-            <span>Halloween Office Adventure</span>
-            {activeRuneTitle && (
-              <span style={{
-                color: activeRuneColor || '#ffbe0b',
-                fontWeight: 600,
-                backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                padding: '1px 8px',
-                borderRadius: '999px',
-                border: `1px solid ${activeRuneColor || '#ffbe0b'}`
-              }}>
-                ✦ {activeRuneTitle}
-              </span>
-            )}
-          </div>
         </div>
       </button>
 

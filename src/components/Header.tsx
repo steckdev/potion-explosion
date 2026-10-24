@@ -117,8 +117,9 @@ export const Header: React.FC<HeaderProps> = ({
           cursor: 'pointer',
           display: 'flex',
           alignItems: 'center',
-          gap: '0.75rem',
-          textAlign: 'left'
+          gap: '0.65rem',
+          textAlign: 'left',
+          flexShrink: 0
         }}
         title="Return to Main Hub"
       >
@@ -129,19 +130,21 @@ export const Header: React.FC<HeaderProps> = ({
             width: '38px',
             height: '38px',
             filter: 'drop-shadow(0 0 8px rgba(191, 90, 242, 0.5))',
-            transition: 'transform 0.2s ease'
+            transition: 'transform 0.2s ease',
+            flexShrink: 0
           }}
           onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.12)'}
           onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
         />
-        <div>
+        <div style={{ flexShrink: 0 }}>
           <h1 className="font-mystic" style={{
-            fontSize: '1.25rem',
-            letterSpacing: '1px',
+            fontSize: 'clamp(1rem, 2.4vw, 1.25rem)',
+            letterSpacing: '0.8px',
             color: '#ffbe0b',
             textShadow: '0 0 10px rgba(255, 190, 11, 0.4)',
             lineHeight: 1.1,
-            margin: 0
+            margin: 0,
+            whiteSpace: 'nowrap'
           }}>
             THE GREAT ALCHEMY QUEST
           </h1>

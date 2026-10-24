@@ -195,8 +195,49 @@ body.kiosk-fullscreen-mode main {
   }
 }
 
+/* Slow Ambient Idle Room Animations */
+@keyframes ambientEmberFloat {
+  0% {
+    transform: translateY(0px) translateX(0px) scale(0.8);
+    opacity: 0.2;
+  }
+  50% {
+    transform: translateY(-45px) translateX(15px) scale(1.2);
+    opacity: 0.75;
+  }
+  100% {
+    transform: translateY(-90px) translateX(-10px) scale(0.8);
+    opacity: 0;
+  }
+}
+
+@keyframes gentleBreathe {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 1;
+  }
+}
+
+@keyframes runeAuraSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes shimmerWave {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
 .animate-float {
   animation: floatGentle 4s ease-in-out infinite;
+}
+
+.animate-breathe {
+  animation: gentleBreathe 5s ease-in-out infinite;
 }
 
 .animate-shake {

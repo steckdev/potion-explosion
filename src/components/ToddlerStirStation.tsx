@@ -1,0 +1,527 @@
+import React, { useState, useRef } from 'react';
+import confetti from 'canvas-confetti';
+import { playBloop, playPoof, playStoneLock, playVictoryFanfare } from '../utils/audio';
+import { X, RefreshCw } from 'lucide-react';
+
+interface ToddlerStirStationProps {
+  onClose: () => void;
+}
+
+interface IngredientOption {
+  name: string;
+  sprite: string;
+  color: string;
+  emoji: string;
+}
+
+const TODDLER_INGREDIENTS: IngredientOption[] = [
+  { name: 'Candy Corn', sprite: '/sprites/candy_corn.png', color: '#ffbe0b', emoji: '🌽' },
+  { name: 'Dragon Pepper', sprite: '/sprites/dragon_pepper.png', color: '#ff3b30', emoji: '🌶️' },
+  { name: 'Pixie Dust', sprite: '/sprites/pixie_dust.png', color: '#bf5af2', emoji: '✨' },
+  { name: 'Pumpkin Seeds', sprite: '/sprites/pumpkin_seeds.png', color: '#30d158', emoji: '🎃' },
+  { name: 'Bat Wing', sprite: '/sprites/bat_wing.png', color: '#38bdf8', emoji: '🦇' }
+];
+
+export const ToddlerStirStation: React.FC<ToddlerStirStationProps> = ({ onClose }) => {
+  const [selectedIngredients, setSelectedIngredients] = useState<IngredientOption[]>([]);
+  const [stirCount, setStirCount] = useState(0); // 0, 1, 2, 3 -> Poof!
+  const [isBrewed, setIsBrewed] = useState(false);
+  const [spoonAngle, setSpoonAngle] = useState(-20);
+  const [isCauldronBouncing, setIsCauldronBouncing] = useState(false);
+  const [isStirringActive, setIsStirringActive] = useState(false);
+  const lastStirTimeRef = useRef(0);
+  const touchStartPosRef = useRef<{ x: number; y: number } | null>(null);
+
+  // Add ingredient
+  const handleAddIngredient = (item: IngredientOption) => {
+    if (selectedIngredients.length >= 3) return;
+    playBloop(1.1 + selectedIngredients.length * 0.25);
+    setIsCauldronBouncing(true);
+    setTimeout(() => setIsCauldronBouncing(false), 260);
+
+    setSelectedIngredients(prev => [...prev, item]);
+  };
+
+  // Remove ingredient by slot
+  const handleRemoveIngredient = (index: number) => {
+    if (isBrewed) return;
+    playBloop(0.85);
+    setSelectedIngredients(prev => prev.filter((_, i) => i !== index));
+    setStirCount(0);
+  };
+
+  // Perform a stir (either via touch drag or tap on cauldron / spoon / stir button)
+  const handleStirAction = () => {
+    if (selectedIngredients.length < 3 || isBrewed) return;
+
+    // Debounce fast touches slightly (140ms)
+    const now = Date.now();
+    if (now - lastStirTimeRef.current < 140) return;
+    lastStirTimeRef.current = now;
+
+    const nextStir = stirCount + 1;
+    setIsStirringActive(true);
+    setTimeout(() => setIsStirringActive(false), 300);
+
+    setSpoonAngle(prev => (prev === -20 ? 30 : prev === 30 ? -15 : 25));
+    setIsCauldronBouncing(true);
+    setTimeout(() => setIsCauldronBouncing(false), 220);
+
+    playBloop(1.15 + nextStir * 0.35);
+
+    // Mini bubbles confetti
+    confetti({
+      particleCount: 12,
+      spread: 60,
+      origin: { y: 0.52 },
+      colors: ['#39ff14', '#ffbe0b', '#bf5af2', '#38bdf8']
+    });
+
+    if (nextStir >= 3) {
+      setStirCount(3);
+      playPoof();
+      setTimeout(() => {
+        playStoneLock();
+        playVictoryFanfare();
+        setIsBrewed(true);
+
+        confetti({
+          particleCount: 65,
+          spread: 100,
+          origin: { y: 0.48 },
+          colors: ['#ffbe0b', '#39ff14', '#bf5af2', '#ff3b30', '#00c8ff']
+        });
+      }, 450);
+    } else {
+      setStirCount(nextStir);
+    }
+  };
+
+  // Touch Move Gestures for stirring
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length > 0) {
+      touchStartPosRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+    handleStirAction();
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStartPosRef.current || e.touches.length === 0) return;
+    const currentX = e.touches[0].clientX;
+    const currentY = e.touches[0].clientY;
+    const dist = Math.hypot(currentX - touchStartPosRef.current.x, currentY - touchStartPosRef.current.y);
+    if (dist > 35) {
+      touchStartPosRef.current = { x: currentX, y: currentY };
+      handleStirAction();
+    }
+  };
+
+  const handleReset = () => {
+    playBloop(1.0);
+    setSelectedIngredients([]);
+    setStirCount(0);
+    setIsBrewed(false);
+    setSpoonAngle(-20);
+  };
+
+  return (
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(8, 6, 18, 0.97)',
+      backdropFilter: 'blur(25px)',
+      zIndex: 200,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: '0.85rem 1.25rem',
+      color: '#ffffff',
+      userSelect: 'none',
+      touchAction: 'manipulation'
+    }}>
+      {/* Top Header */}
+      <div style={{
+        width: '100%',
+        maxWidth: '860px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+          <span style={{ fontSize: '1.9rem' }}>🧙‍♀️</span>
+          <div>
+            <h2 className="font-mystic" style={{
+              fontSize: '1.35rem',
+              color: '#39ff14',
+              margin: 0,
+              textShadow: '0 0 12px rgba(57, 255, 20, 0.55)',
+              letterSpacing: '0.5px'
+            }}>
+              LITTLE ALCHEMIST STIR STATION
+            </h2>
+            <div style={{ fontSize: '0.8rem', color: '#cbd5e1' }}>
+              Apprentice Potion Brewing • Tap 3 Ingredients & Stir!
+            </div>
+          </div>
+        </div>
+
+        <button
+          onClick={onClose}
+          style={{
+            background: 'rgba(255, 255, 255, 0.14)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            color: '#ffffff',
+            borderRadius: '50%',
+            width: '46px',
+            height: '46px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            transition: 'transform 0.2s ease'
+          }}
+          onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.92)'}
+          onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
+          title="Exit Stir Station"
+        >
+          <X size={24} />
+        </button>
+      </div>
+
+      {/* Main Interactive Stage */}
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '0.85rem',
+        width: '100%',
+        maxWidth: '750px',
+        margin: 'auto 0'
+      }}>
+        {/* 3 Large Ingredient Droplet Bubbles */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '1.25rem',
+          backgroundColor: 'rgba(255, 255, 255, 0.07)',
+          padding: '0.55rem 1.6rem',
+          borderRadius: '999px',
+          border: '1px solid rgba(255, 255, 255, 0.18)',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.4)'
+        }}>
+          {[0, 1, 2].map((idx) => {
+            const item = selectedIngredients[idx];
+            return (
+              <div
+                key={idx}
+                onClick={() => item && handleRemoveIngredient(idx)}
+                style={{
+                  width: '66px',
+                  height: '66px',
+                  borderRadius: '50%',
+                  border: item ? `3px solid ${item.color}` : '2px dashed rgba(255, 255, 255, 0.35)',
+                  backgroundColor: item ? 'rgba(255, 255, 255, 0.16)' : 'rgba(0, 0, 0, 0.45)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: item ? `0 0 18px ${item.color}` : 'none',
+                  transform: item ? 'scale(1.08)' : 'scale(1)',
+                  cursor: item ? 'pointer' : 'default',
+                  transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)'
+                }}
+                title={item ? 'Tap to remove' : `Slot ${idx + 1}`}
+              >
+                {item ? (
+                  <img
+                    src={item.sprite}
+                    alt={item.name}
+                    style={{ width: '48px', height: '48px', objectFit: 'contain' }}
+                  />
+                ) : (
+                  <span style={{ fontSize: '1.3rem', color: '#64748b', fontWeight: 800 }}>{idx + 1}</span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Clear Action Prompt Banner */}
+        <div style={{
+          fontSize: '1.2rem',
+          fontWeight: 900,
+          color: isBrewed ? '#39ff14' : selectedIngredients.length < 3 ? '#ffbe0b' : '#38bdf8',
+          textShadow: '0 2px 10px rgba(0,0,0,0.7)',
+          textAlign: 'center',
+          minHeight: '32px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.4rem'
+        }}>
+          {isBrewed
+            ? '🎉 KABOOM! YOUR POTION IS READY!'
+            : selectedIngredients.length < 3
+              ? `👇 Tap ${3 - selectedIngredients.length} Ingredients to add to the Cauldron!`
+              : `🥄 Now Tap or Swirl the Spoon to Stir! (${stirCount}/3)`}
+        </div>
+
+        {/* Interactive Cauldron & Spoon Arena */}
+        <div
+          onClick={handleStirAction}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          style={{
+            position: 'relative',
+            width: '270px',
+            height: '260px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: selectedIngredients.length === 3 && !isBrewed ? 'pointer' : 'default',
+            transform: isCauldronBouncing ? 'scale(1.09) translateY(-6px)' : 'scale(1)',
+            transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)'
+          }}
+        >
+          {/* Expansive Pulsing Radial Aura */}
+          <div style={{
+            position: 'absolute',
+            width: '260px',
+            height: '260px',
+            borderRadius: '50%',
+            background: isBrewed
+              ? 'radial-gradient(circle, #39ff14 0%, #bf5af2 60%, transparent 80%)'
+              : selectedIngredients.length === 3
+                ? 'radial-gradient(circle, #ffbe0b 0%, #38bdf8 60%, transparent 80%)'
+                : 'radial-gradient(circle, #bf5af2 0%, transparent 72%)',
+            opacity: 0.65,
+            filter: 'blur(24px)',
+            animation: 'pulseGlow 2.5s infinite ease-in-out'
+          }} />
+
+          {/* Full Cauldron Artwork (Clean, unclipped with complete feet!) */}
+          <img
+            src={isBrewed ? '/sprites/cauldron_poof.png' : selectedIngredients.length === 3 ? '/sprites/cauldron_churning.png' : '/sprites/cauldron_bubble.png'}
+            alt="Cauldron"
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+              position: 'relative',
+              zIndex: 5,
+              filter: isBrewed
+                ? 'drop-shadow(0 0 28px #39ff14) drop-shadow(0 10px 20px rgba(0,0,0,0.7))'
+                : 'drop-shadow(0 0 20px rgba(191, 90, 242, 0.65)) drop-shadow(0 10px 20px rgba(0,0,0,0.6))'
+            }}
+          />
+
+          {/* Glowing Pedestal Shadow */}
+          <div style={{
+            position: 'absolute',
+            bottom: '6px',
+            width: '200px',
+            height: '22px',
+            borderRadius: '50%',
+            background: 'radial-gradient(ellipse, rgba(0,0,0,0.7) 0%, transparent 70%)',
+            zIndex: 2
+          }} />
+
+          {/* Interactive Wooden Stir Spoon (When 3 ingredients are loaded) */}
+          {selectedIngredients.length === 3 && !isBrewed && (
+            <div style={{
+              position: 'absolute',
+              top: '5px',
+              right: '25px',
+              zIndex: 10,
+              fontSize: '4.2rem',
+              transform: `rotate(${spoonAngle}deg) ${isStirringActive ? 'scale(1.15)' : 'scale(1)'}`,
+              transformOrigin: 'bottom center',
+              transition: 'transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1)',
+              filter: 'drop-shadow(0 6px 14px rgba(0,0,0,0.65)) drop-shadow(0 0 10px #ffbe0b)',
+              pointerEvents: 'none'
+            }}>
+              🥄
+            </div>
+          )}
+
+          {/* Animated Swirl Prompt Ring */}
+          {selectedIngredients.length === 3 && !isBrewed && (
+            <div style={{
+              position: 'absolute',
+              top: '35px',
+              width: '150px',
+              height: '60px',
+              borderRadius: '50%',
+              border: '3.5px dashed #ffbe0b',
+              animation: 'spin 2.5s linear infinite',
+              zIndex: 8,
+              opacity: 0.85,
+              pointerEvents: 'none'
+            }} />
+          )}
+        </div>
+
+        {/* 3-Step Stir Progress Beads */}
+        {selectedIngredients.length === 3 && !isBrewed && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <span style={{ fontSize: '0.9rem', color: '#cbd5e1', fontWeight: 800 }}>Stir Progress:</span>
+            {[1, 2, 3].map((step) => (
+              <div
+                key={step}
+                style={{
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '50%',
+                  backgroundColor: stirCount >= step ? '#39ff14' : 'rgba(255, 255, 255, 0.22)',
+                  boxShadow: stirCount >= step ? '0 0 16px #39ff14' : 'none',
+                  border: '2px solid rgba(255, 255, 255, 0.35)',
+                  transform: stirCount >= step ? 'scale(1.15)' : 'scale(1)',
+                  transition: 'all 0.25s ease'
+                }}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Direct Stir Action Button (Toddler Friendly Tap Target) */}
+        {selectedIngredients.length === 3 && !isBrewed && (
+          <button
+            onClick={handleStirAction}
+            style={{
+              background: 'linear-gradient(135deg, #ffbe0b, #f59e0b)',
+              border: 'none',
+              color: '#090714',
+              borderRadius: '999px',
+              padding: '0.85rem 2.2rem',
+              fontSize: '1.15rem',
+              fontWeight: 900,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.6rem',
+              boxShadow: '0 0 25px rgba(255, 190, 11, 0.6), 0 4px 15px rgba(0,0,0,0.5)',
+              transform: isStirringActive ? 'scale(0.95)' : 'scale(1)',
+              transition: 'transform 0.15s ease'
+            }}
+          >
+            <span>🥄 Tap to Stir the Cauldron! ({stirCount}/3)</span>
+          </button>
+        )}
+      </div>
+
+      {/* Bottom Controls */}
+      <div style={{
+        width: '100%',
+        maxWidth: '860px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '0.5rem'
+      }}>
+        {isBrewed ? (
+          /* Victory Replay Buttons */
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <button
+              onClick={handleReset}
+              style={{
+                background: 'linear-gradient(135deg, #39ff14, #28cd41)',
+                border: 'none',
+                color: '#090714',
+                borderRadius: '999px',
+                padding: '0.95rem 2.4rem',
+                fontSize: '1.2rem',
+                fontWeight: 900,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.6rem',
+                boxShadow: '0 0 25px rgba(57, 255, 20, 0.6)'
+              }}
+            >
+              <RefreshCw size={24} />
+              <span>Stir Another Potion! 🧒✨</span>
+            </button>
+            <button
+              onClick={onClose}
+              style={{
+                background: 'rgba(255, 255, 255, 0.14)',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                color: '#ffffff',
+                borderRadius: '999px',
+                padding: '0.95rem 2.2rem',
+                fontSize: '1.1rem',
+                fontWeight: 800,
+                cursor: 'pointer'
+              }}
+            >
+              Back to Quests
+            </button>
+          </div>
+        ) : (
+          /* 5 Big Friendly Ingredient Tap Cards (Large touch targets for toddlers) */
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(5, 1fr)',
+            gap: '0.75rem',
+            width: '100%'
+          }}>
+            {TODDLER_INGREDIENTS.map((item) => {
+              const countAdded = selectedIngredients.filter(i => i.name === item.name).length;
+              return (
+                <button
+                  key={item.name}
+                  onClick={() => handleAddIngredient(item)}
+                  disabled={selectedIngredients.length >= 3}
+                  style={{
+                    background: 'linear-gradient(180deg, rgba(35, 28, 58, 0.95), rgba(20, 15, 38, 0.95))',
+                    border: `2.5px solid ${item.color}`,
+                    borderRadius: '18px',
+                    padding: '0.65rem 0.4rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                    cursor: selectedIngredients.length >= 3 ? 'default' : 'pointer',
+                    opacity: selectedIngredients.length >= 3 ? 0.35 : 1,
+                    transition: 'all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    boxShadow: '0 4px 14px rgba(0,0,0,0.4)'
+                  }}
+                  onMouseDown={(e) => {
+                    if (selectedIngredients.length < 3) e.currentTarget.style.transform = 'scale(0.92)';
+                  }}
+                  onMouseUp={(e) => {
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }}
+                >
+                  <img
+                    src={item.sprite}
+                    alt={item.name}
+                    style={{ width: '56px', height: '56px', objectFit: 'contain' }}
+                  />
+                  <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#ffffff' }}>
+                    {item.name}
+                  </span>
+                  {countAdded > 0 && (
+                    <span style={{
+                      fontSize: '0.68rem',
+                      fontWeight: 900,
+                      backgroundColor: item.color,
+                      color: '#090714',
+                      padding: '2px 8px',
+                      borderRadius: '999px'
+                    }}>
+                      ✓ {countAdded} in pot
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};

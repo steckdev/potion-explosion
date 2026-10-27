@@ -9,6 +9,8 @@ interface ScreenHubProps {
   onSelectQuest: (rune: RuneType, mode: GameMode) => void;
   selectedMode: GameMode;
   onModeChange: (mode: GameMode) => void;
+  collectedCount?: number;
+  onOpenSatchel?: () => void;
 }
 
 const AMBIENT_EMBERS = [
@@ -24,7 +26,9 @@ const AMBIENT_EMBERS = [
 export const ScreenHub: React.FC<ScreenHubProps> = ({
   onSelectQuest,
   selectedMode,
-  onModeChange
+  onModeChange,
+  collectedCount = 0,
+  onOpenSatchel
 }) => {
   const [hoveredRune, setHoveredRune] = useState<RuneType | null>(null);
   const [showToddlerMode, setShowToddlerMode] = useState(false);
@@ -598,6 +602,43 @@ export const ScreenHub: React.FC<ScreenHubProps> = ({
           >
             <Sparkles size={13} color="#39ff14" />
             <span>Little Alchemist in the Party? <strong>Tap Here for Stir Station!</strong> 🧪</span>
+          </button>
+        )}
+
+        {/* Mobile Phone Scavenger Hunt / NFC Satchel Banner */}
+        {onOpenSatchel && (
+          <button
+            onClick={() => {
+              playBloop(1.1);
+              onOpenSatchel();
+            }}
+            style={{
+              fontSize: '0.78rem',
+              color: '#f8fafc',
+              backgroundColor: collectedCount > 0 ? 'rgba(57, 255, 20, 0.12)' : 'rgba(131, 56, 236, 0.18)',
+              border: collectedCount > 0 ? '1px solid #39ff14' : '1px solid rgba(191, 90, 242, 0.35)',
+              padding: '5px 18px',
+              borderRadius: '999px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              boxShadow: collectedCount > 0 ? '0 0 12px rgba(57, 255, 20, 0.25)' : 'none'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(131, 56, 236, 0.3)';
+              e.currentTarget.style.borderColor = '#bf5af2';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = collectedCount > 0 ? 'rgba(57, 255, 20, 0.12)' : 'rgba(131, 56, 236, 0.18)';
+              e.currentTarget.style.borderColor = collectedCount > 0 ? '#39ff14' : 'rgba(191, 90, 242, 0.35)';
+            }}
+          >
+            <span style={{ fontSize: '0.9rem' }}>🎒</span>
+            <span>
+              Hunting with your phone? <strong>Open Alchemist Satchel ({collectedCount}/12 tokens)</strong>
+            </span>
           </button>
         )}
       </div>

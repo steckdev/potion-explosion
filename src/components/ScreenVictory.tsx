@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import confetti from 'canvas-confetti';
 import type { GameMode, RuneType } from '../types';
 import { QUESTS } from '../data/quests';
-import { playVictoryFanfare, playStoneLock, playBloop } from '../utils/audio';
+import { playVictoryFanfare, playStoneLock, playBloop, stopMusicForVictory } from '../utils/audio';
 import { Sparkles, RotateCcw, Check, ChevronRight } from 'lucide-react';
 
 interface ScreenVictoryProps {
@@ -27,8 +27,9 @@ export const ScreenVictory: React.FC<ScreenVictoryProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const sliderTrackRef = useRef<HTMLDivElement>(null);
 
-  // Trigger celebration on victory mount
+  // Trigger celebration and stop background music on victory mount
   useEffect(() => {
+    stopMusicForVictory();
     playVictoryFanfare();
 
     const duration = 2.5 * 1000;
@@ -73,6 +74,7 @@ export const ScreenVictory: React.FC<ScreenVictoryProps> = ({
 
   // Direct approval trigger (confetti + stone lock)
   const triggerRedemption = useCallback(() => {
+    stopMusicForVictory();
     setIsRedeemed(true);
     setDragProgress(1);
     playStoneLock();

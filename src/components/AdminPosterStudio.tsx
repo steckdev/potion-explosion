@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { CardData, RuneType } from '../types';
 import { QUESTS } from '../data/quests';
 import { PrintablePoster } from './PrintablePoster';
 import { saveStoredCards, resetStoredCards, exportCardsAsJSON, importCardsFromJSON } from '../utils/storage';
 import { playBloop, playStoneLock } from '../utils/audio';
+import { getCardQrCode, downloadCardQrCode } from '../utils/qrcode';
 import { 
   Printer, 
   RotateCcw, 
@@ -17,7 +18,9 @@ import {
   Eye,
   EyeOff,
   MapPin,
-  Copy
+  Copy,
+  QrCode,
+  Globe
 } from 'lucide-react';
 
 interface AdminPosterStudioProps {
@@ -32,14 +35,38 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
   onExitAdmin
 }) => {
   const [selectedCardIndex, setSelectedCardIndex] = useState(0);
-  const [viewMode, setViewMode] = useState<'editor' | 'print_all' | 'cheat_sheet' | 'table_sign' | 'certificates' | 'plinko_discs' | 'prompts'>('editor');
+  const [viewMode, setViewMode] = useState<'editor' | 'print_all' | 'cheat_sheet' | 'table_sign' | 'certificates' | 'plinko_discs' | 'prompts' | 'nfc_tags'>('editor');
+  const [copiedNfcUrl, setCopiedNfcUrl] = useState<string | null>(null);
   const [isImporting, setIsImporting] = useState(false);
   const [jsonInput, setJsonInput] = useState('');
   const [saveToast, setSaveToast] = useState(false);
   
+  // Scanning Base Host / Domain configuration
+  const [scanBaseUrl, setScanBaseUrl] = useState(() => (typeof window !== 'undefined' ? window.location.origin : 'https://potion-explosion.netlify.app'));
+  const [qrPreviews, setQrPreviews] = useState<Record<string, string>>({});
+  const [isDownloadingAllQr, setIsDownloadingAllQr] = useState(false);
+
   // Wall printing vs Answer Key toggles
   const [showAnswerKey, setShowAnswerKey] = useState(false);
   const [showStaffNotes, setShowStaffNotes] = useState(false);
+
+  // Generate QR previews whenever cards or base URL change
+  useEffect(() => {
+    let isMounted = true;
+    async function loadPreviews() {
+      const previews: Record<string, string> = {};
+      for (const card of cards) {
+        previews[card.id] = await getCardQrCode(card, scanBaseUrl, 160);
+      }
+      if (isMounted) {
+        setQrPreviews(previews);
+      }
+    }
+    loadPreviews();
+    return () => {
+      isMounted = false;
+    };
+  }, [cards, scanBaseUrl]);
 
   // Certificate customization
   const [certRecipient, setCertRecipient] = useState('');
@@ -56,7 +83,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
     { label: 'Dragon Scale', path: '/sprites/dragon_scale.png' },
     { label: 'Ghost Tears', path: '/sprites/ghost_tears.png' },
     { label: 'Werewolf Fur', path: '/sprites/werewolf_fur.png' },
-    { label: "Witch's Herb", path: '/sprites/witch_brew_herb.png' },
+    { label: "Herb", path: '/sprites/witch_brew_herb.png' },
     { label: 'Candy Corn', path: '/sprites/candy_corn.png' },
     { label: 'Bat Wings', path: '/sprites/bat_wing.png' },
     { label: 'Banshee Scream', path: '/sprites/banshee_scream.png' },
@@ -307,6 +334,26 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
           >
             <Sparkles size={15} />
             <span>AI Asset Prompter & Style Guide</span>
+          </button>
+
+          <button
+            onClick={() => { playBloop(1.0); setViewMode('nfc_tags'); }}
+            style={{
+              padding: '0.45rem 0.9rem',
+              borderRadius: '999px',
+              border: 'none',
+              cursor: 'pointer',
+              fontWeight: 700,
+              fontSize: '0.82rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              backgroundColor: viewMode === 'nfc_tags' ? '#39ff14' : 'rgba(255,255,255,0.08)',
+              color: viewMode === 'nfc_tags' ? '#090714' : '#ffffff'
+            }}
+          >
+            <span>📱</span>
+            <span>NFC & QR Code Directory</span>
           </button>
         </div>
 
@@ -622,6 +669,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                   showAdminHelper={false} 
                   showAnswerKey={showAnswerKey}
                   showStaffNotes={showStaffNotes}
+                  baseUrl={scanBaseUrl}
                 />
               </div>
 
@@ -936,6 +984,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                   showAdminHelper={false} 
                   showAnswerKey={showAnswerKey}
                   showStaffNotes={showStaffNotes}
+                  baseUrl={scanBaseUrl}
                 />
               </div>
             ))}
@@ -1811,6 +1860,365 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                   --no text, letters, watermarks, frames, borders, dark background boxes, photorealistic humans, blurry, cropped
                 </code>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* VIEW 8: NFC & QR Code Directory */}
+        {viewMode === 'nfc_tags' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '1080px', margin: '0 auto' }}>
+            {/* Guide & Domain Configuration Banner */}
+            <div className="glass-panel" style={{
+              padding: '1.35rem 1.6rem',
+              borderRadius: '20px',
+              borderLeft: '4px solid #39ff14',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1rem'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                  <span style={{ fontSize: '1.75rem' }}>📱</span>
+                  <div>
+                    <h2 className="font-mystic" style={{ margin: 0, fontSize: '1.4rem', color: '#f8fafc' }}>
+                      NFC & QR CODE DIRECTORY & PROGRAMMER
+                    </h2>
+                    <span style={{ fontSize: '0.82rem', color: '#39ff14', fontWeight: 700 }}>
+                      Pre-program physical NTAG213/215 stickers or download scannable QR codes for wall posters
+                    </span>
+                  </div>
+                </div>
+
+                {/* Batch Actions */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <button
+                    disabled={isDownloadingAllQr}
+                    onClick={async () => {
+                      setIsDownloadingAllQr(true);
+                      playBloop(1.1);
+                      for (const card of cards) {
+                        await downloadCardQrCode(card, scanBaseUrl);
+                        await new Promise(r => setTimeout(r, 200));
+                      }
+                      setIsDownloadingAllQr(false);
+                    }}
+                    style={{
+                      backgroundColor: '#0284c7',
+                      color: '#ffffff',
+                      border: 'none',
+                      borderRadius: '10px',
+                      padding: '0.55rem 1.1rem',
+                      fontWeight: 700,
+                      fontSize: '0.82rem',
+                      cursor: isDownloadingAllQr ? 'wait' : 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                      boxShadow: '0 0 12px rgba(2, 132, 199, 0.4)',
+                      opacity: isDownloadingAllQr ? 0.7 : 1
+                    }}
+                  >
+                    <QrCode size={15} />
+                    <span>{isDownloadingAllQr ? 'Downloading All...' : 'Download All 12 QR Codes (PNG)'}</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      playBloop(1.1);
+                      const allUrls = cards.map(c => `Card #${c.number} (${c.name}): ${scanBaseUrl}/?scan=card-${c.number}`).join('\n');
+                      navigator.clipboard.writeText(allUrls);
+                      setCopiedNfcUrl('all');
+                      setTimeout(() => setCopiedNfcUrl(null), 2500);
+                    }}
+                    style={{
+                      backgroundColor: '#8338ec',
+                      color: '#ffffff',
+                      border: 'none',
+                      borderRadius: '10px',
+                      padding: '0.55rem 1.1rem',
+                      fontWeight: 700,
+                      fontSize: '0.82rem',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                      boxShadow: '0 0 12px rgba(131, 56, 236, 0.4)'
+                    }}
+                  >
+                    <Copy size={15} />
+                    <span>{copiedNfcUrl === 'all' ? '✓ Copied All 12 URLs!' : 'Copy All 12 URLs (Batch)'}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Host / Domain Config Row */}
+              <div style={{
+                backgroundColor: 'rgba(0, 0, 0, 0.45)',
+                borderRadius: '12px',
+                padding: '0.85rem 1rem',
+                border: '1px solid rgba(56, 189, 248, 0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '0.75rem'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: '1 1 300px' }}>
+                  <Globe size={18} color="#38bdf8" />
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#f8fafc' }}>
+                      Scan Host / Domain Address
+                    </span>
+                    <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>
+                      Phones must access this address over office Wi-Fi (use Wi-Fi IP e.g. <code style={{ color: '#38bdf8' }}>http://192.168.x.x:5173</code> instead of localhost)
+                    </span>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: '1 1 350px' }}>
+                  <input
+                    type="text"
+                    value={scanBaseUrl}
+                    onChange={e => setScanBaseUrl(e.target.value.trim())}
+                    placeholder="https://your-domain.com or http://192.168.1.50:5173"
+                    style={{
+                      flex: 1,
+                      backgroundColor: '#0f172a',
+                      border: '1px solid #38bdf8',
+                      borderRadius: '8px',
+                      padding: '6px 12px',
+                      color: '#38bdf8',
+                      fontSize: '0.84rem',
+                      fontFamily: 'monospace'
+                    }}
+                  />
+                  <button
+                    onClick={() => {
+                      playBloop(1.0);
+                      setScanBaseUrl(window.location.origin);
+                    }}
+                    style={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                      color: '#ffffff',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      borderRadius: '8px',
+                      padding: '6px 10px',
+                      fontSize: '0.76rem',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
+                    Auto-Detect
+                  </button>
+                </div>
+              </div>
+
+              {/* Instructions Guide */}
+              <div style={{
+                backgroundColor: 'rgba(0, 0, 0, 0.35)',
+                borderRadius: '12px',
+                padding: '0.85rem 1rem',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                gap: '0.85rem',
+                fontSize: '0.82rem',
+                color: '#cbd5e1'
+              }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+                  <strong style={{ color: '#39ff14' }}>📱 1. NFC Tags (NTAG213 / 215 Stickers)</strong>
+                  <div>• Open free <strong>"NFC Tools"</strong> on iPhone or Android.</div>
+                  <div>• Tap <strong>Write</strong> ➔ <strong>Add a record</strong> ➔ <strong>URL / URI</strong>.</div>
+                  <div>• Paste the card URL below and hold phone to the sticker.</div>
+                  <div>• Stick behind the 📱 icon on each printed poster or station token.</div>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+                  <strong style={{ color: '#38bdf8' }}>📷 2. QR Codes (Zero-Install Camera Scanning)</strong>
+                  <div>• QR codes are automatically embedded on all printed posters!</div>
+                  <div>• Participants can point their phone's native <strong>Camera app</strong> at the QR code.</div>
+                  <div>• Or they can download high-resolution individual PNGs below.</div>
+                  <div>• Tapping the link opens the card and auto-syncs room music.</div>
+                </div>
+              </div>
+            </div>
+
+            {/* List of 12 Cards with URLs & QR Codes */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+              {cards.map(card => {
+                const tagUrl = `${scanBaseUrl}/?scan=card-${card.number}`;
+                const isCopied = copiedNfcUrl === card.id;
+                const qrDataUrl = qrPreviews[card.id];
+
+                return (
+                  <div
+                    key={card.id}
+                    className="glass-panel"
+                    style={{
+                      padding: '0.85rem 1.1rem',
+                      borderRadius: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      flexWrap: 'wrap',
+                      gap: '0.85rem',
+                      border: '1px solid rgba(255, 255, 255, 0.12)'
+                    }}
+                  >
+                    {/* Left: Card Info */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', minWidth: '220px' }}>
+                      <div style={{
+                        width: '44px',
+                        height: '44px',
+                        borderRadius: '10px',
+                        backgroundColor: '#1e1b4b',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        overflow: 'hidden'
+                      }}>
+                        <img src={card.sprite} alt={card.name} style={{ width: '38px', height: '38px', objectFit: 'contain' }} />
+                      </div>
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                          <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#ffbe0b' }}>#{card.number}</span>
+                          <strong style={{ fontSize: '0.95rem', color: '#f8fafc' }}>{card.name}</strong>
+                        </div>
+                        <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                          {card.location || 'Station'} • Letter: <strong style={{ color: '#39ff14' }}>{card.targetLetter}</strong> ({card.riddleAnswer})
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Runes */}
+                    <div style={{ display: 'flex', gap: '4px' }}>
+                      {card.runes.map((r, i) => (
+                        <span
+                          key={i}
+                          style={{
+                            fontSize: '0.7rem',
+                            fontWeight: 700,
+                            padding: '2px 8px',
+                            borderRadius: '999px',
+                            backgroundColor: 'rgba(0,0,0,0.5)',
+                            color: QUESTS[r].color,
+                            border: `1px solid ${QUESTS[r].color}`
+                          }}
+                        >
+                          {r}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* QR Code Thumbnail & Download */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      {qrDataUrl ? (
+                        <div style={{
+                          padding: '2px',
+                          backgroundColor: '#ffffff',
+                          borderRadius: '6px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          border: '1px solid rgba(255, 255, 255, 0.4)'
+                        }}>
+                          <img src={qrDataUrl} alt={`QR for card ${card.number}`} style={{ width: '42px', height: '42px', display: 'block' }} />
+                        </div>
+                      ) : (
+                        <div style={{ width: '42px', height: '42px', backgroundColor: '#334155', borderRadius: '6px' }} />
+                      )}
+
+                      <button
+                        onClick={() => {
+                          playBloop(1.0);
+                          downloadCardQrCode(card, scanBaseUrl);
+                        }}
+                        style={{
+                          backgroundColor: 'rgba(56, 189, 248, 0.15)',
+                          color: '#38bdf8',
+                          border: '1px solid rgba(56, 189, 248, 0.3)',
+                          borderRadius: '8px',
+                          padding: '5px 9px',
+                          fontSize: '0.74rem',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.3rem'
+                        }}
+                      >
+                        <Download size={13} />
+                        <span>QR PNG</span>
+                      </button>
+                    </div>
+
+                    {/* Right: URL & Copy Button & Test Scan */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flex: '1 1 280px', justifyContent: 'flex-end' }}>
+                      <code style={{
+                        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                        padding: '5px 10px',
+                        borderRadius: '8px',
+                        fontSize: '0.75rem',
+                        color: '#38bdf8',
+                        fontFamily: 'monospace',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        maxWidth: '200px'
+                      }}>
+                        {tagUrl}
+                      </code>
+
+                      <button
+                        onClick={() => {
+                          playBloop(1.1);
+                          navigator.clipboard.writeText(tagUrl);
+                          setCopiedNfcUrl(card.id);
+                          setTimeout(() => setCopiedNfcUrl(null), 2000);
+                        }}
+                        style={{
+                          backgroundColor: isCopied ? '#15803d' : 'rgba(255, 255, 255, 0.1)',
+                          color: '#ffffff',
+                          border: isCopied ? '1px solid #39ff14' : '1px solid rgba(255, 255, 255, 0.2)',
+                          borderRadius: '8px',
+                          padding: '5px 10px',
+                          fontSize: '0.75rem',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.3rem'
+                        }}
+                      >
+                        {isCopied ? <Check size={13} color="#39ff14" /> : <Copy size={13} />}
+                        <span>{isCopied ? 'Copied' : 'Copy'}</span>
+                      </button>
+
+                      <a
+                        href={tagUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{
+                          backgroundColor: '#39ff14',
+                          color: '#090714',
+                          textDecoration: 'none',
+                          borderRadius: '8px',
+                          padding: '5px 10px',
+                          fontSize: '0.75rem',
+                          fontWeight: 800,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.3rem',
+                          boxShadow: '0 0 8px rgba(57, 255, 20, 0.3)'
+                        }}
+                      >
+                        <span>Test Scan ➔</span>
+                      </a>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}

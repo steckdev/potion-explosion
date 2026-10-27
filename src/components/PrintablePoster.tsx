@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import type { CardData } from '../types';
 import { QUESTS } from '../data/quests';
+import { getCardQrCode } from '../utils/qrcode';
 
 interface PrintablePosterProps {
   card: CardData;
@@ -8,14 +9,28 @@ interface PrintablePosterProps {
   showAdminHelper?: boolean;
   showAnswerKey?: boolean;
   showStaffNotes?: boolean;
+  baseUrl?: string;
 }
 
 export const PrintablePoster: React.FC<PrintablePosterProps> = ({
   card,
   scale = 1,
   showAnswerKey = false,
-  showStaffNotes = false
+  showStaffNotes = false,
+  baseUrl
 }) => {
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
+
+  useEffect(() => {
+    let isMounted = true;
+    getCardQrCode(card, baseUrl, 240).then(url => {
+      if (isMounted) setQrCodeUrl(url);
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, [card, baseUrl]);
+
   // Get active quests for this card
   const activeQuests = card.runes.map(r => QUESTS[r]).filter(Boolean);
 
@@ -90,8 +105,8 @@ export const PrintablePoster: React.FC<PrintablePosterProps> = ({
             width: '130px'
           }}>
             <div style={{
-              width: '114px',
-              height: '114px',
+              width: '160px',
+              height: '160px',
               borderRadius: '50%',
               backgroundColor: 'transparent',
               filter: `drop-shadow(0 0 12px ${leftRune.color}) drop-shadow(0 4px 8px rgba(0,0,0,0.35))`,
@@ -120,27 +135,6 @@ export const PrintablePoster: React.FC<PrintablePosterProps> = ({
           gap: '4px',
           textAlign: 'center'
         }}>
-          <div style={{
-            fontSize: '0.85rem',
-            fontWeight: 800,
-            letterSpacing: '2px',
-            color: '#78350f',
-            textTransform: 'uppercase'
-          }}>
-            THE GREAT ALCHEMY QUEST
-          </div>
-          <div style={{
-            backgroundColor: '#3d2314',
-            color: '#ffbe0b',
-            padding: '5px 20px',
-            borderRadius: '999px',
-            fontSize: '1.02rem',
-            fontWeight: 900,
-            letterSpacing: '1px',
-            boxShadow: '0 3px 8px rgba(0,0,0,0.2)'
-          }}>
-            CLUE CARD #{card.number}
-          </div>
           {thirdRune && (
             <div style={{
               marginTop: '4px',
@@ -167,8 +161,8 @@ export const PrintablePoster: React.FC<PrintablePosterProps> = ({
             width: '130px'
           }}>
             <div style={{
-              width: '114px',
-              height: '114px',
+              width: '160px',
+              height: '160px',
               borderRadius: '50%',
               backgroundColor: 'transparent',
               filter: `drop-shadow(0 0 12px ${rightRune.color}) drop-shadow(0 4px 8px rgba(0,0,0,0.35))`,
@@ -201,12 +195,12 @@ export const PrintablePoster: React.FC<PrintablePosterProps> = ({
       }}>
         {/* Ingredient Art - Pure transparent, cleanly centered, no box */}
         <div style={{
-          width: '290px',
-          height: '250px',
+          width: '350px',
+          height: '260px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          marginBottom: '0.4rem'
+          marginBottom: '0.35rem'
         }}>
           <img
             src={card.sprite}
@@ -234,12 +228,12 @@ export const PrintablePoster: React.FC<PrintablePosterProps> = ({
           {card.name}
         </h1>
         <div style={{
-          fontSize: '0.95rem',
+          fontSize: '1.75rem',
           fontWeight: 700,
           color: '#78350f',
           marginTop: '3px'
         }}>
-          ✨ Magical Alchemist Ingredient ✨
+          Alchemist Ingredient
         </div>
       </div>
 
@@ -289,6 +283,113 @@ export const PrintablePoster: React.FC<PrintablePosterProps> = ({
             letterSpacing: '0.5px'
           }}>
             ✨ (Take my 1st letter!)
+          </div>
+        </div>
+
+        {/* Explorer's Dual Scan Portal: NFC Tap & QR Code Scan */}
+        <div style={{
+          marginTop: '0.75rem',
+          paddingTop: '0.6rem',
+          borderTop: '1.5px dashed rgba(180, 83, 9, 0.4)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '0.8rem',
+          backgroundColor: 'rgba(255, 255, 255, 0.65)',
+          borderRadius: '12px',
+          padding: '0.5rem 0.9rem',
+          border: '1px solid rgba(180, 83, 9, 0.25)',
+          boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.04)'
+        }}>
+          {/* NFC Tap Side */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.65rem',
+            flex: 1
+          }}>
+            <div style={{
+              width: '44px',
+              height: '44px',
+              borderRadius: '50%',
+              backgroundColor: '#3d2314',
+              color: '#39ff14',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '1.35rem',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.25)',
+              border: '2px solid #b45309',
+              flexShrink: 0
+            }}>
+              📱
+            </div>
+            <div style={{ textAlign: 'left', lineHeight: 1.2 }}>
+              <div style={{ fontSize: '0.84rem', fontWeight: 900, color: '#2d1810', letterSpacing: '0.4px' }}>
+                TAP PHONE (NFC)
+              </div>
+              <div style={{ fontSize: '0.72rem', color: '#78350f', fontWeight: 600 }}>
+                Hold top of phone here to claim
+              </div>
+            </div>
+          </div>
+
+          {/* Central Divider */}
+          <div style={{
+            width: '1px',
+            height: '46px',
+            backgroundColor: 'rgba(180, 83, 9, 0.35)'
+          }} />
+
+          {/* QR Code Side */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.65rem',
+            flex: 1,
+            justifyContent: 'flex-end'
+          }}>
+            <div style={{ textAlign: 'right', lineHeight: 1.2 }}>
+              <div style={{ fontSize: '0.84rem', fontWeight: 900, color: '#2d1810', letterSpacing: '0.4px' }}>
+                SCAN QR CODE
+              </div>
+              <div style={{ fontSize: '0.72rem', color: '#78350f', fontWeight: 600 }}>
+                Point camera to open ingredient
+              </div>
+            </div>
+            {qrCodeUrl ? (
+              <div style={{
+                padding: '2px',
+                backgroundColor: '#ffffff',
+                border: '2px solid #78350f',
+                borderRadius: '6px',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.18)',
+                flexShrink: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <img
+                  src={qrCodeUrl}
+                  alt={`QR code for card ${card.number}`}
+                  style={{ width: '56px', height: '56px', display: 'block' }}
+                />
+              </div>
+            ) : (
+              <div style={{
+                width: '56px',
+                height: '56px',
+                backgroundColor: '#e2e8f0',
+                borderRadius: '6px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '0.65rem',
+                color: '#64748b'
+              }}>
+                QR
+              </div>
+            )}
           </div>
         </div>
 

@@ -16,7 +16,7 @@ export const DEFAULT_CARDS: CardData[] = [
     runes: ['frost', 'moon'],
     targetLetter: 'A',
     riddleAnswer: 'Apple',
-    riddle: 'I grow on a branch, red, golden or green; bob for me gently on this Halloween! What am I? (Take my 1st letter!)',
+    riddle: 'I grow on a branch, red, golden or green; bob for me this Halloween! What am I? (Take my 1st letter!)',
     location: 'Breakroom Kitchen (by the fruit bowl)'
   },
   {
@@ -27,7 +27,7 @@ export const DEFAULT_CARDS: CardData[] = [
     runes: ['frost', 'moon'],
     targetLetter: 'H',
     riddleAnswer: 'Haunted House',
-    riddle: 'Creaky old floorboards and ghosts in the hall, dare you step foot through my cobwebbed front wall? What am I? (Take my 1st letter!)',
+    riddle: 'Creaky old floorboards and ghosts in the hall, dare you step through my cobwebbed walls? What am I? (Take my 1st letter!)',
     location: 'Lobby Reception Desk'
   },
   {
@@ -38,13 +38,13 @@ export const DEFAULT_CARDS: CardData[] = [
     runes: ['frost', 'venom'],
     targetLetter: 'O',
     riddleAnswer: 'Owl',
-    riddle: "Perched high in the oak tree with eyes big and round, I call out 'Whoo-whoo!' without making a sound! What am I? (Take my 1st letter!)",
+    riddle: "Perched high in the tree with eyes big and round, I call out 'Whoo-whoo'. What am I? (Take my 1st letter!)",
     location: 'Window Sill overlooking the courtyard'
   },
   {
     id: 'card-4',
     number: 4,
-    name: "Witch's Brew Herb",
+    name: "Herbs",
     sprite: '/sprites/witch_brew_herb.png',
     runes: ['frost', 'venom'],
     targetLetter: 'W',
@@ -104,7 +104,7 @@ export const DEFAULT_CARDS: CardData[] = [
     runes: ['fire', 'moon'],
     targetLetter: 'R',
     riddleAnswer: 'Raven',
-    riddle: "With feathers of midnight and perched on a bough, I croak 'Nevermore!' as the mist settles now! What am I? (Take my 1st letter!)",
+    riddle: "With feathers of midnight and perched on a limb, I take flight above the land! What am I? (Take my 1st letter!)",
     location: 'Corner Quiet Pod (under the dim lamp)'
   },
   {
@@ -115,7 +115,7 @@ export const DEFAULT_CARDS: CardData[] = [
     runes: ['venom', 'moon'],
     targetLetter: 'D',
     riddleAnswer: 'Dracula',
-    riddle: 'A caped vampire count who can turn to a bat, sleeping by day in his castle and crypt! What am I? (Take my 1st letter!)',
+    riddle: 'A caped vampire count who can turn to a bat, sleeping by day in his castle! What am I? (Take my 1st letter!)',
     location: 'Water Dispenser / Kitchen Sink'
   },
   {
@@ -125,8 +125,8 @@ export const DEFAULT_CARDS: CardData[] = [
     sprite: '/sprites/glow_worms.png',
     runes: ['fire', 'moon'],
     targetLetter: 'I',
-    riddleAnswer: 'Invisible',
-    riddle: 'Drink down a potion and vanish from sight, unseen as you wander through Halloween night! What am I? (Take my 1st letter!)',
+    riddleAnswer: 'Ink',
+    riddle: 'Dark as midnight in a bottle or well, dip a feathered quill to write an ancient spell! What am I? (Take my 1st letter!)',
     location: 'IT Rack / Blinking Server Station'
   },
   {
@@ -137,7 +137,7 @@ export const DEFAULT_CARDS: CardData[] = [
     runes: ['venom', 'moon'],
     targetLetter: 'C',
     riddleAnswer: 'Cauldron',
-    riddle: 'Black iron pot bubbling over the fire, brewing the potions that witches desire! What am I? (Take my 1st letter!)',
+    riddle: 'Black iron pot bubbling over the fire, brewing potions the witches desire! What am I? (Take my 1st letter!)',
     location: 'Library Bookshelf / Game Cabinet'
   }
 ];

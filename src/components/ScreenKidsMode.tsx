@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import type { CardData, RuneType } from '../types';
 import { QUESTS } from '../data/quests';
 import { playBloop, playPoof, playStoneLock } from '../utils/audio';
-import { ArrowLeft, Sparkles, Check, Lightbulb } from 'lucide-react';
+import { ArrowLeft, Sparkles, Check } from 'lucide-react';
 
 interface ScreenKidsModeProps {
   questRune: RuneType;
@@ -24,8 +24,6 @@ export const ScreenKidsMode: React.FC<ScreenKidsModeProps> = ({
   const [wrongAttempts, setWrongAttempts] = useState(0);
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
   const [shakingCardIds, setShakingCardIds] = useState<string[]>([]);
-  const [hintedCardId, setHintedCardId] = useState<string | null>(null);
-
   // Find all cards that actually have this rune (6 cards)
   const matchingCards = useMemo(() => cards.filter(c => c.runes.includes(questRune)), [cards, questRune]);
   const matchingCardIds = useMemo(() => new Set(matchingCards.map(c => c.id)), [matchingCards]);
@@ -43,10 +41,6 @@ export const ScreenKidsMode: React.FC<ScreenKidsModeProps> = ({
       return;
     }
 
-    if (hintedCardId === cardId) {
-      setHintedCardId(null);
-    }
-
     if (selectedCardIds.includes(cardId)) {
       playBloop(0.85);
       setSelectedCardIds(prev => prev.filter(id => id !== cardId));
@@ -60,31 +54,6 @@ export const ScreenKidsMode: React.FC<ScreenKidsModeProps> = ({
       playBloop(1.15);
       setSelectedCardIds(prev => [...prev, cardId]);
       setFeedbackMessage(null);
-    }
-  };
-
-  // Provide a friendly hint
-  const handleGiveHint = () => {
-    playBloop(1.3);
-    const unselectedCorrect = displayCards.filter(
-      c => matchingCardIds.has(c.id) && !selectedCardIds.includes(c.id)
-    );
-
-    if (unselectedCorrect.length > 0) {
-      const hintTarget = unselectedCorrect[0];
-      setHintedCardId(hintTarget.id);
-      setFeedbackMessage(`💡 Hint: The Cauldron needs "${hintTarget.name}" (Card #${hintTarget.number})!`);
-    } else if (selectedCardIds.some(id => !matchingCardIds.has(id))) {
-      // If they have wrong ones selected, tell them which one to remove
-      const wrongSelected = selectedCardIds.find(id => !matchingCardIds.has(id));
-      const wrongCard = displayCards.find(c => c.id === wrongSelected);
-      if (wrongCard) {
-        setShakingCardIds([wrongCard.id]);
-        setTimeout(() => setShakingCardIds([]), 700);
-        setFeedbackMessage(`💡 Hint: "${wrongCard.name}" does not belong in this recipe. Try swapping it out!`);
-      }
-    } else {
-      setFeedbackMessage('✨ All 6 correct ingredients found! Tap Brew Potion!');
     }
   };
 
@@ -116,29 +85,14 @@ export const ScreenKidsMode: React.FC<ScreenKidsModeProps> = ({
         setShakingCardIds([]);
       }, 700);
 
-      // If they picked 3 wrong attempts, give generous alchemist assist
-      if (newWrong >= 3) {
-        // Auto-select remaining correct cards so kids never get stuck!
-        const allCorrectIds = Array.from(matchingCardIds);
-        setSelectedCardIds(allCorrectIds);
-        setLockedCorrectIds(allCorrectIds);
-        setFeedbackMessage('🧒✨ Great effort! The Cauldron revealed all remaining recipe ingredients for you! Tap Brew Now!');
-      } else {
-        // Find 1 more right ingredient to hint each time!
-        const remainingCorrect = displayCards.filter(
-          c => matchingCardIds.has(c.id) && !updatedLocked.includes(c.id)
+      if (correctIds.length === 0) {
+        setFeedbackMessage(
+          `🧪 The cauldron fizzled! 0 of those ingredients match your ${quest.totemName} recipe. Look around the office for posters with the ${quest.totemName} rune!`
         );
-        const nextHint = remainingCorrect[0];
-        if (nextHint) {
-          setHintedCardId(nextHint.id);
-          setFeedbackMessage(
-            `✨ Good try (${newWrong}/3)! Locked ${correctIds.length} correct. Hint: Add "${nextHint.name}"!`
-          );
-        } else {
-          setFeedbackMessage(
-            `✨ Locked in ${correctIds.length} cards. Swap the wrong ones to finish brewing!`
-          );
-        }
+      } else {
+        setFeedbackMessage(
+          `🧪 Bubbling! Locked ${correctIds.length} of 6 correct ingredients! Keep searching for the remaining ${6 - correctIds.length}!`
+        );
       }
     }
   };
@@ -207,31 +161,8 @@ export const ScreenKidsMode: React.FC<ScreenKidsModeProps> = ({
           </div>
         </div>
 
-        {/* Controls: HINT Button & Progress Tracker */}
+        {/* Progress Tracker */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          {/* Dedicated HINT Button */}
-          <button
-            onClick={handleGiveHint}
-            style={{
-              background: 'linear-gradient(135deg, rgba(255, 190, 11, 0.25), rgba(217, 119, 6, 0.25))',
-              border: '1px solid #ffbe0b',
-              color: '#ffbe0b',
-              padding: '0.45rem 0.85rem',
-              borderRadius: '999px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.35rem',
-              fontSize: '0.82rem',
-              fontWeight: 800,
-              boxShadow: '0 0 12px rgba(255, 190, 11, 0.35)',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            <Lightbulb size={16} />
-            <span>💡 NEED A HINT?</span>
-          </button>
-
           {/* 6 Potion Droplet Tracker */}
           <div style={{
             display: 'flex',
@@ -298,7 +229,6 @@ export const ScreenKidsMode: React.FC<ScreenKidsModeProps> = ({
           const isSelected = selectedCardIds.includes(card.id);
           const isLocked = lockedCorrectIds.includes(card.id);
           const isShaking = shakingCardIds.includes(card.id);
-          const isHinted = hintedCardId === card.id;
 
           return (
             <div
@@ -312,11 +242,9 @@ export const ScreenKidsMode: React.FC<ScreenKidsModeProps> = ({
                   : 'linear-gradient(180deg, rgba(25, 20, 48, 0.8), rgba(15, 11, 30, 0.8))',
                 border: isLocked
                   ? '3px solid #39ff14'
-                  : isHinted
-                    ? '3px solid #ffbe0b'
-                    : isSelected 
-                      ? `3px solid ${quest.color}` 
-                      : '1px solid rgba(255, 255, 255, 0.12)',
+                  : isSelected 
+                    ? `3px solid ${quest.color}` 
+                    : '1px solid rgba(255, 255, 255, 0.12)',
                 borderRadius: '16px',
                 padding: '0.65rem 0.5rem 0.5rem 0.5rem',
                 display: 'flex',
@@ -328,13 +256,10 @@ export const ScreenKidsMode: React.FC<ScreenKidsModeProps> = ({
                 cursor: isLocked ? 'default' : 'pointer',
                 boxShadow: isLocked
                   ? '0 0 20px rgba(57, 255, 20, 0.5)'
-                  : isHinted
-                    ? '0 0 22px rgba(255, 190, 11, 0.7)'
-                    : isSelected 
-                      ? `0 10px 25px rgba(0, 0, 0, 0.5), 0 0 16px ${quest.glowColor}` 
-                      : '0 4px 12px rgba(0, 0, 0, 0.3)',
-                overflow: 'hidden',
-                animation: isHinted ? 'pulseGlow 1.5s infinite ease-in-out' : 'none'
+                  : isSelected 
+                    ? `0 10px 25px rgba(0, 0, 0, 0.5), 0 0 16px ${quest.glowColor}` 
+                    : '0 4px 12px rgba(0, 0, 0, 0.3)',
+                overflow: 'hidden'
               }}
             >
               {/* Checkmark badge */}
@@ -421,12 +346,12 @@ export const ScreenKidsMode: React.FC<ScreenKidsModeProps> = ({
               {/* Status footer */}
               <div style={{
                 fontSize: '0.68rem',
-                color: isLocked ? '#39ff14' : isHinted ? '#ffbe0b' : isSelected ? quest.color : '#94a3b8',
+                color: isLocked ? '#39ff14' : isSelected ? quest.color : '#94a3b8',
                 fontWeight: 700,
                 marginTop: 'auto',
                 letterSpacing: '0.5px'
               }}>
-                {isLocked ? '✓ RECIPE LOCKED' : isHinted ? '💡 HINT RECIPE' : isSelected ? 'SELECTED' : 'Tap to Pick'}
+                {isLocked ? '✓ RECIPE LOCKED' : isSelected ? 'SELECTED' : 'Tap to Pick'}
               </div>
             </div>
           );

@@ -10,6 +10,8 @@ interface HeaderProps {
   onToggleMute: () => void;
   onOpenHelp: () => void;
   onHome: () => void;
+  collectedCount?: number;
+  onOpenSatchel?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -18,7 +20,9 @@ export const Header: React.FC<HeaderProps> = ({
   isMuted: _isMuted,
   onToggleMute,
   onOpenHelp,
-  onHome
+  onHome,
+  collectedCount = 0,
+  onOpenSatchel
 }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [fullscreenToast, setFullscreenToast] = useState<string | null>(null);
@@ -130,6 +134,41 @@ export const Header: React.FC<HeaderProps> = ({
         </button>
       )}
 
+      {/* Floating Satchel Tab in Full Screen */}
+      {isFullscreen && onOpenSatchel && (
+        <button
+          onClick={() => {
+            playBloop(1.1);
+            onOpenSatchel();
+          }}
+          className="no-print"
+          style={{
+            position: 'fixed',
+            top: '12px',
+            right: '155px',
+            zIndex: 1000,
+            backgroundColor: 'rgba(13, 10, 26, 0.65)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            border: collectedCount > 0 ? '1px solid #39ff14' : '1px solid rgba(255, 255, 255, 0.18)',
+            color: '#e2e8f0',
+            borderRadius: '999px',
+            padding: '6px 14px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.45rem',
+            fontSize: '0.78rem',
+            fontWeight: 700,
+            cursor: 'pointer',
+            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.5)'
+          }}
+          title="Open Alchemist's Satchel"
+        >
+          <span>🎒</span>
+          <span>Satchel ({collectedCount}/12)</span>
+        </button>
+      )}
+
       {/* Main Top Header Bar (Completely Hidden on Full Screen) */}
       {!isFullscreen && (
         <header className="no-print glass-panel" style={{
@@ -192,6 +231,49 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Action Controls */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+        {/* Satchel Button */}
+        {onOpenSatchel && (
+          <button
+            onClick={() => {
+              playBloop(1.1);
+              onOpenSatchel();
+            }}
+            title="Open Alchemist's Satchel (Your Phone NFC Scanned Tokens)"
+            style={{
+              background: collectedCount > 0
+                ? 'linear-gradient(135deg, rgba(131, 56, 236, 0.45) 0%, rgba(57, 255, 20, 0.25) 100%)'
+                : 'rgba(255, 255, 255, 0.08)',
+              border: collectedCount > 0 ? '1px solid #39ff14' : '1px solid rgba(255, 255, 255, 0.15)',
+              color: '#ffffff',
+              padding: '0.45rem 0.8rem',
+              borderRadius: '999px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              fontSize: '0.82rem',
+              fontWeight: 700,
+              boxShadow: collectedCount > 0 ? '0 0 12px rgba(57, 255, 20, 0.3)' : 'none',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.16)'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = collectedCount > 0 ? 'rgba(131, 56, 236, 0.45)' : 'rgba(255, 255, 255, 0.08)'}
+          >
+            <span style={{ fontSize: '1rem' }}>🎒</span>
+            <span style={{ display: 'inline' }}>Satchel</span>
+            <span style={{
+              backgroundColor: collectedCount > 0 ? '#39ff14' : 'rgba(255, 255, 255, 0.2)',
+              color: '#090714',
+              borderRadius: '999px',
+              padding: '1px 6px',
+              fontSize: '0.72rem',
+              fontWeight: 900
+            }}>
+              {collectedCount}/12
+            </span>
+          </button>
+        )}
+
         {/* Fullscreen Toggle */}
         <button
           onClick={toggleFullscreen}

@@ -41,7 +41,7 @@ Card # Visual Ingredient (For Kids) Riddle Answer & Target Letter (For Adults) R
 3 Werewolf Fur Darkness \rightarrow D 🔴 Fire (SPIDER) + 🔵 Frost (SHADOW) + 🟢 Venom (POWDER) 3 Runes
 4 Witch's Brew Herb Eyeball \rightarrow E 🔴 Fire (SPIDER) + 🟢 Venom (POWDER) 2 Runes
 5 Candy Corn Haunted House \rightarrow H 🔵 Frost (SHADOW) + 🟣 Moon (CHARMS) 2 Runes
-6 Bat Wing Invisible \rightarrow I 🔴 Fire (SPIDER) + (or 🟣 Moon if using MYTHIC) 1–2 Runes
+6 Bat Wing Ink \rightarrow I 🔴 Fire (SPIDER) + (or 🟣 Moon if using MYTHIC) 1–2 Runes
 7 Banshee Scream Mummy \rightarrow M 🟣 Moon (CHARMS) 1–2 Runes
 8 Pumpkin Seeds Owl \rightarrow O 🔵 Frost (SHADOW) + 🟢 Venom (POWDER) 2 Runes
 9 Spider Venom Pumpkin \rightarrow P 🔴 Fire (SPIDER) + 🟢 Venom (POWDER) 2 Runes
@@ -125,7 +125,7 @@ Wall Card # Kids' Ingredient Picture Adults' Riddle Answer & 1st Letter Rune Bad
 3 Werewolf Fur Darkness \rightarrow D 🔴 Fire (SPIDER) 🟣 Moon (CANDLE)
 4 Witch's Brew Herb Eyeball \rightarrow E 🔴 Fire (SPIDER) 🟣 Moon (CANDLE)
 5 Candy Corn Haunted House \rightarrow H 🔵 Frost (SHADOW / HORNS) 🟢 Venom (CIPHER)
-6 Bat Wing Invisible \rightarrow I 🔴 Fire (SPIDER) 🟢 Venom (CIPHER)
+6 Bat Wing Ink \rightarrow I 🔴 Fire (SPIDER) 🟢 Venom (CIPHER)
 7 Banshee Scream Lantern \rightarrow L 🔵 Frost (SHROUD / CHILLS) 🟣 Moon (CANDLE)
 8 Pumpkin Seeds Nightmare \rightarrow N 🔵 Frost (HORNED / SHADON) 🟣 Moon (CANDLE)
 9 Spider Venom Pumpkin \rightarrow P 🔴 Fire (SPIDER) 🟢 Venom (CIPHER)

@@ -11,35 +11,6 @@ interface ScreenAdultsModeProps {
   onWin: (attempts: number, purity: number) => void;
 }
 
-interface QuestHintData {
-  title: string;
-  wordMeaning: string;
-  riddleTip: string;
-}
-
-const QUEST_HINTS: Record<RuneType, QuestHintData> = {
-  fire: {
-    title: 'Crimson Fire Torch Riddle Clue',
-    wordMeaning: 'An eight-legged web spinner lurking in dusty corners (6 letters).',
-    riddleTip: 'Check the first letters of your red torch cards: S-P-I-D-E-R!'
-  },
-  frost: {
-    title: 'Glacial Frost Crystal Riddle Clue',
-    wordMeaning: 'A dark silhouette cast by light that mimics your every move (6 letters).',
-    riddleTip: 'Check the first letters of your blue crystal cards: S-H-A-D-O-W!'
-  },
-  venom: {
-    title: 'Toxic Venom Leaf Riddle Clue',
-    wordMeaning: 'Finely ground alchemical dust or crushed reagent mixed in cauldrons (6 letters).',
-    riddleTip: 'Check the first letters of your green leaf cards: P-O-W-D-E-R!'
-  },
-  moon: {
-    title: 'Mystic Shadow Moon Riddle Clue',
-    wordMeaning: 'Spoken incantations, magical enchantments, or lucky amulets (6 letters).',
-    riddleTip: 'Check the first letters of your purple moon cards: C-H-A-R-M-S!'
-  }
-};
-
 export const ScreenAdultsMode: React.FC<ScreenAdultsModeProps> = ({
   questRune,
   cards,
@@ -48,14 +19,12 @@ export const ScreenAdultsMode: React.FC<ScreenAdultsModeProps> = ({
 }) => {
   const quest = QUESTS[questRune];
   const targetWord = quest.secretWord.toUpperCase(); // 6 letters (e.g. SPIDER, SHADOW, etc.)
-  const currentHint = QUEST_HINTS[questRune];
 
   // Cards that carry this rune in the office
   const questCards = cards.filter(c => c.runes.includes(questRune));
 
   // Game state
   const [attempts, setAttempts] = useState(1);
-  const [failedAttempts, setFailedAttempts] = useState(0);
   const [cursorIndex, setCursorIndex] = useState(0);
   const [purity, setPurity] = useState(100);
   
@@ -255,9 +224,6 @@ export const ScreenAdultsMode: React.FC<ScreenAdultsModeProps> = ({
       }, 700);
       return;
     }
-
-    // Failed attempt tracked here
-    setFailedAttempts(f => f + 1);
 
     // Audio feedback for partial result
     if (greenCount > Object.keys(lockedSlots).length) {
@@ -547,7 +513,7 @@ export const ScreenAdultsMode: React.FC<ScreenAdultsModeProps> = ({
             marginTop: '0.2rem'
           }}>
             <Sparkles size={14} />
-            <span>Confirmed Riddle Letters Found:</span>
+            <span>Confirmed Letters in Word:</span>
             <div style={{ display: 'flex', gap: '4px', fontWeight: 800 }}>
               {Array.from(discoveredLetters).sort().map(ch => (
                 <span
@@ -565,113 +531,6 @@ export const ScreenAdultsMode: React.FC<ScreenAdultsModeProps> = ({
             </div>
           </div>
         )}
-
-        {/* Arch-Mage Alchemical Clue / Hint Banner */}
-        {(() => {
-          const firstMissingSlot = [0, 1, 2, 3, 4, 5].find(i => !lockedSlots[i]) ?? -1;
-
-          if (failedAttempts >= 2) {
-            return (
-              <div className="glass-panel" style={{
-                width: '100%',
-                maxWidth: '750px',
-                padding: '0.85rem 1.25rem',
-                borderRadius: '16px',
-                border: '2px solid #f59e0b',
-                background: 'linear-gradient(135deg, rgba(69, 26, 3, 0.88), rgba(28, 18, 48, 0.94))',
-                boxShadow: '0 0 25px rgba(245, 158, 11, 0.35)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.5rem',
-                marginTop: '0.4rem'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <Sparkles size={18} color="#ffbe0b" />
-                    <span className="font-mystic" style={{ fontSize: '0.95rem', color: '#ffbe0b', fontWeight: 800, letterSpacing: '0.5px' }}>
-                      ✨ ARCH-MAGE HINT UNLOCKED (AFTER 2 FAILED CASTS)
-                    </span>
-                  </div>
-                  <span style={{ fontSize: '0.72rem', color: '#fde68a', backgroundColor: 'rgba(245, 158, 11, 0.25)', padding: '2px 8px', borderRadius: '999px', fontWeight: 700 }}>
-                    Attempt #{attempts} • {failedAttempts} Failed
-                  </span>
-                </div>
-
-                <div style={{ fontSize: '0.92rem', color: '#f8fafc', fontStyle: 'italic', lineHeight: 1.4 }}>
-                  "{currentHint.wordMeaning}"
-                </div>
-
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  flexWrap: 'wrap',
-                  gap: '0.5rem',
-                  borderTop: '1px solid rgba(255, 255, 255, 0.12)',
-                  paddingTop: '0.45rem'
-                }}>
-                  <div style={{ fontSize: '0.78rem', color: '#fbbf24' }}>
-                    💡 <strong>Clue:</strong> {currentHint.riddleTip}
-                  </div>
-
-                  {firstMissingSlot !== -1 && (
-                    <button
-                      onClick={() => {
-                        playStoneLock();
-                        const missingLetter = targetWord[firstMissingSlot];
-                        setCurrentSlots(prev => {
-                          const next = [...prev];
-                          next[firstMissingSlot] = missingLetter;
-                          return next;
-                        });
-                        setLockedSlots(prev => ({
-                          ...prev,
-                          [firstMissingSlot]: missingLetter
-                        }));
-                        const nextMissing = [0, 1, 2, 3, 4, 5].find(i => i > firstMissingSlot && !lockedSlots[i]) ?? 0;
-                        setCursorIndex(nextMissing);
-                      }}
-                      style={{
-                        background: 'linear-gradient(135deg, #10b981, #059669)',
-                        border: 'none',
-                        color: '#ffffff',
-                        borderRadius: '8px',
-                        padding: '4px 12px',
-                        fontSize: '0.75rem',
-                        fontWeight: 700,
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.35rem',
-                        boxShadow: '0 2px 8px rgba(16, 185, 129, 0.4)'
-                      }}
-                    >
-                      <span>✨ Auto-Lock Slot #{firstMissingSlot + 1} ({targetWord[firstMissingSlot]})</span>
-                    </button>
-                  )}
-                </div>
-              </div>
-            );
-          }
-
-          return (
-            <div style={{
-              fontSize: '0.75rem',
-              color: '#94a3b8',
-              textAlign: 'center',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.4rem',
-              marginTop: '0.2rem'
-            }}>
-              <Sparkles size={12} color="#f59e0b" />
-              <span>
-                Arch-Mage Riddle Clue unlocks automatically after 2 failed attempts ({failedAttempts}/2 failed)
-              </span>
-            </div>
-          );
-        })()}
       </div>
 
       {/* Reference Card Strip (Clean 6-Card Grid Aligned with Slots & Keyboard) */}

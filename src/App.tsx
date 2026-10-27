@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { CardData, GameMode, RuneType, ScreenState } from './types';
-import { getStoredCards, saveStoredCards } from './utils/storage';
+import { getStoredCards, saveStoredCards, getScannedCardIds, addScannedCardId, clearScannedCardIds } from './utils/storage';
+import { findCardFromScanQuery, startWebNfcScan, isWebNfcSupported } from './utils/nfc';
 import { Header } from './components/Header';
 import { ScreenHub } from './components/ScreenHub';
 import { ScreenKidsMode } from './components/ScreenKidsMode';
@@ -8,6 +9,8 @@ import { ScreenAdultsMode } from './components/ScreenAdultsMode';
 import { ScreenVictory } from './components/ScreenVictory';
 import { AdminPosterStudio } from './components/AdminPosterStudio';
 import { RulesModal } from './components/RulesModal';
+import { NfcScanClaimModal } from './components/NfcScanClaimModal';
+import { SatchelModal } from './components/SatchelModal';
 import { playMusic } from './utils/audio';
 
 export const App: React.FC = () => {
@@ -25,6 +28,11 @@ export const App: React.FC = () => {
   const [selectedQuestRune, setSelectedQuestRune] = useState<RuneType | null>(null);
   const [selectedMode, setSelectedMode] = useState<GameMode>('kids');
 
+  // Phone NFC Card Scans stored in Cookies with LocalStorage backup
+  const [scannedCardIds, setScannedCardIds] = useState<string[]>(() => getScannedCardIds());
+  const [nfcTargetCard, setNfcTargetCard] = useState<CardData | null>(null);
+  const [isSatchelOpen, setIsSatchelOpen] = useState(false);
+
   // Victory stats
   const [victoryStats, setVictoryStats] = useState({ attempts: 1, purity: 100 });
 
@@ -38,6 +46,47 @@ export const App: React.FC = () => {
   useEffect(() => {
     playMusic().catch(() => {});
   }, []);
+
+  // Check URL search parameters for pre-programmed NFC scans (e.g. ?scan=card-11 or ?nfc=11)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const scanQuery = params.get('scan') ||
+                      params.get('nfc') ||
+                      params.get('claim') ||
+                      params.get('token') ||
+                      params.get('card');
+
+    if (scanQuery) {
+      const matchedCard = findCardFromScanQuery(scanQuery, cards);
+      if (matchedCard) {
+        setNfcTargetCard(matchedCard);
+
+        // Clean query parameter from URL so browser refresh doesn't trigger again
+        const cleanUrl = new URL(window.location.href);
+        ['scan', 'nfc', 'claim', 'token', 'card'].forEach(p => cleanUrl.searchParams.delete(p));
+        window.history.replaceState({}, '', cleanUrl.toString());
+      }
+    }
+  }, [cards]);
+
+  // Background Web NFC Listener (for Android Chrome or supporting browsers)
+  useEffect(() => {
+    let stopNfc: (() => void) | null = null;
+    if (isWebNfcSupported()) {
+      startWebNfcScan((detectedQuery) => {
+        const matched = findCardFromScanQuery(detectedQuery, cards);
+        if (matched) {
+          setNfcTargetCard(matched);
+        }
+      }).then(cleanup => {
+        stopNfc = cleanup;
+      }).catch(() => {});
+    }
+
+    return () => {
+      if (stopNfc) stopNfc();
+    };
+  }, [cards]);
 
   // Sync admin state with URL query param
   const handleToggleAdmin = () => {
@@ -75,6 +124,31 @@ export const App: React.FC = () => {
   const handleResetToHub = () => {
     setCurrentScreen('hub');
     setSelectedQuestRune(null);
+    if (!isMuted) {
+      playMusic().catch(() => {});
+    }
+  };
+
+  // NFC & Satchel handlers
+  const handleNfcClaim = (card: CardData) => {
+    const result = addScannedCardId(card.id);
+    setScannedCardIds(result.collection);
+  };
+
+  const handleClearCollection = () => {
+    clearScannedCardIds();
+    setScannedCardIds([]);
+  };
+
+  const handleSimulateScan = (card: CardData) => {
+    setNfcTargetCard(card);
+  };
+
+  const handleTriggerVictoryFromSatchel = (rune: RuneType) => {
+    setSelectedQuestRune(rune);
+    setSelectedMode('kids');
+    setVictoryStats({ attempts: 1, purity: 100 });
+    setCurrentScreen('victory');
   };
 
   return (
@@ -87,6 +161,8 @@ export const App: React.FC = () => {
         onToggleMute={() => setIsMuted(m => !m)}
         onOpenHelp={() => setIsHelpOpen(true)}
         onHome={handleResetToHub}
+        collectedCount={scannedCardIds.length}
+        onOpenSatchel={() => setIsSatchelOpen(true)}
       />
 
       {/* Main View Area */}
@@ -109,6 +185,8 @@ export const App: React.FC = () => {
                 onSelectQuest={handleSelectQuest}
                 selectedMode={selectedMode}
                 onModeChange={setSelectedMode}
+                collectedCount={scannedCardIds.length}
+                onOpenSatchel={() => setIsSatchelOpen(true)}
               />
             )}
 
@@ -143,10 +221,29 @@ export const App: React.FC = () => {
         )}
       </main>
 
-
-
       {/* Rules Modal */}
       <RulesModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
+
+      {/* NFC Scan & Hold-to-Claim Modal */}
+      <NfcScanClaimModal
+        card={nfcTargetCard}
+        isOpen={!!nfcTargetCard}
+        isAlreadyClaimed={nfcTargetCard ? scannedCardIds.includes(nfcTargetCard.id) : false}
+        onClaim={handleNfcClaim}
+        onClose={() => setNfcTargetCard(null)}
+        onOpenSatchel={() => setIsSatchelOpen(true)}
+      />
+
+      {/* Phone Alchemist's Satchel Modal */}
+      <SatchelModal
+        isOpen={isSatchelOpen}
+        cards={cards}
+        scannedCardIds={scannedCardIds}
+        onClose={() => setIsSatchelOpen(false)}
+        onClearCollection={handleClearCollection}
+        onSimulateScan={handleSimulateScan}
+        onTriggerVictory={handleTriggerVictoryFromSatchel}
+      />
     </div>
   );
 };

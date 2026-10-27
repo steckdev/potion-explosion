@@ -198,15 +198,160 @@ function setupUnlockAudioOnFirstGesture() {
   window.addEventListener('keydown', handleFirstGesture, { once: true });
 }
 
+// -------------------------------------------------------------
+// Time-Synchronized Room Audio Engine
+// Keeps all participant phones in the office playing the exact same track
+// and beat in sync, with periodic server time calibration and screen-off pausing.
+// -------------------------------------------------------------
+
+export interface SyncedTrackInfo {
+  id: string;
+  durationSec: number;
+}
+
+export const SYNCED_TRACK_SCHEDULE: SyncedTrackInfo[] = [
+  { id: 'silver_mortar', durationSec: 182 },
+  { id: 'starlight', durationSec: 173.4 },
+  { id: 'lantern_grove', durationSec: 177.3 },
+  { id: 'midnight_potion', durationSec: 175.3 }
+];
+
+export const TOTAL_CYCLE_DURATION_SEC = SYNCED_TRACK_SCHEDULE.reduce((sum, t) => sum + t.durationSec, 0); // ~708s
+
+let serverTimeOffsetMs = 0;
+let wasPlayingBeforeSleep = false;
+
+/**
+ * Calibrate device clock offset with HTTP server Date header every 60 seconds.
+ */
+export async function calibrateServerTime(): Promise<void> {
+  if (typeof window === 'undefined') return;
+  try {
+    const t0 = performance.now();
+    const res = await fetch(window.location.href, { method: 'HEAD', cache: 'no-store' });
+    const dateHeader = res.headers.get('date');
+    if (dateHeader) {
+      const serverTime = new Date(dateHeader).getTime();
+      const roundTripMs = performance.now() - t0;
+      serverTimeOffsetMs = (serverTime + roundTripMs / 2) - Date.now();
+      console.debug('Calibrated server time offset:', serverTimeOffsetMs, 'ms');
+    }
+  } catch {
+    // Fallback to local system clock Date.now()
+  }
+}
+
+/**
+ * Calculates which track and exact second offset all devices in the room should be playing.
+ */
+export function getRoomSynchronizedTarget(): { trackId: string; offsetSec: number } {
+  const currentEpochSec = (Date.now() + serverTimeOffsetMs) / 1000;
+  let cyclePos = currentEpochSec % TOTAL_CYCLE_DURATION_SEC;
+  if (cyclePos < 0) cyclePos += TOTAL_CYCLE_DURATION_SEC;
+
+  let accumulated = 0;
+  for (const track of SYNCED_TRACK_SCHEDULE) {
+    if (cyclePos < accumulated + track.durationSec) {
+      return {
+        trackId: track.id,
+        offsetSec: Math.max(0, cyclePos - accumulated)
+      };
+    }
+    accumulated += track.durationSec;
+  }
+  return { trackId: SYNCED_TRACK_SCHEDULE[0].id, offsetSec: 0 };
+}
+
+/**
+ * Trues up playback to the global room clock, adjusting current track or seeking if drifted > 1.8s
+ */
+export async function syncMusicWithRoomClock(): Promise<void> {
+  if (!audioState.musicEnabled || audioState.isMuted) return;
+
+  const audio = getBgAudio();
+  const target = getRoomSynchronizedTarget();
+  const targetTrack = MUSIC_TRACKS.find(t => t.id === target.trackId) || MUSIC_TRACKS[0];
+
+  // If wrong track is loaded, switch track and seek
+  if (!audio.src.endsWith(targetTrack.src)) {
+    audio.src = targetTrack.src;
+    audio.load();
+    audioState.currentTrackId = targetTrack.id;
+
+    audio.addEventListener('loadedmetadata', function onLoaded() {
+      audio.removeEventListener('loadedmetadata', onLoaded);
+      audio.currentTime = target.offsetSec;
+      audio.play().catch(() => {});
+    }, { once: true });
+
+    audio.volume = audioState.isMuted ? 0 : audioState.musicVolume;
+    try {
+      await audio.play();
+      audioState.isPlayingMusic = true;
+    } catch {}
+    notifyStateChanged();
+    return;
+  }
+
+  // Same track: check drift
+  const drift = Math.abs(audio.currentTime - target.offsetSec);
+  if (drift > 1.8) {
+    console.debug(`Trueing up audio drift: ${drift.toFixed(2)}s`);
+    audio.currentTime = target.offsetSec;
+  }
+
+  if (audio.paused) {
+    try {
+      await audio.play();
+      audioState.isPlayingMusic = true;
+      notifyStateChanged();
+    } catch {}
+  }
+}
+
 // Immediate autoplay attempt when script loads
 if (typeof window !== 'undefined') {
   setupUnlockAudioOnFirstGesture();
+
+  // Screen-off & Phone sleep listener: Stop audio when phone turns off or locks!
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      // Screen turned off, phone locked, or user switched apps
+      if (audioState.isPlayingMusic) {
+        wasPlayingBeforeSleep = true;
+        pauseMusic();
+      }
+    } else {
+      // Screen turned back on, user unlocked phone -> true up with room clock!
+      if (wasPlayingBeforeSleep && audioState.musicEnabled && !audioState.isMuted) {
+        syncMusicWithRoomClock().catch(() => {});
+        wasPlayingBeforeSleep = false;
+      }
+    }
+  });
+
+  window.addEventListener('pagehide', () => {
+    pauseMusic();
+  });
+
+  // Re-calibrate server time every 60 seconds
+  setInterval(() => {
+    calibrateServerTime().catch(() => {});
+  }, 60000);
+
+  // Periodic drift check every 20 seconds while music is active
+  setInterval(() => {
+    if (audioState.isPlayingMusic && !document.hidden) {
+      syncMusicWithRoomClock().catch(() => {});
+    }
+  }, 20000);
+
+  // Initial server calibration on boot
+  calibrateServerTime().catch(() => {});
+
   // Attempt immediate playback on document ready / script execution
   const attemptAutoplay = () => {
-    playMusic().catch(() => {
-      // Browser autoplay policy requires user interaction first;
-      // setupUnlockAudioOnFirstGesture ensures it begins on the first touch/click.
-    });
+    playMusic().catch(() => {});
   };
 
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
@@ -217,17 +362,36 @@ if (typeof window !== 'undefined') {
   }
 }
 
-export async function playMusic(trackId?: string): Promise<void> {
+export async function playMusic(trackId?: string, forceManual = false): Promise<void> {
   const audio = getBgAudio();
-  const targetId = trackId || audioState.currentTrackId;
-  const track = MUSIC_TRACKS.find(t => t.id === targetId) || MUSIC_TRACKS[0];
-
   audioState.musicEnabled = true;
-  audioState.currentTrackId = track.id;
 
-  if (!audio.src.endsWith(track.src)) {
-    audio.src = track.src;
-    audio.load();
+  if (!forceManual) {
+    // Synchronize to the room's time-of-day clock!
+    const target = getRoomSynchronizedTarget();
+    const targetId = trackId || target.trackId;
+    const track = MUSIC_TRACKS.find(t => t.id === targetId) || MUSIC_TRACKS[0];
+    audioState.currentTrackId = track.id;
+
+    if (!audio.src.endsWith(track.src)) {
+      audio.src = track.src;
+      audio.load();
+      audio.currentTime = target.offsetSec;
+    } else {
+      const drift = Math.abs(audio.currentTime - target.offsetSec);
+      if (drift > 1.8) {
+        audio.currentTime = target.offsetSec;
+      }
+    }
+  } else {
+    // User picked a specific track manually in settings
+    const targetId = trackId || audioState.currentTrackId;
+    const track = MUSIC_TRACKS.find(t => t.id === targetId) || MUSIC_TRACKS[0];
+    audioState.currentTrackId = track.id;
+    if (!audio.src.endsWith(track.src)) {
+      audio.src = track.src;
+      audio.load();
+    }
   }
 
   audio.volume = audioState.isMuted ? 0 : audioState.musicVolume;
@@ -243,6 +407,18 @@ export async function playMusic(trackId?: string): Promise<void> {
 }
 
 export function pauseMusic(): void {
+  if (bgAudioElement) {
+    bgAudioElement.pause();
+  }
+  audioState.isPlayingMusic = false;
+  notifyStateChanged();
+}
+
+/**
+ * Stops background music when the player reaches the Victory screen or claims their prize,
+ * so the celebratory sounds and Quest Master interaction are not interrupted by music.
+ */
+export function stopMusicForVictory(): void {
   if (bgAudioElement) {
     bgAudioElement.pause();
   }
@@ -535,3 +711,64 @@ export function playVictoryFanfare() {
     console.debug('Audio error', e);
   }
 }
+
+// 7. NFC Attunement Hum (plays during press-and-hold binding)
+export function playNfcHum(progressRatio = 0.5) {
+  const effectiveGain = getEffectiveSfxGain(0.22);
+  if (effectiveGain <= 0) return;
+
+  try {
+    const ctx = getAudioContext();
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sine';
+    const startFreq = 220 + progressRatio * 320;
+    osc.frequency.setValueAtTime(startFreq, now);
+    osc.frequency.exponentialRampToValueAtTime(startFreq + 35, now + 0.15);
+
+    gain.gain.setValueAtTime(effectiveGain * 0.4, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.18);
+  } catch (e) {
+    console.debug('Audio error', e);
+  }
+}
+
+// 8. NFC Claim Success Fanfare (plays upon successful hold-to-claim completion)
+export function playNfcClaimSuccess() {
+  const effectiveGain = getEffectiveSfxGain(0.35);
+  if (effectiveGain <= 0) return;
+
+  try {
+    const ctx = getAudioContext();
+    const now = ctx.currentTime;
+
+    // Harmonious shimmering chord: F5 -> A5 -> C6 -> E6
+    const chord = [698.46, 880.00, 1046.50, 1318.51];
+    chord.forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const noteTime = now + idx * 0.07;
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, noteTime);
+
+      gain.gain.setValueAtTime(effectiveGain, noteTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, noteTime + 0.6);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(noteTime);
+      osc.stop(noteTime + 0.65);
+    });
+  } catch (e) {
+    console.debug('Audio error', e);
+  }
+}
+

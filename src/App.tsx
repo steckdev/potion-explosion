@@ -42,11 +42,6 @@ export const App: React.FC = () => {
   // Rules modal state
   const [isHelpOpen, setIsHelpOpen] = useState(false);
 
-  // Start background music automatically on load
-  useEffect(() => {
-    playMusic().catch(() => {});
-  }, []);
-
   // Check URL search parameters for pre-programmed NFC scans (e.g. ?scan=card-11 or ?nfc=11)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -140,7 +135,7 @@ export const App: React.FC = () => {
     setScannedCardIds([]);
   };
 
-  const handleSimulateScan = (card: CardData) => {
+  const handleCardScanned = (card: CardData) => {
     setNfcTargetCard(card);
   };
 
@@ -241,7 +236,7 @@ export const App: React.FC = () => {
         scannedCardIds={scannedCardIds}
         onClose={() => setIsSatchelOpen(false)}
         onClearCollection={handleClearCollection}
-        onSimulateScan={handleSimulateScan}
+        onCardScanned={handleCardScanned}
         onTriggerVictory={handleTriggerVictoryFromSatchel}
       />
     </div>

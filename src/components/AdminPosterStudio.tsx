@@ -20,8 +20,11 @@ import {
   MapPin,
   Copy,
   QrCode,
-  Globe
+  Globe,
+  ListChecks
 } from 'lucide-react';
+
+export type AdminViewMode = 'print_all' | 'cheat_sheet' | 'nfc_tags' | 'checklist' | 'table_sign' | 'certificates' | 'plinko_discs' | 'editor' | 'prompts';
 
 interface AdminPosterStudioProps {
   cards: CardData[];
@@ -35,7 +38,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
   onExitAdmin
 }) => {
   const [selectedCardIndex, setSelectedCardIndex] = useState(0);
-  const [viewMode, setViewMode] = useState<'editor' | 'print_all' | 'cheat_sheet' | 'table_sign' | 'certificates' | 'plinko_discs' | 'prompts' | 'nfc_tags'>('editor');
+  const [viewMode, setViewMode] = useState<AdminViewMode>('print_all');
   const [copiedNfcUrl, setCopiedNfcUrl] = useState<string | null>(null);
   const [isImporting, setIsImporting] = useState(false);
   const [jsonInput, setJsonInput] = useState('');
@@ -185,282 +188,423 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
         position: 'sticky',
         top: '60px',
         zIndex: 40,
-        padding: '0.75rem 1.25rem',
+        padding: '0.65rem 1.15rem',
         display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '0.75rem',
+        flexDirection: 'column',
+        gap: '0.65rem',
         borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
-        backgroundColor: 'rgba(18, 14, 36, 0.95)'
+        backgroundColor: 'rgba(18, 14, 36, 0.96)',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.5)'
       }}>
-        {/* Left: View Modes */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-          <button
-            onClick={() => { playBloop(1.0); setViewMode('editor'); }}
-            style={{
-              padding: '0.45rem 0.9rem',
-              borderRadius: '999px',
-              border: 'none',
-              cursor: 'pointer',
-              fontWeight: 700,
-              fontSize: '0.82rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.35rem',
-              backgroundColor: viewMode === 'editor' ? '#8338ec' : 'rgba(255,255,255,0.08)',
-              color: '#ffffff'
-            }}
-          >
-            <Edit3 size={15} />
-            <span>Card Editor & Preview</span>
-          </button>
+        {/* Row 1: Materials & Tools Tabs + Main Action Buttons */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '0.75rem'
+        }}>
+          {/* Left: Material Tabs */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#38bdf8', textTransform: 'uppercase', letterSpacing: '0.5px', marginRight: '0.2rem' }}>
+              🖨️ Materials:
+            </span>
 
-          <button
-            onClick={() => { playBloop(1.0); setViewMode('print_all'); }}
-            style={{
-              padding: '0.45rem 0.9rem',
-              borderRadius: '999px',
-              border: 'none',
-              cursor: 'pointer',
-              fontWeight: 700,
-              fontSize: '0.82rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.35rem',
-              backgroundColor: viewMode === 'print_all' ? '#ff3b30' : 'rgba(255,255,255,0.08)',
-              color: '#ffffff'
-            }}
-          >
-            <Printer size={15} />
-            <span>Print Posters ({cards.length} Cards)</span>
-          </button>
+            <button
+              onClick={() => { playBloop(1.0); setViewMode('print_all'); }}
+              style={{
+                padding: '0.35rem 0.75rem',
+                borderRadius: '999px',
+                border: viewMode === 'print_all' ? '1px solid #ef4444' : '1px solid rgba(255,255,255,0.1)',
+                cursor: 'pointer',
+                fontWeight: 700,
+                fontSize: '0.78rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+                backgroundColor: viewMode === 'print_all' ? 'rgba(239, 68, 68, 0.25)' : 'rgba(255,255,255,0.06)',
+                color: viewMode === 'print_all' ? '#fca5a5' : '#cbd5e1'
+              }}
+            >
+              <Printer size={13} />
+              <span>Wall Posters (12)</span>
+            </button>
 
-          <button
-            onClick={() => { playBloop(1.0); setViewMode('cheat_sheet'); }}
-            style={{
-              padding: '0.45rem 0.9rem',
-              borderRadius: '999px',
-              border: 'none',
-              cursor: 'pointer',
-              fontWeight: 700,
-              fontSize: '0.82rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.35rem',
-              backgroundColor: viewMode === 'cheat_sheet' ? '#00c8ff' : 'rgba(255,255,255,0.08)',
-              color: '#ffffff'
-            }}
-          >
-            <FileText size={15} />
-            <span>Quest Master Cheat Sheet</span>
-          </button>
+            <button
+              onClick={() => { playBloop(1.0); setViewMode('cheat_sheet'); }}
+              style={{
+                padding: '0.35rem 0.75rem',
+                borderRadius: '999px',
+                border: viewMode === 'cheat_sheet' ? '1px solid #00c8ff' : '1px solid rgba(255,255,255,0.1)',
+                cursor: 'pointer',
+                fontWeight: 700,
+                fontSize: '0.78rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+                backgroundColor: viewMode === 'cheat_sheet' ? 'rgba(0, 200, 255, 0.25)' : 'rgba(255,255,255,0.06)',
+                color: viewMode === 'cheat_sheet' ? '#7dd3fc' : '#cbd5e1'
+              }}
+            >
+              <FileText size={13} />
+              <span>Master Cheat Sheet</span>
+            </button>
 
-          <button
-            onClick={() => { playBloop(1.0); setViewMode('table_sign'); }}
-            style={{
-              padding: '0.45rem 0.9rem',
-              borderRadius: '999px',
-              border: 'none',
-              cursor: 'pointer',
-              fontWeight: 700,
-              fontSize: '0.82rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.35rem',
-              backgroundColor: viewMode === 'table_sign' ? '#39ff14' : 'rgba(255,255,255,0.08)',
-              color: viewMode === 'table_sign' ? '#090714' : '#ffffff'
-            }}
-          >
-            <span>📜</span>
-            <span>Table Pedestal Sign</span>
-          </button>
+            <button
+              onClick={() => { playBloop(1.0); setViewMode('nfc_tags'); }}
+              style={{
+                padding: '0.35rem 0.75rem',
+                borderRadius: '999px',
+                border: viewMode === 'nfc_tags' ? '1px solid #39ff14' : '1px solid rgba(255,255,255,0.1)',
+                cursor: 'pointer',
+                fontWeight: 700,
+                fontSize: '0.78rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+                backgroundColor: viewMode === 'nfc_tags' ? 'rgba(57, 255, 20, 0.25)' : 'rgba(255,255,255,0.06)',
+                color: viewMode === 'nfc_tags' ? '#86efac' : '#cbd5e1'
+              }}
+            >
+              <QrCode size={13} />
+              <span>NFC / QR Badges</span>
+            </button>
 
-          <button
-            onClick={() => { playBloop(1.0); setViewMode('certificates'); }}
-            style={{
-              padding: '0.45rem 0.9rem',
-              borderRadius: '999px',
-              border: 'none',
-              cursor: 'pointer',
-              fontWeight: 700,
-              fontSize: '0.82rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.35rem',
-              backgroundColor: viewMode === 'certificates' ? '#ffbe0b' : 'rgba(255,255,255,0.08)',
-              color: viewMode === 'certificates' ? '#090714' : '#ffffff'
-            }}
-          >
-            <Award size={15} />
-            <span>Alchemist Certificates</span>
-          </button>
+            <button
+              onClick={() => { playBloop(1.0); setViewMode('checklist'); }}
+              style={{
+                padding: '0.35rem 0.75rem',
+                borderRadius: '999px',
+                border: viewMode === 'checklist' ? '1px solid #a855f7' : '1px solid rgba(255,255,255,0.1)',
+                cursor: 'pointer',
+                fontWeight: 700,
+                fontSize: '0.78rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+                backgroundColor: viewMode === 'checklist' ? 'rgba(168, 85, 247, 0.25)' : 'rgba(255,255,255,0.06)',
+                color: viewMode === 'checklist' ? '#d8b4fe' : '#cbd5e1'
+              }}
+            >
+              <ListChecks size={13} />
+              <span>Setup Checklist</span>
+            </button>
 
-          <button
-            onClick={() => { playBloop(1.0); setViewMode('plinko_discs'); }}
-            style={{
-              padding: '0.45rem 0.9rem',
-              borderRadius: '999px',
-              border: 'none',
-              cursor: 'pointer',
-              fontWeight: 700,
-              fontSize: '0.82rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.35rem',
-              backgroundColor: viewMode === 'plinko_discs' ? '#00d2ff' : 'rgba(255,255,255,0.08)',
-              color: viewMode === 'plinko_discs' ? '#090714' : '#ffffff'
-            }}
-          >
-            <span>🎲</span>
-            <span>Plinko Disc Tokens (Print)</span>
-          </button>
+            <button
+              onClick={() => { playBloop(1.0); setViewMode('table_sign'); }}
+              style={{
+                padding: '0.35rem 0.75rem',
+                borderRadius: '999px',
+                border: viewMode === 'table_sign' ? '1px solid #eab308' : '1px solid rgba(255,255,255,0.1)',
+                cursor: 'pointer',
+                fontWeight: 700,
+                fontSize: '0.78rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+                backgroundColor: viewMode === 'table_sign' ? 'rgba(234, 179, 8, 0.25)' : 'rgba(255,255,255,0.06)',
+                color: viewMode === 'table_sign' ? '#fde047' : '#cbd5e1'
+              }}
+            >
+              <span>📜</span>
+              <span>Table Sign</span>
+            </button>
 
-          <button
-            onClick={() => { playBloop(1.0); setViewMode('prompts'); }}
-            style={{
-              padding: '0.45rem 0.9rem',
-              borderRadius: '999px',
-              border: 'none',
-              cursor: 'pointer',
-              fontWeight: 700,
-              fontSize: '0.82rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.35rem',
-              backgroundColor: viewMode === 'prompts' ? '#bf5af2' : 'rgba(255,255,255,0.08)',
-              color: '#ffffff'
-            }}
-          >
-            <Sparkles size={15} />
-            <span>AI Asset Prompter & Style Guide</span>
-          </button>
+            <button
+              onClick={() => { playBloop(1.0); setViewMode('certificates'); }}
+              style={{
+                padding: '0.35rem 0.75rem',
+                borderRadius: '999px',
+                border: viewMode === 'certificates' ? '1px solid #f59e0b' : '1px solid rgba(255,255,255,0.1)',
+                cursor: 'pointer',
+                fontWeight: 700,
+                fontSize: '0.78rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+                backgroundColor: viewMode === 'certificates' ? 'rgba(245, 158, 11, 0.25)' : 'rgba(255,255,255,0.06)',
+                color: viewMode === 'certificates' ? '#fcd34d' : '#cbd5e1'
+              }}
+            >
+              <Award size={13} />
+              <span>Certificates</span>
+            </button>
 
-          <button
-            onClick={() => { playBloop(1.0); setViewMode('nfc_tags'); }}
-            style={{
-              padding: '0.45rem 0.9rem',
-              borderRadius: '999px',
-              border: 'none',
-              cursor: 'pointer',
-              fontWeight: 700,
-              fontSize: '0.82rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.35rem',
-              backgroundColor: viewMode === 'nfc_tags' ? '#39ff14' : 'rgba(255,255,255,0.08)',
-              color: viewMode === 'nfc_tags' ? '#090714' : '#ffffff'
-            }}
-          >
-            <span>📱</span>
-            <span>NFC & QR Code Directory</span>
-          </button>
+            <button
+              onClick={() => { playBloop(1.0); setViewMode('plinko_discs'); }}
+              style={{
+                padding: '0.35rem 0.75rem',
+                borderRadius: '999px',
+                border: viewMode === 'plinko_discs' ? '1px solid #06b6d4' : '1px solid rgba(255,255,255,0.1)',
+                cursor: 'pointer',
+                fontWeight: 700,
+                fontSize: '0.78rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+                backgroundColor: viewMode === 'plinko_discs' ? 'rgba(6, 182, 212, 0.25)' : 'rgba(255,255,255,0.06)',
+                color: viewMode === 'plinko_discs' ? '#67e8f9' : '#cbd5e1'
+              }}
+            >
+              <span>🎲</span>
+              <span>Plinko Discs</span>
+            </button>
+
+            <div style={{ width: '1px', height: '18px', backgroundColor: 'rgba(255,255,255,0.2)', margin: '0 0.2rem' }} />
+
+            <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#a855f7', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              🛠️ Tools:
+            </span>
+
+            <button
+              onClick={() => { playBloop(1.0); setViewMode('editor'); }}
+              style={{
+                padding: '0.35rem 0.75rem',
+                borderRadius: '999px',
+                border: viewMode === 'editor' ? '1px solid #8338ec' : '1px solid rgba(255,255,255,0.1)',
+                cursor: 'pointer',
+                fontWeight: 700,
+                fontSize: '0.78rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+                backgroundColor: viewMode === 'editor' ? 'rgba(131, 56, 236, 0.35)' : 'rgba(255,255,255,0.06)',
+                color: viewMode === 'editor' ? '#c084fc' : '#cbd5e1'
+              }}
+            >
+              <Edit3 size={13} />
+              <span>Card Editor</span>
+            </button>
+
+            <button
+              onClick={() => { playBloop(1.0); setViewMode('prompts'); }}
+              style={{
+                padding: '0.35rem 0.75rem',
+                borderRadius: '999px',
+                border: viewMode === 'prompts' ? '1px solid #bf5af2' : '1px solid rgba(255,255,255,0.1)',
+                cursor: 'pointer',
+                fontWeight: 700,
+                fontSize: '0.78rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+                backgroundColor: viewMode === 'prompts' ? 'rgba(191, 90, 242, 0.35)' : 'rgba(255,255,255,0.06)',
+                color: viewMode === 'prompts' ? '#e9d5ff' : '#cbd5e1'
+              }}
+            >
+              <Sparkles size={13} />
+              <span>AI Prompts</span>
+            </button>
+          </div>
+
+          {/* Right: Print Action, Data, Exit */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
+            {saveToast && (
+              <span style={{ fontSize: '0.8rem', color: '#39ff14', fontWeight: 700 }}>
+                ✓ Saved!
+              </span>
+            )}
+
+            <button
+              onClick={handlePrint}
+              style={{
+                backgroundColor: '#38bdf8',
+                color: '#090714',
+                border: 'none',
+                borderRadius: '999px',
+                padding: '0.45rem 1.15rem',
+                fontWeight: 800,
+                fontSize: '0.84rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                boxShadow: '0 0 12px rgba(56, 189, 248, 0.45)',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <Printer size={15} />
+              <span>PRINT VIEW NOW</span>
+            </button>
+
+            <button
+              onClick={handleExportJSON}
+              title="Export Cards as JSON"
+              style={{
+                background: 'rgba(255,255,255,0.08)',
+                border: '1px solid rgba(255,255,255,0.15)',
+                color: '#cbd5e1',
+                borderRadius: '999px',
+                padding: '0.38rem 0.65rem',
+                fontSize: '0.76rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.25rem'
+              }}
+            >
+              <Download size={13} />
+              <span>Export</span>
+            </button>
+
+            <button
+              onClick={() => setIsImporting(true)}
+              title="Import Cards JSON"
+              style={{
+                background: 'rgba(255,255,255,0.08)',
+                border: '1px solid rgba(255,255,255,0.15)',
+                color: '#cbd5e1',
+                borderRadius: '999px',
+                padding: '0.38rem 0.65rem',
+                fontSize: '0.76rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.25rem'
+              }}
+            >
+              <Upload size={13} />
+              <span>Import</span>
+            </button>
+
+            <button
+              onClick={handleResetDefaults}
+              title="Reset Cards to Default"
+              style={{
+                background: 'rgba(239, 68, 68, 0.15)',
+                border: '1px solid rgba(239, 68, 68, 0.4)',
+                color: '#f87171',
+                borderRadius: '999px',
+                padding: '0.38rem 0.65rem',
+                fontSize: '0.76rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.25rem'
+              }}
+            >
+              <RotateCcw size={13} />
+              <span>Reset</span>
+            </button>
+
+            <button
+              onClick={onExitAdmin}
+              style={{
+                background: 'rgba(255,255,255,0.15)',
+                border: '1px solid rgba(255,255,255,0.2)',
+                color: '#ffffff',
+                borderRadius: '999px',
+                padding: '0.4rem 0.85rem',
+                fontSize: '0.78rem',
+                fontWeight: 700,
+                cursor: 'pointer'
+              }}
+            >
+              Exit Admin ✕
+            </button>
+          </div>
         </div>
 
-        {/* Right: Print Button, JSON, Reset, Exit */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-          {saveToast && (
-            <span style={{ fontSize: '0.8rem', color: '#39ff14', fontWeight: 700 }}>
-              ✓ Saved!
+        {/* Row 2: Global Print Toggles & Scan Host URL Configuration */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '0.65rem',
+          paddingTop: '0.5rem',
+          borderTop: '1px solid rgba(255, 255, 255, 0.08)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '0.74rem', fontWeight: 700, color: '#f59e0b' }}>
+              ⚙️ Print Toggles:
             </span>
-          )}
 
-          <button
-            onClick={handlePrint}
-            style={{
-              backgroundColor: '#38bdf8',
-              color: '#090714',
-              border: 'none',
-              borderRadius: '999px',
-              padding: '0.45rem 1rem',
-              fontWeight: 800,
-              fontSize: '0.82rem',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.35rem',
-              boxShadow: '0 0 10px rgba(56, 189, 248, 0.4)'
-            }}
-          >
-            <Printer size={15} />
-            <span>PRINT THIS VIEW</span>
-          </button>
+            {/* Answer Key Toggle */}
+            <button
+              onClick={() => { playBloop(1.0); setShowAnswerKey(v => !v); }}
+              style={{
+                backgroundColor: showAnswerKey ? 'rgba(57, 255, 20, 0.2)' : 'rgba(255, 255, 255, 0.07)',
+                border: `1px solid ${showAnswerKey ? '#39ff14' : 'rgba(255, 255, 255, 0.2)'}`,
+                color: showAnswerKey ? '#39ff14' : '#cbd5e1',
+                padding: '0.3rem 0.75rem',
+                borderRadius: '999px',
+                fontSize: '0.76rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              {showAnswerKey ? <Eye size={13} /> : <EyeOff size={13} />}
+              <span>{showAnswerKey ? 'Riddle Answers: VISIBLE (Staff Key)' : 'Riddle Answers: HIDDEN (Wall Print)'}</span>
+            </button>
 
-          <button
-            onClick={handleExportJSON}
-            title="Export Cards as JSON"
-            style={{
-              background: 'rgba(255,255,255,0.08)',
-              border: '1px solid rgba(255,255,255,0.15)',
-              color: '#cbd5e1',
-              borderRadius: '999px',
-              padding: '0.45rem 0.75rem',
-              fontSize: '0.8rem',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.3rem'
-            }}
-          >
-            <Download size={14} />
-            <span>Export</span>
-          </button>
+            {/* Staff Mounting Notes Toggle */}
+            <button
+              onClick={() => { playBloop(1.0); setShowStaffNotes(v => !v); }}
+              style={{
+                backgroundColor: showStaffNotes ? 'rgba(217, 119, 6, 0.25)' : 'rgba(255, 255, 255, 0.07)',
+                border: `1px solid ${showStaffNotes ? '#f59e0b' : 'rgba(255, 255, 255, 0.2)'}`,
+                color: showStaffNotes ? '#fbbf24' : '#cbd5e1',
+                padding: '0.3rem 0.75rem',
+                borderRadius: '999px',
+                fontSize: '0.76rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <MapPin size={13} />
+              <span>{showStaffNotes ? 'Mounting Notes: ON (Office Setup)' : 'Mounting Notes: OFF (Clean)'}</span>
+            </button>
+          </div>
 
-          <button
-            onClick={() => setIsImporting(true)}
-            title="Import Cards JSON"
-            style={{
-              background: 'rgba(255,255,255,0.08)',
-              border: '1px solid rgba(255,255,255,0.15)',
-              color: '#cbd5e1',
-              borderRadius: '999px',
-              padding: '0.45rem 0.75rem',
-              fontSize: '0.8rem',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.3rem'
-            }}
-          >
-            <Upload size={14} />
-            <span>Import</span>
-          </button>
-
-          <button
-            onClick={handleResetDefaults}
-            title="Reset to Original Cards"
-            style={{
-              background: 'rgba(239, 68, 68, 0.15)',
-              border: '1px solid rgba(239, 68, 68, 0.4)',
-              color: '#f87171',
-              borderRadius: '999px',
-              padding: '0.45rem 0.75rem',
-              fontSize: '0.8rem',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.3rem'
-            }}
-          >
-            <RotateCcw size={14} />
-            <span>Reset</span>
-          </button>
-
-          <button
-            onClick={onExitAdmin}
-            style={{
-              background: 'rgba(255,255,255,0.15)',
-              border: 'none',
-              color: '#ffffff',
-              borderRadius: '999px',
-              padding: '0.45rem 1rem',
-              fontSize: '0.82rem',
-              fontWeight: 700,
-              cursor: 'pointer'
-            }}
-          >
-            Exit Admin ✕
-          </button>
+          {/* Scan Base URL Config */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <span style={{ fontSize: '0.74rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+              <Globe size={13} color="#38bdf8" />
+              <span>Scan QR Host:</span>
+            </span>
+            <input
+              type="text"
+              value={scanBaseUrl}
+              onChange={(e) => setScanBaseUrl(e.target.value)}
+              placeholder="https://..."
+              style={{
+                backgroundColor: 'rgba(0, 0, 0, 0.45)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                color: '#f8fafc',
+                borderRadius: '6px',
+                padding: '3px 8px',
+                fontSize: '0.75rem',
+                width: '180px'
+              }}
+            />
+            {typeof window !== 'undefined' && scanBaseUrl !== window.location.origin && (
+              <button
+                onClick={() => setScanBaseUrl(window.location.origin)}
+                style={{
+                  background: 'rgba(56, 189, 248, 0.15)',
+                  border: '1px solid rgba(56, 189, 248, 0.4)',
+                  color: '#38bdf8',
+                  borderRadius: '6px',
+                  padding: '3px 7px',
+                  fontSize: '0.72rem',
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+                title="Reset to current browser origin"
+              >
+                Reset
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -540,74 +684,6 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
         {/* VIEW 1: Interactive Live Poster Editor & Preview */}
         {viewMode === 'editor' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            {/* Poster Print & Spoiler Options Bar */}
-            <div className="no-print glass-panel" style={{
-              padding: '0.65rem 1.25rem',
-              borderRadius: '16px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              gap: '1rem',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              backgroundColor: 'rgba(20, 15, 42, 0.85)'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#ffbe0b' }}>
-                  Poster Print Options:
-                </span>
-                <span style={{ fontSize: '0.78rem', color: '#94a3b8' }}>
-                  (Configure what appears on the physical printed wall cards)
-                </span>
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
-                {/* Answer Key Toggle */}
-                <button
-                  onClick={() => { playBloop(1.0); setShowAnswerKey(v => !v); }}
-                  style={{
-                    backgroundColor: showAnswerKey ? 'rgba(57, 255, 20, 0.2)' : 'rgba(255, 255, 255, 0.08)',
-                    border: `1px solid ${showAnswerKey ? '#39ff14' : 'rgba(255, 255, 255, 0.2)'}`,
-                    color: showAnswerKey ? '#39ff14' : '#cbd5e1',
-                    padding: '0.4rem 0.9rem',
-                    borderRadius: '999px',
-                    fontSize: '0.8rem',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.4rem',
-                    transition: 'all 0.2s ease'
-                  }}
-                >
-                  {showAnswerKey ? <Eye size={14} /> : <EyeOff size={14} />}
-                  <span>{showAnswerKey ? 'Riddle Answers: VISIBLE (Staff Key)' : 'Riddle Answers: HIDDEN (Wall Print)'}</span>
-                </button>
-
-                {/* Office Location Notes Toggle */}
-                <button
-                  onClick={() => { playBloop(1.0); setShowStaffNotes(v => !v); }}
-                  style={{
-                    backgroundColor: showStaffNotes ? 'rgba(217, 119, 6, 0.25)' : 'rgba(255, 255, 255, 0.08)',
-                    border: `1px solid ${showStaffNotes ? '#f59e0b' : 'rgba(255, 255, 255, 0.2)'}`,
-                    color: showStaffNotes ? '#fbbf24' : '#cbd5e1',
-                    padding: '0.4rem 0.9rem',
-                    borderRadius: '999px',
-                    fontSize: '0.8rem',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.4rem',
-                    transition: 'all 0.2s ease'
-                  }}
-                >
-                  <MapPin size={14} />
-                  <span>{showStaffNotes ? 'Mounting Notes: ON' : 'Mounting Notes: OFF (Clean)'}</span>
-                </button>
-              </div>
-            </div>
-
             {/* 12-Card Quick Strip */}
             <div className="no-print" style={{
               display: 'flex',
@@ -893,87 +969,47 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
         {viewMode === 'print_all' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', alignItems: 'center' }}>
             <div className="no-print" style={{
-              backgroundColor: 'rgba(239, 68, 68, 0.15)',
-              border: '1px solid rgba(239, 68, 68, 0.4)',
-              padding: '1rem 1.5rem',
+              backgroundColor: 'rgba(239, 68, 68, 0.12)',
+              border: '1px solid rgba(239, 68, 68, 0.35)',
+              padding: '0.85rem 1.25rem',
               borderRadius: '16px',
               maxWidth: '8.5in',
               width: '100%',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              gap: '1rem'
+              gap: '1rem',
+              boxSizing: 'border-box'
             }}>
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#f87171' }}>
-                  Ready to Print {cards.length} Wall Posters!
+                <h3 style={{ margin: 0, fontSize: '1.05rem', color: '#f87171' }}>
+                  Ready to Print {cards.length} Wall Posters
                 </h3>
-                <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#fecaca' }}>
-                  Each card will print on its own 8.5" x 11" sheet with margins and headers automatically hidden.
+                <p style={{ margin: '3px 0 0 0', fontSize: '0.8rem', color: '#fecaca' }}>
+                  Standard 8.5" x 11" letter sheets. All headers and UI controls hidden automatically during printing.
                 </p>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-                <button
-                  onClick={() => { playBloop(1.0); setShowAnswerKey(v => !v); }}
-                  style={{
-                    backgroundColor: showAnswerKey ? 'rgba(57, 255, 20, 0.2)' : 'rgba(255, 255, 255, 0.1)',
-                    border: `1px solid ${showAnswerKey ? '#39ff14' : 'rgba(255, 255, 255, 0.2)'}`,
-                    color: showAnswerKey ? '#39ff14' : '#ffffff',
-                    padding: '0.45rem 1rem',
-                    borderRadius: '999px',
-                    fontSize: '0.82rem',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.4rem'
-                  }}
-                >
-                  {showAnswerKey ? <Eye size={15} /> : <EyeOff size={15} />}
-                  <span>{showAnswerKey ? 'Answers: VISIBLE' : 'Answers: HIDDEN (Wall Print)'}</span>
-                </button>
-
-                <button
-                  onClick={() => { playBloop(1.0); setShowStaffNotes(v => !v); }}
-                  style={{
-                    backgroundColor: showStaffNotes ? 'rgba(217, 119, 6, 0.3)' : 'rgba(255, 255, 255, 0.1)',
-                    border: `1px solid ${showStaffNotes ? '#f59e0b' : 'rgba(255, 255, 255, 0.2)'}`,
-                    color: showStaffNotes ? '#fbbf24' : '#ffffff',
-                    padding: '0.45rem 1rem',
-                    borderRadius: '999px',
-                    fontSize: '0.82rem',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.4rem'
-                  }}
-                >
-                  <MapPin size={15} />
-                  <span>{showStaffNotes ? 'Locations: ON' : 'Locations: OFF'}</span>
-                </button>
-
-                <button
-                  onClick={handlePrint}
-                  style={{
-                    backgroundColor: '#ef4444',
-                    color: '#ffffff',
-                    border: 'none',
-                    borderRadius: '999px',
-                    padding: '0.65rem 1.5rem',
-                    fontWeight: 800,
-                    fontSize: '0.95rem',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    boxShadow: '0 0 16px rgba(239, 68, 68, 0.6)'
-                  }}
-                >
-                  <Printer size={18} />
-                  <span>PRINT ALL {cards.length} POSTERS NOW</span>
-                </button>
-              </div>
+              <button
+                onClick={handlePrint}
+                style={{
+                  backgroundColor: '#ef4444',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '999px',
+                  padding: '0.55rem 1.3rem',
+                  fontWeight: 800,
+                  fontSize: '0.88rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.45rem',
+                  boxShadow: '0 0 16px rgba(239, 68, 68, 0.5)',
+                  flexShrink: 0
+                }}
+              >
+                <Printer size={16} />
+                <span>PRINT ALL {cards.length} POSTERS</span>
+              </button>
             </div>
 
             {/* Cards in Print Containers */}
@@ -988,6 +1024,166 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                 />
               </div>
             ))}
+          </div>
+        )}
+
+        {/* VIEW: Office Setup Checklist */}
+        {viewMode === 'checklist' && (
+          <div style={{ maxWidth: '8.5in', margin: '0 auto', width: '100%' }}>
+            <div className="print-page-container" style={{
+              backgroundColor: '#f8f2de',
+              backgroundImage: 'linear-gradient(180deg, #fbf7ea 0%, #f6edd4 50%, #f0e3bf 100%)',
+              color: '#2d1810',
+              border: '8px solid #3d2314',
+              borderRadius: '16px',
+              padding: '0.4in 0.5in',
+              boxSizing: 'border-box',
+              minHeight: '10.5in',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between'
+            }}>
+              <div>
+                {/* Header */}
+                <div style={{
+                  textAlign: 'center',
+                  borderBottom: '2px solid #b45309',
+                  paddingBottom: '0.6rem',
+                  marginBottom: '0.8rem'
+                }}>
+                  <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#b45309', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                    Office Event Preparation & Game Runner Guide
+                  </div>
+                  <h1 className="font-mystic" style={{ margin: '4px 0', fontSize: '1.75rem', color: '#3d2314' }}>
+                    THE GREAT ALCHEMY QUEST • SETUP CHECKLIST
+                  </h1>
+                  <p style={{ margin: 0, fontSize: '0.82rem', color: '#78350f', fontWeight: 600 }}>
+                    12 Office Stations Readiness • Room Mounting & NFC Programming Verification
+                  </p>
+                </div>
+
+                {/* Stations Table */}
+                <table style={{
+                  width: '100%',
+                  borderCollapse: 'collapse',
+                  fontSize: '0.78rem',
+                  marginBottom: '1rem'
+                }}>
+                  <thead>
+                    <tr style={{ backgroundColor: '#3d2314', color: '#fef3c7' }}>
+                      <th style={{ padding: '6px 8px', textAlign: 'center', width: '35px' }}>#</th>
+                      <th style={{ padding: '6px 8px', textAlign: 'left' }}>Ingredient & Totems</th>
+                      <th style={{ padding: '6px 8px', textAlign: 'left' }}>Office Hiding Spot / Location</th>
+                      <th style={{ padding: '6px 8px', textAlign: 'center', width: '70px' }}>Letter</th>
+                      <th style={{ padding: '6px 6px', textAlign: 'center', width: '60px' }}>NFC Tag</th>
+                      <th style={{ padding: '6px 6px', textAlign: 'center', width: '60px' }}>Mounted</th>
+                      <th style={{ padding: '6px 6px', textAlign: 'center', width: '60px' }}>QR Tested</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {cards.map((c, i) => (
+                      <tr
+                        key={c.id}
+                        style={{
+                          backgroundColor: i % 2 === 0 ? 'rgba(255, 255, 255, 0.6)' : 'transparent',
+                          borderBottom: '1px solid rgba(180, 83, 9, 0.25)'
+                        }}
+                      >
+                        <td style={{ padding: '6px 8px', textAlign: 'center', fontWeight: 800, color: '#78350f' }}>
+                          #{c.number}
+                        </td>
+                        <td style={{ padding: '6px 8px', fontWeight: 700, color: '#1e1b4b' }}>
+                          {c.name}
+                          <span style={{ fontSize: '0.7rem', color: '#92400e', marginLeft: '6px' }}>
+                            ({c.runes.map(r => r.toUpperCase()).join(' & ')})
+                          </span>
+                        </td>
+                        <td style={{ padding: '6px 8px', color: '#451a03', fontWeight: 600 }}>
+                          📍 {c.location || 'Assign office room'}
+                        </td>
+                        <td style={{ padding: '6px 8px', textAlign: 'center' }}>
+                          <span style={{
+                            backgroundColor: '#3d2314',
+                            color: '#39ff14',
+                            padding: '2px 6px',
+                            borderRadius: '4px',
+                            fontFamily: 'monospace',
+                            fontWeight: 800
+                          }}>
+                            {c.targetLetter}
+                          </span>
+                        </td>
+                        <td style={{ padding: '6px 6px', textAlign: 'center', fontSize: '1rem', color: '#78350f' }}>
+                          ▢
+                        </td>
+                        <td style={{ padding: '6px 6px', textAlign: 'center', fontSize: '1rem', color: '#78350f' }}>
+                          ▢
+                        </td>
+                        <td style={{ padding: '6px 6px', textAlign: 'center', fontSize: '1rem', color: '#78350f' }}>
+                          ▢
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                {/* Pre-Event Launch Checks */}
+                <div style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.75)',
+                  border: '1px solid #b45309',
+                  borderRadius: '8px',
+                  padding: '0.65rem 0.9rem',
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '0.5rem',
+                  fontSize: '0.76rem',
+                  color: '#3d2314'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <span style={{ fontSize: '1rem' }}>▢</span>
+                    <strong>Audio & Music:</strong> Tested on iPad hub / speakers
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <span style={{ fontSize: '1rem' }}>▢</span>
+                    <strong>Welcome Pedestal Sign:</strong> Displayed at starting table
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <span style={{ fontSize: '1rem' }}>▢</span>
+                    <strong>Satchel Modal:</strong> Test NFC scan on iPhone & Android
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <span style={{ fontSize: '1rem' }}>▢</span>
+                    <strong>Plinko Board & Tokens:</strong> Cut out and ready for drops
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <span style={{ fontSize: '1rem' }}>▢</span>
+                    <strong>Certificates & Pens:</strong> Printed for winning alchemists
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <span style={{ fontSize: '1rem' }}>▢</span>
+                    <strong>Staff Cheat Sheet:</strong> Kept at desk for hint facilitation
+                  </div>
+                </div>
+              </div>
+
+              {/* Sign-off footer */}
+              <div style={{
+                marginTop: '0.8rem',
+                paddingTop: '0.5rem',
+                borderTop: '1px dashed #b45309',
+                display: 'flex',
+                justifyContent: 'space-between',
+                fontSize: '0.78rem',
+                color: '#78350f'
+              }}>
+                <div>
+                  <strong>Quest Master On-Duty:</strong> ___________________________________
+                </div>
+                <div>
+                  <strong>Pre-Flight Verified Date:</strong> ___________________
+                </div>
+              </div>
+            </div>
           </div>
         )}
 

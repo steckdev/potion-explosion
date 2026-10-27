@@ -4,7 +4,7 @@ import { QUESTS } from '../data/quests';
 import { playBloop, playPoof, getAudioState, subscribeAudioState, toggleMusic } from '../utils/audio';
 import { findCardFromScanQuery } from '../utils/nfc';
 import { CameraQrScannerModal } from './CameraQrScannerModal';
-import { X, Sparkles, Lock, Radio, RotateCcw, MapPin, Camera, Volume2, VolumeX } from 'lucide-react';
+import { X, Sparkles, Lock, Radio, MapPin, Camera, Volume2, VolumeX } from 'lucide-react';
 
 interface SatchelModalProps {
   isOpen: boolean;
@@ -12,7 +12,7 @@ interface SatchelModalProps {
   scannedCardIds: string[];
   onClose: () => void;
   onClearCollection: () => void;
-  onSimulateScan: (card: CardData) => void;
+  onCardScanned: (card: CardData) => void;
   onTriggerVictory: (rune: RuneType) => void;
 }
 
@@ -22,11 +22,10 @@ export const SatchelModal: React.FC<SatchelModalProps> = ({
   scannedCardIds,
   onClose,
   onClearCollection,
-  onSimulateScan,
+  onCardScanned,
   onTriggerVictory
 }) => {
   const [selectedInspectCard, setSelectedInspectCard] = useState<CardData | null>(null);
-  const [testCardIndex, setTestCardIndex] = useState(0);
   const [isCameraScannerOpen, setIsCameraScannerOpen] = useState(false);
   const [isAudioMuted, setIsAudioMuted] = useState(() => getAudioState().isMuted);
 
@@ -40,7 +39,7 @@ export const SatchelModal: React.FC<SatchelModalProps> = ({
     setIsCameraScannerOpen(false);
     const matched = findCardFromScanQuery(code, cards);
     if (matched) {
-      onSimulateScan(matched);
+      onCardScanned(matched);
     } else {
       alert(`Scanned code: "${code}", but could not find a matching card in this quest.`);
     }
@@ -117,9 +116,6 @@ export const SatchelModal: React.FC<SatchelModalProps> = ({
               <h2 className="font-mystic" style={{ margin: 0, fontSize: '1.25rem', color: '#f8fafc' }}>
                 Alchemist's Satchel
               </h2>
-              <span style={{ fontSize: '0.78rem', color: '#a855f7', fontWeight: 600 }}>
-                Phone NFC Scavenger Collection • Stored in Cookies
-              </span>
             </div>
           </div>
 
@@ -221,9 +217,31 @@ export const SatchelModal: React.FC<SatchelModalProps> = ({
               <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#e2e8f0' }}>
                 Total Office Ingredients Found
               </span>
-              <strong style={{ fontSize: '1.1rem', color: '#39ff14', fontFamily: 'monospace' }}>
-                {collectedCount} / {totalCount}
-              </strong>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                {collectedCount > 0 && (
+                  <button
+                    onClick={() => {
+                      if (confirm('Empty your satchel to start over?')) {
+                        onClearCollection();
+                      }
+                    }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#94a3b8',
+                      fontSize: '0.72rem',
+                      cursor: 'pointer',
+                      textDecoration: 'underline'
+                    }}
+                    title="Empty Satchel"
+                  >
+                    Empty
+                  </button>
+                )}
+                <strong style={{ fontSize: '1.1rem', color: '#39ff14', fontFamily: 'monospace' }}>
+                  {collectedCount} / {totalCount}
+                </strong>
+              </div>
             </div>
 
             {/* Glowing Progress Bar */}
@@ -570,94 +588,10 @@ export const SatchelModal: React.FC<SatchelModalProps> = ({
                 color: '#ffbe0b',
                 fontWeight: 700
               }}>
-                ✨ Solve the riddle and take its 1st letter!
+                ✨ Solve the riddle & take its 1st letter!
               </div>
             </div>
           )}
-
-          {/* Test & Organizer Tools */}
-          <div style={{
-            marginTop: '0.5rem',
-            borderTop: '1px dashed rgba(255, 255, 255, 0.15)',
-            paddingTop: '0.85rem',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0.65rem'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: '0.78rem', color: '#94a3b8', fontWeight: 600 }}>
-                📱 Organizer / Testing Tools:
-              </span>
-              {collectedCount > 0 && (
-                <button
-                  onClick={() => {
-                    if (confirm('Clear all scanned tokens from your phone cookies?')) {
-                      onClearCollection();
-                    }
-                  }}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: '#f87171',
-                    fontSize: '0.72rem',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.25rem'
-                  }}
-                >
-                  <RotateCcw size={12} />
-                  <span>Reset Cookies</span>
-                </button>
-              )}
-            </div>
-
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <select
-                value={testCardIndex}
-                onChange={(e) => setTestCardIndex(Number(e.target.value))}
-                style={{
-                  flex: 1,
-                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  color: '#f8fafc',
-                  borderRadius: '8px',
-                  padding: '6px 8px',
-                  fontSize: '0.8rem'
-                }}
-              >
-                {cards.map((c, idx) => (
-                  <option key={c.id} value={idx}>
-                    Card #{c.number}: {c.name} ({scannedCardIds.includes(c.id) ? 'Collected' : 'New'})
-                  </option>
-                ))}
-              </select>
-
-              <button
-                onClick={() => {
-                  playBloop(1.1);
-                  onClose();
-                  onSimulateScan(cards[testCardIndex]);
-                }}
-                style={{
-                  backgroundColor: '#8338ec',
-                  color: '#ffffff',
-                  border: 'none',
-                  borderRadius: '8px',
-                  padding: '6px 12px',
-                  fontSize: '0.8rem',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.35rem'
-                }}
-              >
-                <Radio size={14} />
-                <span>Simulate NFC Scan</span>
-              </button>
-            </div>
-          </div>
         </div>
       </div>
 

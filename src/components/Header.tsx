@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Volume2, VolumeX, Printer, HelpCircle, Maximize, Minimize, Music, Sliders } from 'lucide-react';
-import { setMuted, playBloop, subscribeAudioState, getAudioState, MUSIC_TRACKS, type AudioState } from '../utils/audio';
+import { Volume2, VolumeX, Printer, HelpCircle, Maximize, Minimize, Music, Sliders, Play, Pause } from 'lucide-react';
+import { setMuted, playBloop, subscribeAudioState, getAudioState, playMusic, pauseMusic, MUSIC_TRACKS, type AudioState } from '../utils/audio';
 import { AudioSettingsModal } from './AudioSettingsModal';
 
 interface HeaderProps {
@@ -326,81 +326,139 @@ export const Header: React.FC<HeaderProps> = ({
         </button>
 
         {/* Audio Sound Chamber & Mixer */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          backgroundColor: 'rgba(255, 255, 255, 0.08)',
-          borderRadius: '999px',
-          border: audioState.isPlayingMusic && !audioState.isMuted
-            ? '1px solid rgba(255, 190, 11, 0.5)'
-            : '1px solid rgba(255, 255, 255, 0.15)',
-          overflow: 'hidden',
-          transition: 'all 0.2s ease',
-          boxShadow: audioState.isPlayingMusic && !audioState.isMuted
-            ? '0 0 12px rgba(255, 190, 11, 0.25)'
-            : 'none'
-        }}>
-          {/* Open Audio Mixer Button */}
+        {!audioState.isPlayingMusic ? (
+          /* Simple Play Music Button (No auto-play startle) */
           <button
             onClick={() => {
-              playBloop(1.0);
-              setIsAudioModalOpen(true);
+              playBloop(1.1);
+              playMusic();
             }}
-            title="Open Alchemical Sound Chamber (Adjust Songs & Volume)"
+            title="Start Room Background Music"
             style={{
-              background: 'none',
-              border: 'none',
-              color: audioState.isPlayingMusic && !audioState.isMuted ? '#ffbe0b' : '#e2e8f0',
-              padding: '0.4rem 0.55rem',
+              backgroundColor: 'rgba(57, 255, 20, 0.12)',
+              border: '1px solid rgba(57, 255, 20, 0.4)',
+              color: '#39ff14',
+              padding: '0.4rem 0.75rem',
+              borderRadius: '999px',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               gap: '0.35rem',
               fontSize: '0.8rem',
-              fontWeight: 600
+              fontWeight: 700,
+              boxShadow: '0 0 10px rgba(57, 255, 20, 0.25)',
+              transition: 'all 0.2s ease'
             }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(57, 255, 20, 0.22)'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(57, 255, 20, 0.12)'}
           >
-            <Music size={15} color={audioState.isPlayingMusic && !audioState.isMuted ? '#ffbe0b' : '#38bdf8'} />
-            <span className="desktop-only-btn" style={{ maxWidth: '90px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {audioState.isPlayingMusic && !audioState.isMuted 
-                ? (MUSIC_TRACKS.find(t => t.id === audioState.currentTrackId)?.name || 'Music')
-                : 'Audio'}
-            </span>
-            <Sliders size={13} color="#94a3b8" className="desktop-only-btn" />
+            <Play size={13} fill="#39ff14" />
+            <span>Play Music</span>
           </button>
+        ) : (
+          /* Active Playing Controls */
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            backgroundColor: 'rgba(255, 255, 255, 0.08)',
+            borderRadius: '999px',
+            border: !audioState.isMuted
+              ? '1px solid rgba(255, 190, 11, 0.5)'
+              : '1px solid rgba(255, 255, 255, 0.15)',
+            overflow: 'hidden',
+            transition: 'all 0.2s ease',
+            boxShadow: !audioState.isMuted
+              ? '0 0 12px rgba(255, 190, 11, 0.25)'
+              : 'none'
+          }}>
+            {/* Pause Button */}
+            <button
+              onClick={() => {
+                playBloop(0.9);
+                pauseMusic();
+              }}
+              title="Pause Background Music"
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#ffbe0b',
+                padding: '0.4rem 0.55rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+                fontSize: '0.78rem',
+                fontWeight: 700
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+            >
+              <Pause size={13} fill="#ffbe0b" />
+              <span className="desktop-only-btn">Pause</span>
+            </button>
 
-          <div style={{ width: '1px', height: '18px', backgroundColor: 'rgba(255, 255, 255, 0.15)' }} />
+            <div style={{ width: '1px', height: '16px', backgroundColor: 'rgba(255, 255, 255, 0.15)' }} />
 
-          {/* Quick Mute Toggle */}
-          <button
-            onClick={() => {
-              const nextMute = !audioState.isMuted;
-              setMuted(nextMute);
-              onToggleMute();
-            }}
-            title={audioState.isMuted ? 'Unmute Sound' : 'Mute All Sound'}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: audioState.isMuted ? '#f87171' : '#39ff14',
-              padding: '0.4rem 0.55rem',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-          >
-            {audioState.isMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
-          </button>
-        </div>
+            {/* Open Audio Mixer Button */}
+            <button
+              onClick={() => {
+                playBloop(1.0);
+                setIsAudioModalOpen(true);
+              }}
+              title="Adjust Songs & Volume"
+              style={{
+                background: 'none',
+                border: 'none',
+                color: !audioState.isMuted ? '#ffbe0b' : '#e2e8f0',
+                padding: '0.4rem 0.55rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+                fontSize: '0.78rem'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+            >
+              <Music size={13} color="#ffbe0b" />
+              <span className="desktop-only-btn" style={{ maxWidth: '85px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {MUSIC_TRACKS.find(t => t.id === audioState.currentTrackId)?.name || 'Music'}
+              </span>
+              <Sliders size={12} color="#94a3b8" className="desktop-only-btn" />
+            </button>
+
+            <div style={{ width: '1px', height: '16px', backgroundColor: 'rgba(255, 255, 255, 0.15)' }} />
+
+            {/* Quick Mute Toggle */}
+            <button
+              onClick={() => {
+                const nextMute = !audioState.isMuted;
+                setMuted(nextMute);
+                onToggleMute();
+              }}
+              title={audioState.isMuted ? 'Unmute Sound' : 'Mute Sound'}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: audioState.isMuted ? '#f87171' : '#39ff14',
+                padding: '0.4rem 0.55rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+            >
+              {audioState.isMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
+            </button>
+          </div>
+        )}
 
         {/* Poster Studio & Admin Toggle */}
         <button
           onClick={onToggleAdmin}
+          className={isAdmin ? '' : 'desktop-only-btn'}
           style={{
             background: isAdmin 
               ? 'linear-gradient(135deg, #f59e0b, #d97706)' 
@@ -409,13 +467,13 @@ export const Header: React.FC<HeaderProps> = ({
               ? '1px solid #fbbf24' 
               : '1px solid rgba(191, 90, 242, 0.5)',
             color: '#ffffff',
-            padding: '0.45rem 0.85rem',
+            padding: '0.4rem 0.75rem',
             borderRadius: '999px',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
-            gap: '0.4rem',
-            fontSize: '0.82rem',
+            gap: '0.35rem',
+            fontSize: '0.8rem',
             fontWeight: 600,
             boxShadow: isAdmin ? '0 0 14px rgba(245, 158, 11, 0.5)' : 'none',
             transition: 'all 0.2s ease'
@@ -427,8 +485,8 @@ export const Header: React.FC<HeaderProps> = ({
             if (!isAdmin) e.currentTarget.style.backgroundColor = 'rgba(131, 56, 236, 0.25)';
           }}
         >
-          <Printer size={15} color={isAdmin ? '#ffffff' : '#bf5af2'} />
-          <span>{isAdmin ? 'Exit Admin' : '🖨️ Poster Studio & Admin'}</span>
+          <Printer size={14} color={isAdmin ? '#ffffff' : '#bf5af2'} />
+          <span>{isAdmin ? 'Exit Admin' : 'Poster Studio & Admin'}</span>
         </button>
       </div>
     </header>

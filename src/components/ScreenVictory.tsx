@@ -388,7 +388,7 @@ export const ScreenVictory: React.FC<ScreenVictoryProps> = ({
                   cursor: 'pointer',
                   textDecoration: 'underline'
                 }}
-                title="Reset redemption status for testing"
+                title="Reset redemption status"
               >
                 (Staff: Reset)
               </button>

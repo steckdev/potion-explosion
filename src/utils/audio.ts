@@ -179,10 +179,8 @@ function setupUnlockAudioOnFirstGesture() {
       }
     } catch {}
 
-    // Start music on first touch/interaction if not playing yet
-    if (!audioState.isMuted && !audioState.isPlayingMusic) {
-      playMusic(audioState.currentTrackId).catch(() => {});
-    }
+    // Only unlock AudioContext for sound effects (bloops/clicks)
+    // Background music is purely manual via play button per user preference
 
     window.removeEventListener('pointerdown', handleFirstGesture);
     window.removeEventListener('touchstart', handleFirstGesture);
@@ -346,20 +344,8 @@ if (typeof window !== 'undefined') {
     }
   }, 20000);
 
-  // Initial server calibration on boot
+  // Initial server calibration on boot (keeps clock synchronized for when music is played)
   calibrateServerTime().catch(() => {});
-
-  // Attempt immediate playback on document ready / script execution
-  const attemptAutoplay = () => {
-    playMusic().catch(() => {});
-  };
-
-  if (document.readyState === 'complete' || document.readyState === 'interactive') {
-    attemptAutoplay();
-  } else {
-    window.addEventListener('DOMContentLoaded', attemptAutoplay, { once: true });
-    window.addEventListener('load', attemptAutoplay, { once: true });
-  }
 }
 
 export async function playMusic(trackId?: string, forceManual = false): Promise<void> {

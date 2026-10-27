@@ -87,7 +87,7 @@ export const ScreenKidsMode: React.FC<ScreenKidsModeProps> = ({
 
       if (correctIds.length === 0) {
         setFeedbackMessage(
-          `🧪 The cauldron fizzled! 0 of those ingredients match your ${quest.totemName} recipe. Look around the office for posters with the ${quest.totemName} rune!`
+          `🧪 The cauldron fizzled! 0 of those ingredients match your ${quest.totemName} recipe. Look for posters with the ${quest.totemName} rune!`
         );
       } else {
         setFeedbackMessage(

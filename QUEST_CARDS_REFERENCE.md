@@ -21,19 +21,19 @@ Every card in the room carries exactly **two Elemental Runes** in the top corner
 - **Tiny Alchemists (Kids):** Look for their Totem's rune in the top corner, identify the cute ingredient picture, and match all 6 on the iPad grid.
 - **Master Alchemists (Teens & Adults):** Read the bottom riddle, solve the mystery object/creature, and take its **1st letter** to decipher their 6-letter secret word.
 
-| # | Ingredient Name (Kids) | Dual Runes | Office Location | Riddle Answer (Adults) | 1st Letter |
+| # | Ingredient Name (Kids) | Dual Runes | Station Location | Riddle Answer (Adults) | 1st Letter |
 | :-: | :--- | :--- | :--- | :--- | :-: |
 | **1** | **Dragon Scale** | 🔵 Frost + 🟣 Moon | Breakroom Kitchen *(by the fruit bowl)* | **Apple** *(Fruit/Object)* | **A** |
 | **2** | **Ghost Tears** | 🔵 Frost + 🟣 Moon | Lobby Reception Desk | **Haunted House** *(Structure)* | **H** |
 | **3** | **Werewolf Fur** | 🔵 Frost + 🟢 Venom | Window Sill *(overlooking courtyard)* | **Owl** *(Creature)* | **O** |
-| **4** | **Herbs** | 🔵 Frost + 🟢 Venom | Office Planter / Green Wall | **Werewolf** *(Creature)* | **W** |
+| **4** | **Herbs** | 🔵 Frost + 🟢 Venom | Green Planter / Living Wall | **Werewolf** *(Creature)* | **W** |
 | **5** | **Candy Corn** | 🔴 Fire + 🔵 Frost | Snack Pantry / Treat Station | **Skeleton** *(Bones/Object)* | **S** |
 | **6** | **Bat Wings** | 🔴 Fire + 🔵 Frost | Ceiling Vent Beam / Coat Rack | **Darkness** *(Mystery)* | **D** |
 | **7** | **Banshee Scream** | 🔴 Fire + 🟢 Venom | Phone Booth 3 *(Soundproof Room)* | **Pumpkin** *(Jack-o'-lantern)* | **P** |
 | **8** | **Pumpkin Seeds** | 🔴 Fire + 🟢 Venom | Main Conference Room Whiteboard | **Eyeball** *(Curiosity in a jar)* | **E** |
 | **9** | **Spider Venom** | 🔴 Fire + 🟣 Moon | Corner Quiet Pod *(under dim lamp)* | **Raven** *(Creature)* | **R** |
 | **10** | **Toad Slime** | 🟢 Venom + 🟣 Moon | Water Dispenser / Kitchen Sink | **Dracula** *(Vampire Count)* | **D** |
-| **11** | **Glow Worms** | 🔴 Fire + 🟣 Moon | IT Rack / Blinking Server Station | **Ink** *(Alchemical Object)* | **I** |
+| **11** | **Glow Worms** | 🔴 Fire + 🟣 Moon | Tech Rack / Blinking Server Station | **Ink** *(Alchemical Object)* | **I** |
 | **12** | **Pixie Dust** | 🟢 Venom + 🟣 Moon | Library Bookshelf / Game Cabinet | **Cauldron** *(Cast-iron Pot)* | **C** |
 
 ---
@@ -43,7 +43,7 @@ Every card in the room carries exactly **two Elemental Runes** in the top corner
 * **Card Number:** 11
 * **Card Ingredient:** Glow Worms
 * **Dual Runes:** 🔴 Fire Torch + 🟣 Shadow Moon
-* **Office Location:** IT Rack / Blinking Server Station
+* **Station Location:** Tech Rack / Blinking Server Station
 * **Target Letter:** `I`
 * **Riddle Answer:** `Ink`
 * **Riddle Text:**

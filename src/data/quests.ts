@@ -12,7 +12,7 @@ export const QUESTS: Record<RuneType, QuestInfo> = {
     glowColor: 'rgba(255, 69, 58, 0.7)',
     secretWord: 'SPIDER',
     subtitle: 'Blazing embers that ignite mystical brews',
-    description: 'Carry the glowing Fire Torch through the office. Hunt for cards bearing the Red Torch emblem!'
+    description: 'Carry the glowing Fire Torch through the realm. Hunt for cards bearing the Red Torch emblem!'
   },
   frost: {
     rune: 'frost',
@@ -25,7 +25,7 @@ export const QUESTS: Record<RuneType, QuestInfo> = {
     glowColor: 'rgba(0, 200, 255, 0.7)',
     secretWord: 'SHADOW',
     subtitle: 'Chilled crystalline magic that freezes time',
-    description: 'Carry the glowing Frost Crystal through the office. Hunt for cards bearing the Blue Crystal emblem!'
+    description: 'Carry the glowing Frost Crystal through the realm. Hunt for cards bearing the Blue Crystal emblem!'
   },
   venom: {
     rune: 'venom',
@@ -38,7 +38,7 @@ export const QUESTS: Record<RuneType, QuestInfo> = {
     glowColor: 'rgba(57, 255, 20, 0.7)',
     secretWord: 'POWDER',
     subtitle: 'Bubbly acidic botanicals and rare swamp concoctions',
-    description: 'Carry the glowing Venom Leaf through the office. Hunt for cards bearing the Green Leaf emblem!'
+    description: 'Carry the glowing Venom Leaf through the realm. Hunt for cards bearing the Green Leaf emblem!'
   },
   moon: {
     rune: 'moon',
@@ -51,6 +51,6 @@ export const QUESTS: Record<RuneType, QuestInfo> = {
     glowColor: 'rgba(191, 90, 242, 0.7)',
     secretWord: 'CHARMS',
     subtitle: 'Astral moonlight that reveals hidden enchantments',
-    description: 'Carry the glowing Shadow Moon through the office. Hunt for cards bearing the Purple Moon emblem!'
+    description: 'Carry the glowing Shadow Moon through the realm. Hunt for cards bearing the Purple Moon emblem!'
   }
 };

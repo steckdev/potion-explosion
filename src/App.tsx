@@ -83,6 +83,53 @@ export const App: React.FC = () => {
     };
   }, [cards]);
 
+  // Default to fullscreen on load and trigger native fullscreen on user gesture
+  useEffect(() => {
+    if (isAdmin) return;
+
+    if (typeof document !== 'undefined') {
+      document.body.classList.add('kiosk-fullscreen-mode');
+    }
+
+    const triggerFullscreen = () => {
+      if (typeof document === 'undefined') return;
+      const doc = document as any;
+      const docEl = document.documentElement as any;
+      const isFull = !!(doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement || doc.msFullscreenElement);
+      if (!isFull) {
+        if (docEl.requestFullscreen) {
+          docEl.requestFullscreen().catch(() => {});
+        } else if (docEl.webkitRequestFullscreen) {
+          docEl.webkitRequestFullscreen();
+        } else if (docEl.webkitRequestFullScreen) {
+          docEl.webkitRequestFullScreen();
+        }
+      }
+      document.body.classList.add('kiosk-fullscreen-mode');
+    };
+
+    // Attempt immediately on mount
+    triggerFullscreen();
+
+    // Trigger on first click / touch / pointer gesture (satisfies browser gesture requirements)
+    const handleGesture = () => {
+      triggerFullscreen();
+      window.removeEventListener('pointerdown', handleGesture);
+      window.removeEventListener('touchstart', handleGesture);
+      window.removeEventListener('click', handleGesture);
+    };
+
+    window.addEventListener('pointerdown', handleGesture, { once: true });
+    window.addEventListener('touchstart', handleGesture, { once: true });
+    window.addEventListener('click', handleGesture, { once: true });
+
+    return () => {
+      window.removeEventListener('pointerdown', handleGesture);
+      window.removeEventListener('touchstart', handleGesture);
+      window.removeEventListener('click', handleGesture);
+    };
+  }, [isAdmin]);
+
   // Sync admin state with URL query param
   const handleToggleAdmin = () => {
     setIsAdmin(prev => {
@@ -100,6 +147,18 @@ export const App: React.FC = () => {
 
   // Start quest from Hub
   const handleSelectQuest = (rune: RuneType, mode: GameMode) => {
+    if (typeof document !== 'undefined') {
+      const doc = document as any;
+      const docEl = document.documentElement as any;
+      if (!doc.fullscreenElement && !doc.webkitFullscreenElement) {
+        if (docEl.requestFullscreen) {
+          docEl.requestFullscreen().catch(() => {});
+        } else if (docEl.webkitRequestFullscreen) {
+          docEl.webkitRequestFullscreen();
+        }
+      }
+      document.body.classList.add('kiosk-fullscreen-mode');
+    }
     setSelectedQuestRune(rune);
     setSelectedMode(mode);
     if (mode === 'kids') {

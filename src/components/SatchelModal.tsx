@@ -28,6 +28,8 @@ export const SatchelModal: React.FC<SatchelModalProps> = ({
   const [selectedInspectCard, setSelectedInspectCard] = useState<CardData | null>(null);
   const [isCameraScannerOpen, setIsCameraScannerOpen] = useState(false);
   const [isAudioMuted, setIsAudioMuted] = useState(() => getAudioState().isMuted);
+  const [virtualInputText, setVirtualInputText] = useState('');
+  const [virtualFeedback, setVirtualFeedback] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   useEffect(() => {
     return subscribeAudioState(state => {
@@ -42,6 +44,28 @@ export const SatchelModal: React.FC<SatchelModalProps> = ({
       onCardScanned(matched);
     } else {
       alert(`Scanned code: "${code}", but could not find a matching card in this quest.`);
+    }
+  };
+
+  const handleVirtualSolve = (e: React.FormEvent) => {
+    e.preventDefault();
+    const query = virtualInputText.trim().toLowerCase();
+    if (!query) return;
+
+    const matched = cards.find(c => 
+      c.name.toLowerCase() === query ||
+      c.riddleAnswer.toLowerCase() === query ||
+      (c.name.toLowerCase().includes(query) && query.length >= 4) ||
+      (c.riddleAnswer.toLowerCase().includes(query) && query.length >= 4)
+    );
+
+    if (matched) {
+      playBloop(1.2);
+      setVirtualInputText('');
+      setVirtualFeedback({ type: 'success', text: `✨ Attuned Card #${matched.number}: ${matched.name}!` });
+      onCardScanned(matched);
+    } else {
+      setVirtualFeedback({ type: 'error', text: `"${virtualInputText}" did not attune any ingredient. Check your riddle solutions!` });
     }
   };
 
@@ -127,7 +151,7 @@ export const SatchelModal: React.FC<SatchelModalProps> = ({
                 playBloop(1.0);
                 toggleMusic();
               }}
-              title={isAudioMuted ? "Unmute room music" : "Mute room music (Silent Office Mode)"}
+              title={isAudioMuted ? "Unmute room music" : "Mute room music (Silent Mode)"}
               style={{
                 backgroundColor: isAudioMuted ? 'rgba(239, 68, 68, 0.2)' : 'rgba(255, 255, 255, 0.1)',
                 border: isAudioMuted ? '1px solid rgba(239, 68, 68, 0.4)' : '1px solid rgba(255, 255, 255, 0.15)',
@@ -215,7 +239,7 @@ export const SatchelModal: React.FC<SatchelModalProps> = ({
           }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#e2e8f0' }}>
-                Total Office Ingredients Found
+                Total Magical Ingredients Found
               </span>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                 {collectedCount > 0 && (
@@ -264,7 +288,7 @@ export const SatchelModal: React.FC<SatchelModalProps> = ({
             </div>
 
             <p style={{ margin: 0, fontSize: '0.78rem', color: '#94a3b8' }}>
-              💡 Scan NFC stickers on wall cards around the office with your phone or point your camera at the QR code to claim ingredients.
+              💡 Scan NFC stickers on cards, scan QR codes, or enter riddle answers virtually to collect ingredients.
             </p>
           </div>
 
@@ -323,6 +347,70 @@ export const SatchelModal: React.FC<SatchelModalProps> = ({
               <Radio size={16} color="#39ff14" />
               <span>📱 Tap with NFC</span>
             </button>
+          </div>
+
+          {/* Virtual Quest Mode: Enter Riddle Answer directly */}
+          <div style={{
+            backgroundColor: 'rgba(255, 255, 255, 0.04)',
+            border: '1px dashed rgba(255, 255, 255, 0.18)',
+            borderRadius: '12px',
+            padding: '0.65rem 0.85rem',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.45rem'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '0.78rem', color: '#e2e8f0', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <span>🔮</span>
+                <span>Playing Virtually? Enter Riddle Solution:</span>
+              </span>
+              <span style={{ fontSize: '0.7rem', color: '#a855f7', fontWeight: 600 }}>Zoom / Remote</span>
+            </div>
+            <form
+              onSubmit={handleVirtualSolve}
+              style={{ display: 'flex', gap: '0.4rem' }}
+            >
+              <input
+                type="text"
+                value={virtualInputText}
+                onChange={(e) => setVirtualInputText(e.target.value)}
+                placeholder="Type ingredient or riddle answer (e.g. Werewolf, Spider...)"
+                style={{
+                  flex: 1,
+                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '8px',
+                  padding: '6px 10px',
+                  color: '#ffffff',
+                  fontSize: '0.8rem'
+                }}
+              />
+              <button
+                type="submit"
+                style={{
+                  backgroundColor: '#8338ec',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '8px',
+                  padding: '6px 14px',
+                  fontWeight: 700,
+                  fontSize: '0.8rem',
+                  cursor: 'pointer',
+                  boxShadow: '0 0 10px rgba(131, 56, 236, 0.45)'
+                }}
+              >
+                Attune
+              </button>
+            </form>
+            {virtualFeedback && (
+              <div style={{
+                fontSize: '0.74rem',
+                color: virtualFeedback.type === 'success' ? '#39ff14' : '#f87171',
+                fontWeight: 600
+              }}>
+                {virtualFeedback.text}
+              </div>
+            )}
           </div>
 
           {/* Quest Readiness Cards */}
@@ -415,7 +503,7 @@ export const SatchelModal: React.FC<SatchelModalProps> = ({
                 GRAND MASTER ALCHEMIST COMPLETED!
               </strong>
               <p style={{ margin: 0, fontSize: '0.8rem', color: '#cbd5e1' }}>
-                You have scanned and secured all 12 ingredients in the office!
+                You have discovered and secured all 12 ingredients in the realm!
               </p>
               <button
                 onClick={() => {

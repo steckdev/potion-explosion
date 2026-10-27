@@ -50,7 +50,7 @@ export const DEFAULT_CARDS: CardData[] = [
     targetLetter: 'W',
     riddleAnswer: 'Werewolf',
     riddle: 'When the full silver moon casts its luminous light, I howl at the stars and transform in the night! What am I? (Take my 1st letter!)',
-    location: 'Office Planter / Green Wall'
+    location: 'Green Planter / Living Wall'
   },
   {
     id: 'card-5',

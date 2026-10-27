@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Volume2, VolumeX, Printer, HelpCircle, Maximize, Minimize, Music, Sliders, Play, Pause } from 'lucide-react';
+import { Volume2, VolumeX, HelpCircle, Maximize, Minimize, Music, Sliders, Play, Pause } from 'lucide-react';
 import { setMuted, playBloop, subscribeAudioState, getAudioState, playMusic, pauseMusic, MUSIC_TRACKS, type AudioState } from '../utils/audio';
 import { AudioSettingsModal } from './AudioSettingsModal';
 
 interface HeaderProps {
-  isAdmin: boolean;
-  onToggleAdmin: () => void;
+  isAdmin?: boolean;
+  onToggleAdmin?: () => void;
   isMuted: boolean;
   onToggleMute: () => void;
   onOpenHelp: () => void;
@@ -15,8 +15,8 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({
-  isAdmin,
-  onToggleAdmin,
+  isAdmin = false,
+  onToggleAdmin: _onToggleAdmin,
   isMuted: _isMuted,
   onToggleMute,
   onOpenHelp,
@@ -24,7 +24,10 @@ export const Header: React.FC<HeaderProps> = ({
   collectedCount = 0,
   onOpenSatchel
 }) => {
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(() => {
+    if (isAdmin) return false;
+    return true; // Default to full screen on load
+  });
   const [fullscreenToast, setFullscreenToast] = useState<string | null>(null);
   const [isAudioModalOpen, setIsAudioModalOpen] = useState(false);
   const [audioState, setAudioState] = useState<AudioState>(() => getAudioState());
@@ -35,6 +38,12 @@ export const Header: React.FC<HeaderProps> = ({
     });
     return unsub;
   }, []);
+
+  useEffect(() => {
+    if (!isAdmin && typeof document !== 'undefined') {
+      document.body.classList.add('kiosk-fullscreen-mode');
+    }
+  }, [isAdmin]);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -454,40 +463,6 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           </div>
         )}
-
-        {/* Poster Studio & Admin Toggle */}
-        <button
-          onClick={onToggleAdmin}
-          className={isAdmin ? '' : 'desktop-only-btn'}
-          style={{
-            background: isAdmin 
-              ? 'linear-gradient(135deg, #f59e0b, #d97706)' 
-              : 'rgba(131, 56, 236, 0.25)',
-            border: isAdmin 
-              ? '1px solid #fbbf24' 
-              : '1px solid rgba(191, 90, 242, 0.5)',
-            color: '#ffffff',
-            padding: '0.4rem 0.75rem',
-            borderRadius: '999px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.35rem',
-            fontSize: '0.8rem',
-            fontWeight: 600,
-            boxShadow: isAdmin ? '0 0 14px rgba(245, 158, 11, 0.5)' : 'none',
-            transition: 'all 0.2s ease'
-          }}
-          onMouseEnter={(e) => {
-            if (!isAdmin) e.currentTarget.style.backgroundColor = 'rgba(131, 56, 236, 0.45)';
-          }}
-          onMouseLeave={(e) => {
-            if (!isAdmin) e.currentTarget.style.backgroundColor = 'rgba(131, 56, 236, 0.25)';
-          }}
-        >
-          <Printer size={14} color={isAdmin ? '#ffffff' : '#bf5af2'} />
-          <span>{isAdmin ? 'Exit Admin' : 'Poster Studio & Admin'}</span>
-        </button>
       </div>
     </header>
     )}

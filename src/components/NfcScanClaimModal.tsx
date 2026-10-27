@@ -179,14 +179,14 @@ export const NfcScanClaimModal: React.FC<NfcScanClaimModalProps> = ({
           textAlign: 'center'
         }}
       >
-        {/* Quick Audio Mute / Unmute Button for Office Room courtesy */}
+        {/* Quick Audio Mute / Unmute Button */}
         <button
           onClick={() => {
             playBloop(1.0);
             toggleMusic();
           }}
           aria-label={isAudioMuted ? "Unmute room music" : "Mute room music"}
-          title={isAudioMuted ? "Unmute room music" : "Mute room music (Silent Office Mode)"}
+          title={isAudioMuted ? "Unmute room music" : "Mute room music (Silent Mode)"}
           style={{
             position: 'absolute',
             top: '14px',
@@ -380,7 +380,7 @@ export const NfcScanClaimModal: React.FC<NfcScanClaimModalProps> = ({
           )}
         </div>
 
-        {/* Office Location Tag */}
+        {/* Station Location Tag */}
         {card.location && (
           <div style={{
             display: 'flex',

@@ -198,7 +198,7 @@ function setupUnlockAudioOnFirstGesture() {
 
 // -------------------------------------------------------------
 // Time-Synchronized Room Audio Engine
-// Keeps all participant phones in the office playing the exact same track
+// Keeps all participant phones playing the exact same track
 // and beat in sync, with periodic server time calibration and screen-off pausing.
 // -------------------------------------------------------------
 

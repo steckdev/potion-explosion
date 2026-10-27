@@ -354,7 +354,7 @@ export const PrintablePoster: React.FC<PrintablePosterProps> = ({
                 SCAN QR CODE
               </div>
               <div style={{ fontSize: '0.72rem', color: '#78350f', fontWeight: 600 }}>
-                Point camera to open ingredient
+                Point camera to capture ingredient
               </div>
             </div>
             {qrCodeUrl ? (

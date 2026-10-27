@@ -78,7 +78,7 @@ export const RulesModal: React.FC<RulesModalProps> = ({ isOpen, onClose }) => {
             <span>HOW TO PLAY THE ALCHEMY QUEST</span>
           </div>
           <h2 className="font-mystic" style={{ fontSize: '1.6rem', margin: 0, color: '#f8fafc' }}>
-            Office Halloween Adventure Guide
+            The Great Alchemy Adventure Guide
           </h2>
         </div>
 
@@ -111,9 +111,9 @@ export const RulesModal: React.FC<RulesModalProps> = ({ isOpen, onClose }) => {
           }}>
             <span style={{ fontSize: '1.4rem' }}>🗺️</span>
             <div>
-              <strong style={{ color: '#00c8ff' }}>Step 2: Hunt for Clue Cards in the Office</strong>
+              <strong style={{ color: '#00c8ff' }}>Step 2: Hunt for Clue Posters</strong>
               <div style={{ color: '#cbd5e1', marginTop: '2px' }}>
-                Walk around the office looking for the 12 magical clue posters. Only focus on posters that have your Totem's Rune emblem in the top corners!
+                Seek out the 12 magical clue posters. Only focus on posters that have your Totem's Rune emblem in the top corners!
               </div>
             </div>
           </div>

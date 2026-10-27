@@ -561,7 +561,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
               }}
             >
               <MapPin size={13} />
-              <span>{showStaffNotes ? 'Mounting Notes: ON (Office Setup)' : 'Mounting Notes: OFF (Clean)'}</span>
+              <span>{showStaffNotes ? 'Mounting Notes: ON (Setup Guide)' : 'Mounting Notes: OFF (Clean)'}</span>
             </button>
           </div>
 
@@ -938,10 +938,10 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                   </div>
                 </div>
 
-                {/* Office Location */}
+                {/* Station Location */}
                 <div>
                   <label style={{ fontSize: '0.78rem', color: '#cbd5e1', fontWeight: 600 }}>
-                    Office Wall Location Hint (Staff Guide):
+                    Station Wall Location Hint (Staff Guide):
                   </label>
                   <input
                     type="text"
@@ -1027,7 +1027,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
           </div>
         )}
 
-        {/* VIEW: Office Setup Checklist */}
+        {/* VIEW: Realm Setup Checklist */}
         {viewMode === 'checklist' && (
           <div style={{ maxWidth: '8.5in', margin: '0 auto', width: '100%' }}>
             <div className="print-page-container" style={{
@@ -1052,13 +1052,13 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                   marginBottom: '0.8rem'
                 }}>
                   <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#b45309', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                    Office Event Preparation & Game Runner Guide
+                    Event Preparation & Game Runner Guide
                   </div>
                   <h1 className="font-mystic" style={{ margin: '4px 0', fontSize: '1.75rem', color: '#3d2314' }}>
                     THE GREAT ALCHEMY QUEST • SETUP CHECKLIST
                   </h1>
                   <p style={{ margin: 0, fontSize: '0.82rem', color: '#78350f', fontWeight: 600 }}>
-                    12 Office Stations Readiness • Room Mounting & NFC Programming Verification
+                    12 Stations Readiness • Wall Mounting & NFC Programming Verification
                   </p>
                 </div>
 
@@ -1073,7 +1073,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                     <tr style={{ backgroundColor: '#3d2314', color: '#fef3c7' }}>
                       <th style={{ padding: '6px 8px', textAlign: 'center', width: '35px' }}>#</th>
                       <th style={{ padding: '6px 8px', textAlign: 'left' }}>Ingredient & Totems</th>
-                      <th style={{ padding: '6px 8px', textAlign: 'left' }}>Office Hiding Spot / Location</th>
+                      <th style={{ padding: '6px 8px', textAlign: 'left' }}>Station Hiding Spot / Location</th>
                       <th style={{ padding: '6px 8px', textAlign: 'center', width: '70px' }}>Letter</th>
                       <th style={{ padding: '6px 6px', textAlign: 'center', width: '60px' }}>NFC Tag</th>
                       <th style={{ padding: '6px 6px', textAlign: 'center', width: '60px' }}>Mounted</th>
@@ -1099,7 +1099,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                           </span>
                         </td>
                         <td style={{ padding: '6px 8px', color: '#451a03', fontWeight: 600 }}>
-                          📍 {c.location || 'Assign office room'}
+                          📍 {c.location || 'Assign location'}
                         </td>
                         <td style={{ padding: '6px 8px', textAlign: 'center' }}>
                           <span style={{
@@ -1271,7 +1271,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                             <th style={{ padding: '4px 8px', border: '1px solid #d97706' }}>Ingredient (Kids)</th>
                             <th style={{ padding: '4px 8px', border: '1px solid #d97706' }}>Letter</th>
                             <th style={{ padding: '4px 8px', border: '1px solid #d97706' }}>Riddle Answer</th>
-                            <th style={{ padding: '4px 8px', border: '1px solid #d97706' }}>Office Location</th>
+                            <th style={{ padding: '4px 8px', border: '1px solid #d97706' }}>Station Location</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -1281,7 +1281,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                               <td style={{ padding: '4px 8px', border: '1px solid #fcd34d' }}>{c.name}</td>
                               <td style={{ padding: '4px 8px', border: '1px solid #fcd34d', fontWeight: 900, color: '#b45309' }}>[{c.targetLetter}]</td>
                               <td style={{ padding: '4px 8px', border: '1px solid #fcd34d' }}>{c.riddleAnswer}</td>
-                              <td style={{ padding: '4px 8px', border: '1px solid #fcd34d' }}>{c.location || 'Office'}</td>
+                              <td style={{ padding: '4px 8px', border: '1px solid #fcd34d' }}>{c.location || 'Station'}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -1314,7 +1314,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
             }}>
               <div>
                 <div style={{ fontSize: '1rem', fontWeight: 800, color: '#b45309', letterSpacing: '2px' }}>
-                  WELCOME TO THE OFFICE ADVENTURE
+                  WELCOME TO THE ALCHEMY ADVENTURE
                 </div>
                 <h1 className="font-mystic" style={{ fontSize: '2.8rem', margin: '0.4rem 0', color: '#3d2314' }}>
                   THE GREAT ALCHEMY QUEST
@@ -1375,7 +1375,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                   gap: '0.5rem'
                 }}>
                   <div style={{ fontSize: '2.5rem' }}>🗺️</div>
-                  <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#3d2314' }}>2. Explore Office</h3>
+                  <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#3d2314' }}>2. Explore & Seek</h3>
                   <p style={{ margin: 0, fontSize: '0.88rem', color: '#78350f', lineHeight: 1.35 }}>
                     Walk around looking for posters bearing your Totem's Rune emblem in the corners.
                   </p>
@@ -1612,7 +1612,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
 
               {/* Body Text */}
               <div style={{ zIndex: 5, maxWidth: '6in', fontSize: '1.15rem', lineHeight: 1.5, color: '#3d2314' }}>
-                has braved the enchanted corridors, attuned the sacred path, and decoded the hidden ingredients of the office to attain the rank of:
+                has braved the enchanted corridors, attuned the sacred path, and decoded the hidden ingredients of the realm to attain the rank of:
                 <div style={{
                   fontSize: '1.65rem',
                   fontWeight: 900,
@@ -1682,7 +1682,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                   </div>
                   <div style={{ width: '180px', height: '2px', backgroundColor: '#78350f' }} />
                   <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#92400e', marginTop: '3px' }}>
-                    Quest Master Office Station
+                    Quest Master Realm Station
                   </span>
                 </div>
               </div>
@@ -1978,7 +1978,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                   <h4 style={{ margin: 0, color: '#ff3b30', fontSize: '1rem' }}>🔴 🔵 🟢 🟣 4 Physical Elemental Totems</h4>
                   <button
                     onClick={() => {
-                      const p = `Set of 4 physical 3D-printed tabletop gaming totems for Halloween office scavenger hunt, translucent silk colored filament: 1) Crimson Fire Torch in glowing ruby red, 2) Glacial Frost Crystal in ice sapphire blue, 3) Toxic Venom Leaf in emerald neon green, 4) Mystic Shadow Moon in astral amethyst purple. Carved dark stone pedestal bases with glowing runes, internal LED tea-light glow, cinematic macro studio product render, isolated on pure white background, clean product design, ultra high detail --v 6.0`;
+                      const p = `Set of 4 physical 3D-printed tabletop gaming totems for Halloween alchemy quest scavenger hunt, translucent silk colored filament: 1) Crimson Fire Torch in glowing ruby red, 2) Glacial Frost Crystal in ice sapphire blue, 3) Toxic Venom Leaf in emerald neon green, 4) Mystic Shadow Moon in astral amethyst purple. Carved dark stone pedestal bases with glowing runes, internal LED tea-light glow, cinematic macro studio product render, isolated on pure white background, clean product design, ultra high detail --v 6.0`;
                       navigator.clipboard.writeText(p);
                       setPromptCopied('totems');
                       setTimeout(() => setPromptCopied(null), 2000);
@@ -1990,7 +1990,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                   </button>
                 </div>
                 <p style={{ fontSize: '0.82rem', color: '#94a3b8', margin: 0, lineHeight: 1.4 }}>
-                  Use this to render visual mockups or 3D print guides for the physical handheld totems players carry through the office.
+                  Use this to render visual mockups or 3D print guides for the physical handheld totems players carry through the realm.
                 </p>
               </div>
 
@@ -2166,7 +2166,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                       Scan Host / Domain Address
                     </span>
                     <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>
-                      Phones must access this address over office Wi-Fi (use Wi-Fi IP e.g. <code style={{ color: '#38bdf8' }}>http://192.168.x.x:5173</code> instead of localhost)
+                      Phones must access this address over local Wi-Fi (use Wi-Fi IP e.g. <code style={{ color: '#38bdf8' }}>http://192.168.x.x:5173</code> instead of localhost)
                     </span>
                   </div>
                 </div>
@@ -2282,7 +2282,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                           <strong style={{ fontSize: '0.95rem', color: '#f8fafc' }}>{card.name}</strong>
                         </div>
                         <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
-                          {card.location || 'Office'} • Letter: <strong style={{ color: '#39ff14' }}>{card.targetLetter}</strong> ({card.riddleAnswer})
+                          {card.location || 'Station'} • Letter: <strong style={{ color: '#39ff14' }}>{card.targetLetter}</strong> ({card.riddleAnswer})
                         </div>
                       </div>
                     </div>

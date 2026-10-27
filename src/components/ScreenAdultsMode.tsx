@@ -20,7 +20,7 @@ export const ScreenAdultsMode: React.FC<ScreenAdultsModeProps> = ({
   const quest = QUESTS[questRune];
   const targetWord = quest.secretWord.toUpperCase(); // 6 letters (e.g. SPIDER, SHADOW, etc.)
 
-  // Cards that carry this rune in the office
+  // Cards that carry this rune in the realm
   const questCards = cards.filter(c => c.runes.includes(questRune));
 
   // Game state
@@ -545,13 +545,13 @@ export const ScreenAdultsMode: React.FC<ScreenAdultsModeProps> = ({
         margin: '0 auto'
       }}>
         <div style={{
-          fontSize: '0.76rem',
+          fontSize: '0.74rem',
           color: '#cbd5e1',
           fontWeight: 700,
           textAlign: 'center',
           letterSpacing: '0.5px'
         }}>
-          CARDS WITH {quest.totemName.toUpperCase()} IN OFFICE (TAP TO VIEW RIDDLE CLUE):
+          CARDS WITH {quest.totemName.toUpperCase()} RUNE (TAP TO VIEW RIDDLE CLUE):
         </div>
         <div style={{
           display: 'grid',
@@ -626,7 +626,7 @@ export const ScreenAdultsMode: React.FC<ScreenAdultsModeProps> = ({
             <img src={inspectedCard.sprite} alt={inspectedCard.name} style={{ width: '48px', height: '48px', objectFit: 'contain' }} />
             <div>
               <div style={{ fontSize: '0.75rem', color: quest.color, fontWeight: 700 }}>
-                CARD #{inspectedCard.number} • {inspectedCard.location || 'Office'}
+                CARD #{inspectedCard.number} • {inspectedCard.location || 'Realm Station'}
               </div>
               <div>
                 <div style={{ fontSize: '0.92rem', color: '#ffffff', fontWeight: 600, fontStyle: 'italic', lineHeight: 1.35 }}>

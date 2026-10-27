@@ -281,23 +281,30 @@ export const SatchelModal: React.FC<SatchelModalProps> = ({
               <span>Scan QR Code</span>
             </button>
 
-            <div style={{
-              backgroundColor: 'rgba(57, 255, 20, 0.08)',
-              border: '1.5px solid rgba(57, 255, 20, 0.45)',
-              borderRadius: '12px',
-              padding: '0.75rem 0.6rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.5rem',
-              color: '#39ff14',
-              fontWeight: 700,
-              fontSize: '0.84rem',
-              textAlign: 'center'
-            }}>
+            <button
+              onClick={() => {
+                playBloop(1.1);
+                alert("📱 How NFC Works on iPhone & Android:\n\n• iPhone: Hold the top edge of your phone against any wall poster sticker. iOS will show a banner to claim!\n• Android: Tap the poster sticker directly.\n• Or use 'Scan QR Code' with your camera!");
+              }}
+              style={{
+                backgroundColor: 'rgba(57, 255, 20, 0.08)',
+                border: '1.5px solid rgba(57, 255, 20, 0.45)',
+                borderRadius: '12px',
+                padding: '0.75rem 0.6rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.5rem',
+                color: '#39ff14',
+                fontWeight: 700,
+                fontSize: '0.84rem',
+                textAlign: 'center',
+                cursor: 'pointer'
+              }}
+            >
               <Radio size={16} color="#39ff14" />
-              <span>NFC Ready (Tap Card)</span>
-            </div>
+              <span>📱 Tap with NFC</span>
+            </button>
           </div>
 
           {/* Quest Readiness Cards */}
@@ -543,7 +550,7 @@ export const SatchelModal: React.FC<SatchelModalProps> = ({
               {selectedInspectCard.location && (
                 <div style={{ fontSize: '0.75rem', color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
                   <MapPin size={12} />
-                  <span>Found at: {selectedInspectCard.location}</span>
+                  <span>{selectedInspectCard.location}</span>
                 </div>
               )}
 

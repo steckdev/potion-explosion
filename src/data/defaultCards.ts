@@ -61,7 +61,7 @@ export const DEFAULT_CARDS: CardData[] = [
     targetLetter: 'S',
     riddleAnswer: 'Skeleton',
     riddle: 'I rattle my bones as I dance in the street, with no skin or muscles from head to my feet! What am I? (Take my 1st letter!)',
-    location: 'Snack Pantry / Treat Station'
+    location: 'Snack Pantry / Treat Table'
   },
   {
     id: 'card-6',
@@ -127,7 +127,7 @@ export const DEFAULT_CARDS: CardData[] = [
     targetLetter: 'I',
     riddleAnswer: 'Ink',
     riddle: 'Dark as midnight in a bottle or well, dip a feathered quill to write an ancient spell! What am I? (Take my 1st letter!)',
-    location: 'IT Rack / Blinking Server Station'
+    location: 'IT Server Rack (Blinking Lights)'
   },
   {
     id: 'card-12',

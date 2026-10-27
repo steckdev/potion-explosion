@@ -2086,7 +2086,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                           <strong style={{ fontSize: '0.95rem', color: '#f8fafc' }}>{card.name}</strong>
                         </div>
                         <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
-                          {card.location || 'Station'} • Letter: <strong style={{ color: '#39ff14' }}>{card.targetLetter}</strong> ({card.riddleAnswer})
+                          {card.location || 'Office'} • Letter: <strong style={{ color: '#39ff14' }}>{card.targetLetter}</strong> ({card.riddleAnswer})
                         </div>
                       </div>
                     </div>

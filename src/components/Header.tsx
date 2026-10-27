@@ -216,7 +216,7 @@ export const Header: React.FC<HeaderProps> = ({
         />
         <div style={{ flexShrink: 0 }}>
           <h1 className="font-mystic" style={{
-            fontSize: 'clamp(1rem, 2.4vw, 1.25rem)',
+            fontSize: 'clamp(0.92rem, 3.2vw, 1.25rem)',
             letterSpacing: '0.8px',
             color: '#ffbe0b',
             textShadow: '0 0 10px rgba(255, 190, 11, 0.4)',
@@ -224,13 +224,13 @@ export const Header: React.FC<HeaderProps> = ({
             margin: 0,
             whiteSpace: 'nowrap'
           }}>
-            THE GREAT ALCHEMY QUEST
+            ALCHEMY QUEST
           </h1>
         </div>
       </button>
 
       {/* Action Controls */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexShrink: 0 }}>
         {/* Satchel Button */}
         {onOpenSatchel && (
           <button
@@ -245,13 +245,13 @@ export const Header: React.FC<HeaderProps> = ({
                 : 'rgba(255, 255, 255, 0.08)',
               border: collectedCount > 0 ? '1px solid #39ff14' : '1px solid rgba(255, 255, 255, 0.15)',
               color: '#ffffff',
-              padding: '0.45rem 0.8rem',
+              padding: '0.4rem 0.65rem',
               borderRadius: '999px',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.4rem',
-              fontSize: '0.82rem',
+              gap: '0.35rem',
+              fontSize: '0.8rem',
               fontWeight: 700,
               boxShadow: collectedCount > 0 ? '0 0 12px rgba(57, 255, 20, 0.3)' : 'none',
               transition: 'all 0.2s ease'
@@ -259,14 +259,14 @@ export const Header: React.FC<HeaderProps> = ({
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.16)'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = collectedCount > 0 ? 'rgba(131, 56, 236, 0.45)' : 'rgba(255, 255, 255, 0.08)'}
           >
-            <span style={{ fontSize: '1rem' }}>🎒</span>
-            <span style={{ display: 'inline' }}>Satchel</span>
+            <span style={{ fontSize: '0.95rem' }}>🎒</span>
+            <span className="desktop-only-btn" style={{ display: 'inline' }}>Satchel</span>
             <span style={{
               backgroundColor: collectedCount > 0 ? '#39ff14' : 'rgba(255, 255, 255, 0.2)',
               color: '#090714',
               borderRadius: '999px',
-              padding: '1px 6px',
-              fontSize: '0.72rem',
+              padding: '1px 5px',
+              fontSize: '0.7rem',
               fontWeight: 900
             }}>
               {collectedCount}/12
@@ -274,9 +274,10 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
         )}
 
-        {/* Fullscreen Toggle */}
+        {/* Fullscreen Toggle (Desktop / iPad only, not on iPhone) */}
         <button
           onClick={toggleFullscreen}
+          className="desktop-only-btn"
           title={isFullscreen ? 'Exit Full Screen' : 'Enter Full Screen (Ideal for iPad)'}
           style={{
             background: isFullscreen ? 'rgba(57, 255, 20, 0.18)' : 'rgba(255, 255, 255, 0.08)',
@@ -307,13 +308,13 @@ export const Header: React.FC<HeaderProps> = ({
             background: 'rgba(255, 255, 255, 0.08)',
             border: '1px solid rgba(255, 255, 255, 0.15)',
             color: '#e2e8f0',
-            padding: '0.45rem 0.75rem',
+            padding: '0.4rem 0.6rem',
             borderRadius: '999px',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
-            gap: '0.35rem',
-            fontSize: '0.82rem',
+            gap: '0.3rem',
+            fontSize: '0.8rem',
             fontWeight: 600,
             transition: 'all 0.2s ease'
           }}
@@ -321,7 +322,7 @@ export const Header: React.FC<HeaderProps> = ({
           onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)'}
         >
           <HelpCircle size={15} color="#38bdf8" />
-          <span>Rules</span>
+          <span className="desktop-only-btn">Rules</span>
         </button>
 
         {/* Audio Sound Chamber & Mixer */}
@@ -350,24 +351,24 @@ export const Header: React.FC<HeaderProps> = ({
               background: 'none',
               border: 'none',
               color: audioState.isPlayingMusic && !audioState.isMuted ? '#ffbe0b' : '#e2e8f0',
-              padding: '0.45rem 0.65rem 0.45rem 0.8rem',
+              padding: '0.4rem 0.55rem',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.4rem',
-              fontSize: '0.82rem',
+              gap: '0.35rem',
+              fontSize: '0.8rem',
               fontWeight: 600
             }}
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
           >
             <Music size={15} color={audioState.isPlayingMusic && !audioState.isMuted ? '#ffbe0b' : '#38bdf8'} />
-            <span style={{ maxWidth: '100px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <span className="desktop-only-btn" style={{ maxWidth: '90px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {audioState.isPlayingMusic && !audioState.isMuted 
                 ? (MUSIC_TRACKS.find(t => t.id === audioState.currentTrackId)?.name || 'Music')
-                : 'Audio & Music'}
+                : 'Audio'}
             </span>
-            <Sliders size={13} color="#94a3b8" />
+            <Sliders size={13} color="#94a3b8" className="desktop-only-btn" />
           </button>
 
           <div style={{ width: '1px', height: '18px', backgroundColor: 'rgba(255, 255, 255, 0.15)' }} />
@@ -384,7 +385,7 @@ export const Header: React.FC<HeaderProps> = ({
               background: 'none',
               border: 'none',
               color: audioState.isMuted ? '#f87171' : '#39ff14',
-              padding: '0.45rem 0.65rem',
+              padding: '0.4rem 0.55rem',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',

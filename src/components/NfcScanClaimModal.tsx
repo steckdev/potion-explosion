@@ -150,28 +150,33 @@ export const NfcScanClaimModal: React.FC<NfcScanClaimModalProps> = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '1rem',
+        padding: '0.75rem',
+        overflowY: 'auto',
+        WebkitOverflowScrolling: 'touch',
         animation: 'fadeIn 0.25s ease-out'
       }}
     >
       {/* Modal Container */}
       <div
-        className="glass-panel"
+        className="glass-panel scrollable-modal-content"
         style={{
           width: '100%',
           maxWidth: '460px',
+          maxHeight: 'min(90vh, 90dvh)',
+          overflowY: 'auto',
+          WebkitOverflowScrolling: 'touch',
+          overscrollBehavior: 'contain',
           borderRadius: '24px',
-          padding: '1.5rem 1.25rem',
+          padding: '1.25rem 1.1rem calc(1.75rem + env(safe-area-inset-bottom, 20px)) 1.1rem',
           position: 'relative',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: '1rem',
+          gap: '0.85rem',
           border: `2px solid ${showSecured ? '#39ff14' : primaryQuest.color}`,
           boxShadow: `0 0 35px ${primaryQuest.glowColor}, 0 15px 40px rgba(0, 0, 0, 0.8)`,
           background: `radial-gradient(circle at 50% 20%, rgba(30, 20, 60, 0.85) 0%, rgba(9, 7, 20, 0.98) 100%)`,
-          textAlign: 'center',
-          overflow: 'hidden'
+          textAlign: 'center'
         }}
       >
         {/* Quick Audio Mute / Unmute Button for Office Room courtesy */}
@@ -389,7 +394,7 @@ export const NfcScanClaimModal: React.FC<NfcScanClaimModalProps> = ({
             border: '1px solid rgba(255, 255, 255, 0.1)'
           }}>
             <MapPin size={14} color="#38bdf8" />
-            <span>Station: {card.location}</span>
+            <span>{card.location}</span>
           </div>
         )}
 

@@ -104,6 +104,48 @@ html, body {
     radial-gradient(circle at 85% 85%, rgba(255, 59, 48, 0.12) 0%, transparent 40%),
     linear-gradient(180deg, #0b0818 0%, #130d2a 50%, #080612 100%);
   position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* Mobile Responsive Quest Cards Carousel */
+.quest-cards-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  width: 100%;
+}
+
+@media (max-width: 720px) {
+  .quest-cards-container {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 0.85rem;
+    padding: 0.5rem 0.75rem 1.25rem 0.75rem;
+    margin: 0 -0.75rem;
+    width: calc(100% + 1.5rem);
+    scrollbar-width: thin;
+  }
+
+  .quest-cards-container > .quest-rune-card {
+    flex: 0 0 240px;
+    scroll-snap-align: center;
+  }
+
+  /* Hide non-essential desktop buttons on mobile header */
+  .desktop-only-btn {
+    display: none !important;
+  }
+}
+
+/* Modal Scroll Container Hardening for iOS Safari */
+.scrollable-modal-content {
+  max-height: min(88vh, 88dvh);
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior: contain;
 }
 
 /* Fullscreen & iPad Kiosk Mode Styles */

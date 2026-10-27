@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Camera, RefreshCw, AlertCircle } from 'lucide-react';
+import jsQR from 'jsqr';
 import { playBloop, playNfcHum } from '../utils/audio';
 
 interface CameraQrScannerModalProps {
@@ -19,6 +20,7 @@ export const CameraQrScannerModal: React.FC<CameraQrScannerModalProps> = ({
   const streamRef = useRef<MediaStream | null>(null);
   const animFrameRef = useRef<number | null>(null);
   const detectedRef = useRef<boolean>(false);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
     if (!isOpen) {
@@ -84,47 +86,94 @@ export const CameraQrScannerModal: React.FC<CameraQrScannerModalProps> = ({
     }
   };
 
+  const handleFoundCode = (code: string) => {
+    if (detectedRef.current) return;
+    detectedRef.current = true;
+    playBloop(1.2);
+    playNfcHum(1.0);
+    stopCamera();
+    onCodeDetected(code);
+  };
+
   const startDetectionLoop = () => {
-    // Check if BarcodeDetector is natively available
+    // Check if BarcodeDetector is natively available (Android Chrome, modern Chromium)
     const BarcodeDetectorClass = (window as unknown as { BarcodeDetector?: new (options?: { formats: string[] }) => { detect: (source: ImageBitmapSource) => Promise<Array<{ rawValue: string }>> } }).BarcodeDetector;
 
-    if (!BarcodeDetectorClass) {
-      // BarcodeDetector not supported directly in this browser version
-      // The camera will display the viewfinder, but detection requires native camera or fallback
-      return;
+    let nativeDetector: { detect: (source: ImageBitmapSource) => Promise<Array<{ rawValue: string }>> } | null = null;
+    if (BarcodeDetectorClass) {
+      try {
+        nativeDetector = new BarcodeDetectorClass({ formats: ['qr_code'] });
+      } catch (e) {
+        console.debug('Failed to construct BarcodeDetector', e);
+      }
     }
 
-    let detector: { detect: (source: ImageBitmapSource) => Promise<Array<{ rawValue: string }>> } | null = null;
-    try {
-      detector = new BarcodeDetectorClass({ formats: ['qr_code'] });
-    } catch (e) {
-      console.debug('Failed to construct BarcodeDetector', e);
-      return;
+    // Canvas fallback for iOS Safari and browsers without native BarcodeDetector
+    if (!canvasRef.current) {
+      canvasRef.current = document.createElement('canvas');
     }
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
     let lastCheckTime = 0;
 
     const tick = async (now: number) => {
-      if (detectedRef.current || !videoRef.current || !detector) return;
+      if (detectedRef.current || !videoRef.current) return;
 
-      // Throttle detection to ~8 FPS to save phone battery
+      // Throttle detection to ~8 FPS to preserve battery and CPU
       if (now - lastCheckTime > 120 && videoRef.current.readyState >= 2) {
         lastCheckTime = now;
-        try {
-          const barcodes = await detector.detect(videoRef.current);
-          if (barcodes && barcodes.length > 0 && !detectedRef.current) {
-            const code = barcodes[0].rawValue;
-            if (code) {
-              detectedRef.current = true;
-              playBloop(1.2);
-              playNfcHum(1.0);
-              stopCamera();
-              onCodeDetected(code);
-              return;
+
+        // Path A: Native hardware BarcodeDetector if available
+        if (nativeDetector) {
+          try {
+            const barcodes = await nativeDetector.detect(videoRef.current);
+            if (barcodes && barcodes.length > 0 && !detectedRef.current) {
+              const code = barcodes[0].rawValue;
+              if (code) {
+                handleFoundCode(code);
+                return;
+              }
             }
+          } catch {
+            // Frame skip
           }
-        } catch {
-          // Frame drop or detection skip
+        } else {
+          // Path B: jsQR Canvas Decoder (Universal iOS Safari Support)
+          try {
+            const video = videoRef.current;
+            const vw = video.videoWidth;
+            const vh = video.videoHeight;
+
+            if (vw > 0 && vh > 0) {
+              // Scale down slightly if video is 4K/1080p to decode faster
+              const maxDim = 640;
+              const scale = Math.min(1, maxDim / Math.max(vw, vh));
+              const targetW = Math.round(vw * scale);
+              const targetH = Math.round(vh * scale);
+
+              if (canvas.width !== targetW || canvas.height !== targetH) {
+                canvas.width = targetW;
+                canvas.height = targetH;
+              }
+
+              ctx?.drawImage(video, 0, 0, targetW, targetH);
+              const imageData = ctx?.getImageData(0, 0, targetW, targetH);
+
+              if (imageData) {
+                const qrResult = jsQR(imageData.data, imageData.width, imageData.height, {
+                  inversionAttempts: 'dontInvert'
+                });
+
+                if (qrResult && qrResult.data && !detectedRef.current) {
+                  handleFoundCode(qrResult.data);
+                  return;
+                }
+              }
+            }
+          } catch (e) {
+            console.debug('Canvas scan error', e);
+          }
         }
       }
 

@@ -174,8 +174,8 @@ export const ScreenHub: React.FC<ScreenHubProps> = ({
         {/* 2 Big Illustrated Guild Cards */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '1.25rem',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(270px, 1fr))',
+          gap: '0.75rem',
           width: '100%'
         }}>
           {/* Card 1: Apprentice Alchemist */}
@@ -380,23 +380,30 @@ export const ScreenHub: React.FC<ScreenHubProps> = ({
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '0.45rem',
-          fontSize: '0.78rem',
-          fontWeight: 800,
-          letterSpacing: '1.2px',
-          color: '#cbd5e1',
-          textTransform: 'uppercase'
+          justifyContent: 'space-between',
+          width: '100%',
+          flexWrap: 'wrap',
+          gap: '0.35rem'
         }}>
-          <Compass size={14} color="#00d2ff" />
-          <span>Step 2: Begin Your Elemental Relic Quest</span>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.45rem',
+            fontSize: '0.78rem',
+            fontWeight: 800,
+            letterSpacing: '1.2px',
+            color: '#cbd5e1',
+            textTransform: 'uppercase'
+          }}>
+            <Compass size={14} color="#00d2ff" />
+            <span>Step 2: Begin Your Elemental Relic Quest</span>
+          </div>
+          <span className="desktop-only-btn" style={{ fontSize: '0.72rem', color: '#ffbe0b', fontWeight: 700 }}>
+            Choose a Relic
+          </span>
         </div>
 
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: '0.75rem',
-          width: '100%'
-        }}>
+        <div className="quest-cards-container">
           {runeOrder.map((rune, index) => {
             const quest = QUESTS[rune];
             const isHovered = hoveredRune === rune;

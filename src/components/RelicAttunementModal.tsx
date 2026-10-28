@@ -183,7 +183,7 @@ export const RelicAttunementModal: React.FC<RelicAttunementModalProps> = ({
 
           {/* 6 Ingredient Cards Grid - Mystery until scanned */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '0.35rem' }}>
-            {questCards.map((c, idx) => {
+            {questCards.map((c) => {
               const isFound = scannedCardIds.includes(c.id);
               return (
                 <div
@@ -199,7 +199,7 @@ export const RelicAttunementModal: React.FC<RelicAttunementModalProps> = ({
                     border: `1px solid ${isFound ? '#39ff14' : 'rgba(255, 255, 255, 0.15)'}`,
                     opacity: isFound ? 1 : 0.75
                   }}
-                  title={isFound ? `${c.name} - Discovered!` : `Mystery Clue #${idx + 1} - Search the rooms for posters with the ${quest.rune} rune!`}
+                  title={isFound ? `${c.name} - Discovered!` : `Mystery Clue - Search the rooms for posters with the ${quest.rune} rune!`}
                 >
                   {isFound ? (
                     <img src={c.sprite} alt={c.name} style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
@@ -216,7 +216,7 @@ export const RelicAttunementModal: React.FC<RelicAttunementModalProps> = ({
                     textOverflow: 'ellipsis',
                     maxWidth: '100%'
                   }}>
-                    {isFound ? `#${c.number}` : `Clue ${idx + 1}`}
+                    {isFound ? c.name : 'Mystery'}
                   </span>
                 </div>
               );

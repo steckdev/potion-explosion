@@ -1431,48 +1431,75 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                           Look for 8.5" x 11" clue posters hanging in rooms throughout the office. When you spot a poster with this Totem's <strong>{r.toUpperCase()} RUNE</strong> in the top corners, scan it with your phone camera to reveal the ingredient and collect its secret letter!
                         </p>
 
-                        {/* 6 Mystery Cards Grid */}
+                        {/* 6 Mystery Discovery Slots (Order does not matter!) */}
                         <div style={{
                           display: 'grid',
                           gridTemplateColumns: 'repeat(3, 1fr)',
                           gap: '8px'
                         }}>
-                          {[1, 2, 3, 4, 5, 6].map(num => (
+                          {[1, 2, 3, 4, 5, 6].map(slot => (
                             <div
-                              key={num}
+                              key={slot}
                               style={{
                                 backgroundColor: '#ffffff',
                                 border: '1.5px dashed #d97706',
                                 borderRadius: '8px',
-                                padding: '8px 10px',
+                                padding: '6px 8px',
                                 display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
+                                flexDirection: 'column',
+                                gap: '4px',
                                 boxShadow: '0 2px 5px rgba(0,0,0,0.04)'
                               }}
                             >
-                              <div style={{
-                                width: '32px',
-                                height: '32px',
-                                borderRadius: '50%',
-                                backgroundColor: 'rgba(255, 251, 235, 0.9)',
-                                border: `2px solid ${quest.color}`,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: '1rem',
-                                color: quest.color,
-                                fontWeight: 900,
-                                flexShrink: 0
-                              }}>
-                                ❓
-                              </div>
-                              <div style={{ lineHeight: 1.2 }}>
-                                <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#1e1b4b' }}>
-                                  Clue #{num}
+                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                  <div style={{
+                                    width: '24px',
+                                    height: '24px',
+                                    borderRadius: '50%',
+                                    backgroundColor: 'rgba(255, 251, 235, 0.9)',
+                                    border: `1.5px solid ${quest.color}`,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: '0.8rem',
+                                    color: quest.color,
+                                    fontWeight: 900,
+                                    flexShrink: 0
+                                  }}>
+                                    ❓
+                                  </div>
+                                  <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#1e1b4b' }}>
+                                    Mystery Clue
+                                  </div>
                                 </div>
-                                <div style={{ fontSize: '0.62rem', color: '#92400e', fontWeight: 600 }}>
-                                  Hidden in Rooms
+                                <span style={{ fontSize: '0.55rem', color: '#92400e', fontWeight: 700 }}>
+                                  Any Order
+                                </span>
+                              </div>
+                              <div style={{
+                                fontSize: '0.58rem',
+                                color: '#451a03',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '2px',
+                                borderTop: '1px dashed #fcd34d',
+                                paddingTop: '3px'
+                              }}>
+                                <div>📍 Room: ______________</div>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                  <span>✏️ Draw/Write: ________</span>
+                                  <span style={{
+                                    display: 'inline-block',
+                                    width: '16px',
+                                    height: '14px',
+                                    border: '1px solid #78350f',
+                                    borderRadius: '2px',
+                                    backgroundColor: '#fffdf8',
+                                    textAlign: 'center',
+                                    fontSize: '0.52rem',
+                                    lineHeight: '14px'
+                                  }} title="Secret Letter" />
                                 </div>
                               </div>
                             </div>
@@ -1708,8 +1735,8 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                           alignItems: 'center',
                           justifyContent: 'space-between'
                         }}>
-                          <span>6 Mystery Clues to Discover:</span>
-                          <span style={{ fontSize: '0.55rem', color: quest.color, fontWeight: 900 }}>FIND IN ROOMS</span>
+                          <span>6 Secret Clues to Discover:</span>
+                          <span style={{ fontSize: '0.55rem', color: quest.color, fontWeight: 900 }}>ANY ORDER</span>
                         </div>
                         <div style={{
                           display: 'grid',
@@ -1722,8 +1749,8 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                           borderRadius: '6px',
                           border: '1px solid #fcd34d'
                         }}>
-                          {[1, 2, 3, 4, 5, 6].map(num => (
-                            <div key={num} style={{
+                          {[1, 2, 3, 4, 5, 6].map(slot => (
+                            <div key={slot} style={{
                               display: 'flex',
                               alignItems: 'center',
                               gap: '3px',
@@ -1734,7 +1761,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                               boxSizing: 'border-box'
                             }}>
                               <span style={{ color: quest.color, fontWeight: 900, fontSize: '0.7rem' }}>❓</span>
-                              <span style={{ fontWeight: 700 }}>Clue #{num}</span>
+                              <span style={{ fontWeight: 700 }}>Mystery Clue</span>
                             </div>
                           ))}
                         </div>
@@ -1874,13 +1901,13 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
 
                 <p style={{
                   margin: '1px auto 0 auto',
-                  fontSize: '0.73rem',
+                  fontSize: '0.67rem',
                   color: '#78350f',
                   fontWeight: 600,
-                  lineHeight: 1.25,
+                  lineHeight: 1.2,
                   maxWidth: '7.2in'
                 }}>
-                  Welcome, traveler! As you explore the office collecting candy at each trick-or-treat station, look closely — mystical alchemical secrets have been hidden across the realm! Some candy stations harbor ancient clue scrolls on the walls. Choose your Totem, mark your candy path, and uncover the ingredients needed to brew the legendary Master Potion!
+                  Welcome traveler! Trick-or-treat at office stations and discover 6 hidden clue scrolls matching your Totem rune. Fill in your discoveries below, collect the secret letters, and claim your 3D Mini Potion fidget at the Master Cauldron!
                 </p>
               </div>
 
@@ -1889,23 +1916,23 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                 backgroundColor: 'rgba(255, 255, 255, 0.9)',
                 border: '1.5px solid #d97706',
                 borderRadius: '8px',
-                padding: '4px 8px',
+                padding: '2px 6px',
                 position: 'relative',
                 zIndex: 1,
-                margin: '2px 0'
+                margin: '1px 0'
               }}>
                 <div style={{
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  marginBottom: '3px',
+                  marginBottom: '2px',
                   borderBottom: '1px solid rgba(180, 83, 9, 0.25)',
-                  paddingBottom: '2px'
+                  paddingBottom: '1px'
                 }}>
-                  <span style={{ fontSize: '0.66rem', fontWeight: 900, color: '#78350f', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  <span style={{ fontSize: '0.64rem', fontWeight: 900, color: '#78350f', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                     🔍 Totem Corner Symbols (Check Wall Poster Corners):
                   </span>
-                  <span style={{ fontSize: '0.6rem', color: '#92400e', fontWeight: 700 }}>
+                  <span style={{ fontSize: '0.58rem', color: '#92400e', fontWeight: 700 }}>
                     Match your Totem's Rune to collect your 6 ingredients!
                   </span>
                 </div>
@@ -1913,9 +1940,9 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                 <div style={{
                   display: 'grid',
                   gridTemplateColumns: 'repeat(4, 1fr)',
-                  gap: '6px'
+                  gap: '5px'
                 }}>
-                  {(['fire', 'frost', 'venom', 'moon'] as RuneType[]).map((r, i) => {
+                  {(['fire', 'frost', 'venom', 'moon'] as RuneType[]).map((r) => {
                     const quest = QUESTS[r];
                     return (
                       <div
@@ -1923,24 +1950,24 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                         style={{
                           display: 'flex',
                           alignItems: 'center',
-                          gap: '6px',
+                          gap: '5px',
                           backgroundColor: '#fffdf8',
                           border: `1.5px solid ${quest.color}`,
                           borderRadius: '6px',
-                          padding: '2px 5px',
+                          padding: '1.5px 4px',
                           boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
                         }}
                       >
                         <img
                           src={quest.icon}
                           alt={quest.title}
-                          style={{ width: '22px', height: '22px', filter: `drop-shadow(0 1px 2px ${quest.color})` }}
+                          style={{ width: '18px', height: '18px', filter: `drop-shadow(0 1px 2px ${quest.color})` }}
                         />
                         <div style={{ lineHeight: 1.1 }}>
-                          <div style={{ fontSize: '0.56rem', fontWeight: 900, color: quest.color, textTransform: 'uppercase' }}>
-                            #{i + 1} {r}
+                          <div style={{ fontSize: '0.54rem', fontWeight: 900, color: quest.color, textTransform: 'uppercase' }}>
+                            {r.toUpperCase()} RUNE
                           </div>
-                          <div style={{ fontSize: '0.64rem', fontWeight: 800, color: '#1e1b4b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          <div style={{ fontSize: '0.62rem', fontWeight: 800, color: '#1e1b4b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                             {quest.title}
                           </div>
                         </div>
@@ -1954,7 +1981,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
               <div style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(4, 1fr)',
-                gap: '5px',
+                gap: '4px',
                 position: 'relative',
                 zIndex: 1,
                 margin: '1px 0'
@@ -1963,295 +1990,288 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                   backgroundColor: 'rgba(255, 255, 255, 0.75)',
                   border: '1px solid #b45309',
                   borderRadius: '6px',
-                  padding: '4px 6px',
-                  fontSize: '0.63rem',
-                  lineHeight: 1.2,
+                  padding: '2px 5px',
+                  fontSize: '0.6rem',
+                  lineHeight: 1.15,
                   color: '#2d1810'
                 }}>
                   <div style={{ fontWeight: 900, color: '#b45309', marginBottom: '1px', display: 'flex', alignItems: 'center', gap: '3px' }}>
                     <span>1.</span>
-                    <span>Pick Your Totem</span>
+                    <span>Pick Totem</span>
                   </div>
-                  Tap your phone to your Totem's NFC tag or scan its QR code to open your satchel. (Or use this paper log!)
+                  Tap NFC tag or scan QR code to open your satchel. (Or use this paper log!)
                 </div>
 
                 <div style={{
                   backgroundColor: 'rgba(255, 255, 255, 0.75)',
                   border: '1px solid #b45309',
                   borderRadius: '6px',
-                  padding: '4px 6px',
-                  fontSize: '0.63rem',
-                  lineHeight: 1.2,
+                  padding: '2px 5px',
+                  fontSize: '0.6rem',
+                  lineHeight: 1.15,
                   color: '#2d1810'
                 }}>
                   <div style={{ fontWeight: 900, color: '#b45309', marginBottom: '1px', display: 'flex', alignItems: 'center', gap: '3px' }}>
                     <span>2.</span>
                     <span>Trick-or-Treat</span>
                   </div>
-                  Visit the sweet candy stations marked on your map. Check off each candy station as you collect treats!
+                  Visit the sweet candy stations on your map & check off below!
                 </div>
 
                 <div style={{
                   backgroundColor: 'rgba(255, 255, 255, 0.75)',
                   border: '1px solid #b45309',
                   borderRadius: '6px',
-                  padding: '4px 6px',
-                  fontSize: '0.63rem',
-                  lineHeight: 1.2,
+                  padding: '2px 5px',
+                  fontSize: '0.6rem',
+                  lineHeight: 1.15,
                   color: '#2d1810'
                 }}>
                   <div style={{ fontWeight: 900, color: '#b45309', marginBottom: '1px', display: 'flex', alignItems: 'center', gap: '3px' }}>
                     <span>3.</span>
-                    <span>Spot Room Clues</span>
+                    <span>Spot Clues</span>
                   </div>
-                  Find 8.5" x 11" posters in rooms. If the top corner matches your Totem, scan with camera to claim it!
+                  Find posters matching your Rune. Order does not matter! Draw or write what you discover!
                 </div>
 
                 <div style={{
                   backgroundColor: 'rgba(255, 255, 255, 0.75)',
                   border: '1px solid #b45309',
                   borderRadius: '6px',
-                  padding: '4px 6px',
-                  fontSize: '0.63rem',
-                  lineHeight: 1.2,
+                  padding: '2px 5px',
+                  fontSize: '0.6rem',
+                  lineHeight: 1.15,
                   color: '#2d1810'
                 }}>
                   <div style={{ fontWeight: 900, color: '#b45309', marginBottom: '1px', display: 'flex', alignItems: 'center', gap: '3px' }}>
                     <span>4.</span>
                     <span>Win 3D Mini Potion</span>
                   </div>
-                  Return your full satchel to the High Alchemist to spin Plinko and claim your 3D-printed potion fidget!
+                  Return satchel to High Alchemist to spin Plinko & claim prize!
                 </div>
               </div>
 
-              {/* SECTION 4: CANDY STATIONS & ROOM CLUES DISCOVERY TRACKER */}
+              {/* SECTION 4: CANDY STATIONS CHECKLIST */}
               <div style={{
                 position: 'relative',
                 zIndex: 1,
                 backgroundColor: 'rgba(255, 255, 255, 0.85)',
                 border: '1.5px solid #b45309',
                 borderRadius: '8px',
-                padding: '4px 6px',
+                padding: '4px 8px',
                 margin: '2px 0'
               }}>
                 <div style={{
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  marginBottom: '2px',
-                  borderBottom: '1px solid rgba(180, 83, 9, 0.3)',
+                  marginBottom: '3px',
+                  borderBottom: '1px solid rgba(180, 83, 9, 0.25)',
                   paddingBottom: '2px'
                 }}>
                   <div style={{ fontSize: '0.68rem', fontWeight: 900, color: '#78350f', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    🗺️ Office Stations & Room Discovery Log (Check off as you visit):
+                    🍬 Office Trick-or-Treat Candy Stations (Visit all rooms for treats!):
                   </div>
                   <div style={{ fontSize: '0.58rem', color: '#92400e', fontWeight: 700 }}>
-                    Mark candy visits & check off room clue posters found!
+                    Check off each room as you collect candy • Clues are hidden in 6 of these rooms!
                   </div>
                 </div>
 
                 <div style={{
                   display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
-                  gap: '8px'
+                  gridTemplateColumns: 'repeat(4, 1fr)',
+                  gap: '3px 8px'
                 }}>
-                  {/* Left Table: Stations 1-6 */}
-                  <table style={{
-                    width: '100%',
-                    borderCollapse: 'collapse',
-                    fontSize: '0.62rem'
-                  }}>
-                    <thead>
-                      <tr style={{ backgroundColor: '#3d2314', color: '#fef3c7' }}>
-                        <th style={{ padding: '2px 4px', textAlign: 'center', width: '22px' }}>#</th>
-                        <th style={{ padding: '2px 4px', textAlign: 'left' }}>Office Room Location</th>
-                        <th style={{ padding: '2px 2px', textAlign: 'center', width: '48px' }}>🍬 Candy</th>
-                        <th style={{ padding: '2px 2px', textAlign: 'center', width: '44px' }}>🔍 Clue</th>
-                        <th style={{ padding: '2px 2px', textAlign: 'center', width: '32px' }}>Letter</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {cards.slice(0, 6).map((c, i) => (
-                        <tr
-                          key={c.id}
-                          style={{
-                            backgroundColor: i % 2 === 0 ? 'rgba(255, 255, 255, 0.7)' : 'transparent',
-                            borderBottom: '1px solid rgba(180, 83, 9, 0.15)'
-                          }}
-                        >
-                          <td style={{ padding: '1.5px 3px', textAlign: 'center', fontWeight: 800, color: '#78350f' }}>
-                            #{c.number}
-                          </td>
-                          <td style={{ padding: '1.5px 4px', fontWeight: 700, color: '#1e1b4b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '145px' }} title={c.location}>
-                            📍 {c.location || `Office Station ${c.number}`}
-                          </td>
-                          <td style={{ padding: '1.5px 2px', textAlign: 'center', fontSize: '0.82rem', color: '#b45309' }}>
-                            ▢
-                          </td>
-                          <td style={{ padding: '1.5px 2px', textAlign: 'center', fontSize: '0.82rem', color: '#b45309' }}>
-                            ▢
-                          </td>
-                          <td style={{ padding: '1.5px 2px', textAlign: 'center' }}>
-                            <span style={{
-                              display: 'inline-block',
-                              width: '18px',
-                              height: '13px',
-                              border: '1px dashed #78350f',
-                              borderRadius: '3px',
-                              backgroundColor: '#ffffff'
-                            }} />
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-
-                  {/* Right Table: Stations 7-12 */}
-                  <table style={{
-                    width: '100%',
-                    borderCollapse: 'collapse',
-                    fontSize: '0.62rem'
-                  }}>
-                    <thead>
-                      <tr style={{ backgroundColor: '#3d2314', color: '#fef3c7' }}>
-                        <th style={{ padding: '2px 4px', textAlign: 'center', width: '22px' }}>#</th>
-                        <th style={{ padding: '2px 4px', textAlign: 'left' }}>Office Room Location</th>
-                        <th style={{ padding: '2px 2px', textAlign: 'center', width: '48px' }}>🍬 Candy</th>
-                        <th style={{ padding: '2px 2px', textAlign: 'center', width: '44px' }}>🔍 Clue</th>
-                        <th style={{ padding: '2px 2px', textAlign: 'center', width: '32px' }}>Letter</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {cards.slice(6, 12).map((c, i) => (
-                        <tr
-                          key={c.id}
-                          style={{
-                            backgroundColor: i % 2 === 0 ? 'rgba(255, 255, 255, 0.7)' : 'transparent',
-                            borderBottom: '1px solid rgba(180, 83, 9, 0.15)'
-                          }}
-                        >
-                          <td style={{ padding: '1.5px 3px', textAlign: 'center', fontWeight: 800, color: '#78350f' }}>
-                            #{c.number}
-                          </td>
-                          <td style={{ padding: '1.5px 4px', fontWeight: 700, color: '#1e1b4b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '145px' }} title={c.location}>
-                            📍 {c.location || `Office Station ${c.number}`}
-                          </td>
-                          <td style={{ padding: '1.5px 2px', textAlign: 'center', fontSize: '0.82rem', color: '#b45309' }}>
-                            ▢
-                          </td>
-                          <td style={{ padding: '1.5px 2px', textAlign: 'center', fontSize: '0.82rem', color: '#b45309' }}>
-                            ▢
-                          </td>
-                          <td style={{ padding: '1.5px 2px', textAlign: 'center' }}>
-                            <span style={{
-                              display: 'inline-block',
-                              width: '18px',
-                              height: '13px',
-                              border: '1px dashed #78350f',
-                              borderRadius: '3px',
-                              backgroundColor: '#ffffff'
-                            }} />
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                  {cards.slice(0, 12).map((c) => (
+                    <div
+                      key={c.id}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        backgroundColor: 'rgba(255, 255, 255, 0.75)',
+                        border: '1px solid rgba(180, 83, 9, 0.2)',
+                        borderRadius: '4px',
+                        padding: '1.5px 5px',
+                        fontSize: '0.6rem'
+                      }}
+                    >
+                      <span style={{ fontSize: '0.78rem', color: '#b45309', lineHeight: 1 }}>▢</span>
+                      <span style={{
+                        fontWeight: 700,
+                        color: '#1e1b4b',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
+                      }}>
+                        📍 {c.location || `Station ${c.number}`}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
 
-              {/* SECTION 5: PEN & PAPER PUZZLE SOLVER (POTION LETTER FLASKS & WORD UNSCRAMBLE) */}
+              {/* SECTION 5: 6 CLUE DISCOVERIES • DRAW OR WRITE (ANY ORDER) */}
               <div style={{
+                position: 'relative',
+                zIndex: 1,
                 backgroundColor: '#fffdf8',
                 border: '1.5px solid #d97706',
                 borderRadius: '8px',
                 padding: '4px 8px',
-                position: 'relative',
-                zIndex: 1,
                 margin: '2px 0'
               }}>
                 <div style={{
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  marginBottom: '3px'
+                  marginBottom: '4px',
+                  borderBottom: '1px solid rgba(180, 83, 9, 0.25)',
+                  paddingBottom: '2px'
                 }}>
-                  <div style={{ fontSize: '0.68rem', fontWeight: 900, color: '#78350f', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    ⚗️ Explorer's Riddle Solver (Record Your 6 Letters):
+                  <div style={{ fontSize: '0.72rem', fontWeight: 900, color: '#78350f', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span>✏️</span>
+                    <span>6 Quest Clue Discoveries • Draw or Write What You Find:</span>
                   </div>
-                  <div style={{ fontSize: '0.58rem', color: '#92400e', fontWeight: 700 }}>
-                    Letters found on your 6 matching quest posters:
+                  <div style={{ fontSize: '0.6rem', color: '#92400e', fontWeight: 800 }}>
+                    Order does NOT matter! Fill in any box as you discover clues in the rooms:
                   </div>
                 </div>
 
+                {/* 6 Discovery Boxes (3 columns x 2 rows) */}
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(3, 1fr)',
+                  gap: '5px'
+                }}>
+                  {[1, 2, 3, 4, 5, 6].map(slot => (
+                    <div
+                      key={slot}
+                      style={{
+                        backgroundColor: '#ffffff',
+                        border: '1.5px solid #b45309',
+                        borderRadius: '6px',
+                        padding: '3px 5px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+                        height: '80px',
+                        boxSizing: 'border-box'
+                      }}
+                    >
+                      {/* Top: Header & Room */}
+                      <div>
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          borderBottom: '1px dashed #fcd34d',
+                          paddingBottom: '1px',
+                          marginBottom: '1px'
+                        }}>
+                          <span style={{ fontSize: '0.62rem', fontWeight: 900, color: '#78350f', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                            <span>🔍</span>
+                            <span>Clue Discovery</span>
+                          </span>
+                          <span style={{ fontSize: '0.55rem', color: '#b45309', fontWeight: 800 }}>
+                            ▢ Found
+                          </span>
+                        </div>
+                        <div style={{ fontSize: '0.56rem', color: '#451a03', fontWeight: 700 }}>
+                          📍 Room: ____________________
+                        </div>
+                      </div>
+
+                      {/* Canvas: Draw or Write Box */}
+                      <div style={{
+                        flex: 1,
+                        margin: '1px 0',
+                        border: '1px dashed #d97706',
+                        borderRadius: '4px',
+                        backgroundColor: '#fffdf9',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '1px',
+                        minHeight: '24px',
+                        position: 'relative'
+                      }}>
+                        <span style={{
+                          fontSize: '0.52rem',
+                          color: '#a8a29e',
+                          fontStyle: 'italic',
+                          textAlign: 'center',
+                          pointerEvents: 'none',
+                          lineHeight: 1.15
+                        }}>
+                          ✏️ Draw sketch or write item found
+                        </span>
+                      </div>
+
+                      {/* Bottom: Secret Riddle Letter */}
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        borderTop: '1px dashed #fcd34d',
+                        paddingTop: '1px'
+                      }}>
+                        <span style={{ fontSize: '0.56rem', fontWeight: 800, color: '#78350f' }}>
+                          🔤 Riddle Letter:
+                        </span>
+                        <div style={{
+                          width: '22px',
+                          height: '17px',
+                          border: '2px solid #78350f',
+                          borderRadius: '3px',
+                          backgroundColor: '#ffffff',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.06)'
+                        }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Secret Word Unscrambler Bar */}
                 <div style={{
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  gap: '6px'
+                  backgroundColor: 'rgba(255, 251, 235, 0.95)',
+                  border: '1.5px dashed #b45309',
+                  borderRadius: '6px',
+                  padding: '2px 8px',
+                  marginTop: '2px'
                 }}>
-                  {/* 6 Letter Flasks */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                    {[1, 2, 3, 4, 5, 6].map(num => (
-                      <div
-                        key={num}
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'center',
-                          backgroundColor: '#ffffff',
-                          border: '1.5px solid #b45309',
-                          borderRadius: '5px',
-                          padding: '2px 5px',
-                          boxShadow: '0 1px 2px rgba(0,0,0,0.04)'
-                        }}
-                      >
-                        <span style={{ fontSize: '0.52rem', fontWeight: 800, color: '#78350f' }}>
-                          #{num}
-                        </span>
-                        <div style={{
-                          width: '20px',
-                          height: '18px',
-                          borderBottom: '2px solid #3d2314',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontWeight: 900,
-                          fontSize: '0.9rem',
-                          color: '#1e1b4b'
-                        }} />
-                      </div>
-                    ))}
+                  <div>
+                    <div style={{ fontSize: '0.62rem', fontWeight: 900, color: '#78350f', textTransform: 'uppercase' }}>
+                      🧩 Unscramble Your 6 Letters:
+                    </div>
+                    <div style={{ fontSize: '0.52rem', color: '#92400e', fontWeight: 700 }}>
+                      Rearrange the 6 letters collected above to reveal the Master Potion Brew Word!
+                    </div>
                   </div>
 
-                  {/* Secret Unscramble Word Blank */}
-                  <div style={{
-                    flex: 1,
-                    marginLeft: '6px',
-                    backgroundColor: 'rgba(255, 251, 235, 0.8)',
-                    border: '1px dashed #b45309',
-                    borderRadius: '6px',
-                    padding: '3px 6px',
-                    textAlign: 'center'
-                  }}>
-                    <span style={{ fontSize: '0.58rem', fontWeight: 900, color: '#78350f', textTransform: 'uppercase' }}>
-                      Unscrambled Secret Brew Word:
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <span style={{ fontSize: '0.62rem', fontWeight: 900, color: '#1e1b4b' }}>
+                      SECRET WORD:
                     </span>
-                    <div style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '4px',
-                      marginTop: '2px'
-                    }}>
-                      {[1, 2, 3, 4, 5, 6].map(l => (
+                    <div style={{ display: 'flex', gap: '3px' }}>
+                      {[1, 2, 3, 4, 5, 6].map(i => (
                         <div
-                          key={l}
+                          key={i}
                           style={{
-                            width: '18px',
-                            height: '18px',
-                            borderBottom: '2px solid #78350f',
+                            width: '20px',
+                            height: '20px',
+                            border: '1.5px solid #78350f',
                             backgroundColor: '#ffffff',
-                            borderRadius: '3px'
+                            borderRadius: '3px',
+                            boxShadow: '0 1px 2px rgba(0,0,0,0.06)'
                           }}
                         />
                       ))}
@@ -2269,8 +2289,8 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                 justifyContent: 'space-between',
                 gap: '0.6rem',
                 borderTop: '1.5px dashed #b45309',
-                paddingTop: '3px',
-                marginTop: '2px'
+                paddingTop: '2px',
+                marginTop: '1px'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <img

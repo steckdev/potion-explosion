@@ -395,7 +395,7 @@ export const SatchelModal: React.FC<SatchelModalProps> = ({
 
               {/* The 6 Ingredient Tracker Chips - Mystery until scanned */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '0.35rem' }}>
-                {activeQuestCards.map((c, idx) => {
+                {activeQuestCards.map((c) => {
                   const isFound = scannedCardIds.includes(c.id);
                   return (
                     <div
@@ -414,7 +414,7 @@ export const SatchelModal: React.FC<SatchelModalProps> = ({
                         opacity: isFound ? 1 : 0.65,
                         transition: 'all 0.2s ease'
                       }}
-                      title={isFound ? `${c.name} - Found!` : `Mystery Clue #${idx + 1} (Tap to inspect riddle)`}
+                      title={isFound ? `${c.name} - Found!` : `Mystery Clue (Find in any order)`}
                     >
                       {isFound ? (
                         <img src={c.sprite} alt={c.name} style={{ width: '22px', height: '22px', objectFit: 'contain' }} />
@@ -422,7 +422,7 @@ export const SatchelModal: React.FC<SatchelModalProps> = ({
                         <span style={{ fontSize: '1.1rem', lineHeight: 1 }}>❓</span>
                       )}
                       <span style={{ fontSize: '0.62rem', color: isFound ? '#39ff14' : '#94a3b8', fontWeight: 700, marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
-                        {isFound ? `#${c.number}` : `Clue ${idx + 1}`}
+                        {isFound ? c.name : 'Mystery'}
                       </span>
                     </div>
                   );

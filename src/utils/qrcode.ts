@@ -53,3 +53,19 @@ export async function downloadCardQrCode(card: CardData, baseUrl?: string): Prom
   a.click();
   document.body.removeChild(a);
 }
+
+/**
+ * Trigger an instant browser download of a Totem's quest starter QR code PNG image.
+ */
+export async function downloadTotemQrCode(rune: string, baseUrl?: string): Promise<void> {
+  const url = `${baseUrl || window.location.origin}/?quest=${rune}`;
+  const dataUrl = await getQrCodeDataUrl(url, 512); // High-res 512x512 for printing
+  if (!dataUrl) return;
+
+  const a = document.createElement('a');
+  a.href = dataUrl;
+  a.download = `AlchemyQuest_Totem_${rune.toUpperCase()}_QR.png`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}

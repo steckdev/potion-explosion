@@ -4,7 +4,7 @@ import { QUESTS } from '../data/quests';
 import { PrintablePoster } from './PrintablePoster';
 import { saveStoredCards, resetStoredCards, exportCardsAsJSON, importCardsFromJSON } from '../utils/storage';
 import { playBloop, playStoneLock } from '../utils/audio';
-import { getCardQrCode, downloadCardQrCode } from '../utils/qrcode';
+import { getCardQrCode, downloadCardQrCode, getQrCodeDataUrl, downloadTotemQrCode } from '../utils/qrcode';
 import { 
   Printer, 
   RotateCcw, 
@@ -24,7 +24,7 @@ import {
   ListChecks
 } from 'lucide-react';
 
-export type AdminViewMode = 'print_all' | 'cheat_sheet' | 'nfc_tags' | 'checklist' | 'table_sign' | 'certificates' | 'plinko_discs' | 'editor' | 'prompts';
+export type AdminViewMode = 'print_all' | 'totem_cards' | 'table_sign' | 'cheat_sheet' | 'checklist' | 'certificates' | 'plinko_discs' | 'nfc_tags' | 'editor' | 'prompts';
 
 interface AdminPosterStudioProps {
   cards: CardData[];
@@ -47,6 +47,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
   // Scanning Base Host / Domain configuration
   const [scanBaseUrl, setScanBaseUrl] = useState(() => (typeof window !== 'undefined' ? window.location.origin : 'https://potion-explosion.netlify.app'));
   const [qrPreviews, setQrPreviews] = useState<Record<string, string>>({});
+  const [totemQrPreviews, setTotemQrPreviews] = useState<Record<string, string>>({});
   const [isDownloadingAllQr, setIsDownloadingAllQr] = useState(false);
 
   // Wall printing vs Answer Key toggles
@@ -61,8 +62,16 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
       for (const card of cards) {
         previews[card.id] = await getCardQrCode(card, scanBaseUrl, 160);
       }
+      
+      const runes: RuneType[] = ['fire', 'frost', 'venom', 'moon'];
+      const totemPreviews: Record<string, string> = {};
+      for (const r of runes) {
+        totemPreviews[r] = await getQrCodeDataUrl(`${scanBaseUrl}/?quest=${r}`, 200);
+      }
+
       if (isMounted) {
         setQrPreviews(previews);
+        setTotemQrPreviews(totemPreviews);
       }
     }
     loadPreviews();
@@ -231,6 +240,46 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
             </button>
 
             <button
+              onClick={() => { playBloop(1.0); setViewMode('totem_cards'); }}
+              style={{
+                padding: '0.35rem 0.75rem',
+                borderRadius: '999px',
+                border: viewMode === 'totem_cards' ? '1px solid #39ff14' : '1px solid rgba(255,255,255,0.1)',
+                cursor: 'pointer',
+                fontWeight: 700,
+                fontSize: '0.78rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+                backgroundColor: viewMode === 'totem_cards' ? 'rgba(57, 255, 20, 0.25)' : 'rgba(255,255,255,0.06)',
+                color: viewMode === 'totem_cards' ? '#86efac' : '#cbd5e1'
+              }}
+            >
+              <span>🏷️</span>
+              <span>4 Totem NFC Cards</span>
+            </button>
+
+            <button
+              onClick={() => { playBloop(1.0); setViewMode('table_sign'); }}
+              style={{
+                padding: '0.35rem 0.75rem',
+                borderRadius: '999px',
+                border: viewMode === 'table_sign' ? '1px solid #eab308' : '1px solid rgba(255,255,255,0.1)',
+                cursor: 'pointer',
+                fontWeight: 700,
+                fontSize: '0.78rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+                backgroundColor: viewMode === 'table_sign' ? 'rgba(234, 179, 8, 0.25)' : 'rgba(255,255,255,0.06)',
+                color: viewMode === 'table_sign' ? '#fde047' : '#cbd5e1'
+              }}
+            >
+              <span>📜</span>
+              <span>Mythical Welcome Sign</span>
+            </button>
+
+            <button
               onClick={() => { playBloop(1.0); setViewMode('cheat_sheet'); }}
               style={{
                 padding: '0.35rem 0.75rem',
@@ -248,26 +297,6 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
             >
               <FileText size={13} />
               <span>Master Cheat Sheet</span>
-            </button>
-
-            <button
-              onClick={() => { playBloop(1.0); setViewMode('nfc_tags'); }}
-              style={{
-                padding: '0.35rem 0.75rem',
-                borderRadius: '999px',
-                border: viewMode === 'nfc_tags' ? '1px solid #39ff14' : '1px solid rgba(255,255,255,0.1)',
-                cursor: 'pointer',
-                fontWeight: 700,
-                fontSize: '0.78rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.3rem',
-                backgroundColor: viewMode === 'nfc_tags' ? 'rgba(57, 255, 20, 0.25)' : 'rgba(255,255,255,0.06)',
-                color: viewMode === 'nfc_tags' ? '#86efac' : '#cbd5e1'
-              }}
-            >
-              <QrCode size={13} />
-              <span>NFC / QR Badges</span>
             </button>
 
             <button
@@ -291,23 +320,23 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
             </button>
 
             <button
-              onClick={() => { playBloop(1.0); setViewMode('table_sign'); }}
+              onClick={() => { playBloop(1.0); setViewMode('nfc_tags'); }}
               style={{
                 padding: '0.35rem 0.75rem',
                 borderRadius: '999px',
-                border: viewMode === 'table_sign' ? '1px solid #eab308' : '1px solid rgba(255,255,255,0.1)',
+                border: viewMode === 'nfc_tags' ? '1px solid #39ff14' : '1px solid rgba(255,255,255,0.1)',
                 cursor: 'pointer',
                 fontWeight: 700,
                 fontSize: '0.78rem',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.3rem',
-                backgroundColor: viewMode === 'table_sign' ? 'rgba(234, 179, 8, 0.25)' : 'rgba(255,255,255,0.06)',
-                color: viewMode === 'table_sign' ? '#fde047' : '#cbd5e1'
+                backgroundColor: viewMode === 'nfc_tags' ? 'rgba(57, 255, 20, 0.25)' : 'rgba(255,255,255,0.06)',
+                color: viewMode === 'nfc_tags' ? '#86efac' : '#cbd5e1'
               }}
             >
-              <span>📜</span>
-              <span>Table Sign</span>
+              <QrCode size={13} />
+              <span>📱 NFC Programmer</span>
             </button>
 
             <button
@@ -1027,6 +1056,300 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
           </div>
         )}
 
+        {/* VIEW: 4 Totem NFC Cards / Quest Starters (8.5" x 11" 4-up sheet) */}
+        {viewMode === 'totem_cards' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', alignItems: 'center', width: '100%', maxWidth: '8.5in', margin: '0 auto' }}>
+            {/* Action Bar */}
+            <div className="no-print" style={{
+              backgroundColor: 'rgba(57, 255, 20, 0.1)',
+              border: '1.5px solid #39ff14',
+              padding: '0.85rem 1.25rem',
+              borderRadius: '16px',
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '1rem',
+              boxSizing: 'border-box'
+            }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.05rem', color: '#86efac', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span>🏷️</span>
+                  <span>4 Elemental Totem NFC Cards (Quest Starters)</span>
+                </h3>
+                <p style={{ margin: '3px 0 0 0', fontSize: '0.8rem', color: '#cbd5e1' }}>
+                  Prints all 4 Totem desk cards on one 8.5" x 11" sheet. Stick your 4 physical NFC tags on the dashed circles or scan QR codes with camera to start the game!
+                </p>
+              </div>
+              <button
+                onClick={handlePrint}
+                style={{
+                  backgroundColor: '#39ff14',
+                  color: '#090714',
+                  border: 'none',
+                  borderRadius: '999px',
+                  padding: '0.55rem 1.3rem',
+                  fontWeight: 800,
+                  fontSize: '0.88rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.45rem',
+                  boxShadow: '0 0 16px rgba(57, 255, 20, 0.4)',
+                  flexShrink: 0
+                }}
+              >
+                <Printer size={16} />
+                <span>PRINT 4 TOTEM CARDS (8.5" x 11")</span>
+              </button>
+            </div>
+
+            {/* Printable 8.5" x 11" Page with 4 Totem Cards (2x2 Grid) */}
+            <div className="print-page-container" style={{
+              width: '8.0in',
+              height: '10.4in',
+              maxHeight: '10.4in',
+              maxWidth: '8.0in',
+              backgroundColor: '#fbf7ea',
+              border: '8px solid #3d2314',
+              borderRadius: '16px',
+              padding: '0.22in',
+              boxSizing: 'border-box',
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gridTemplateRows: '1fr 1fr',
+              gap: '0.22in',
+              position: 'relative',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.4)',
+              color: '#2d1810',
+              overflow: 'hidden'
+            }}>
+              {/* Center Scissors Guides */}
+              <div style={{
+                position: 'absolute',
+                top: '0.2in',
+                bottom: '0.2in',
+                left: '50%',
+                width: '0',
+                borderLeft: '1.5px dashed #b45309',
+                pointerEvents: 'none',
+                opacity: 0.6,
+                zIndex: 10
+              }}>
+                <span style={{ position: 'absolute', top: '48%', left: '-8px', fontSize: '14px', backgroundColor: '#fbf7ea' }}>✂</span>
+              </div>
+              <div style={{
+                position: 'absolute',
+                left: '0.2in',
+                right: '0.2in',
+                top: '50%',
+                height: '0',
+                borderTop: '1.5px dashed #b45309',
+                pointerEvents: 'none',
+                opacity: 0.6,
+                zIndex: 10
+              }}>
+                <span style={{ position: 'absolute', left: '48%', top: '-10px', fontSize: '14px', backgroundColor: '#fbf7ea' }}>✂</span>
+              </div>
+
+              {(['fire', 'frost', 'venom', 'moon'] as RuneType[]).map((r, idx) => {
+                const quest = QUESTS[r];
+                const questCards = cards.filter(c => c.runes.includes(r));
+                const qrUrl = totemQrPreviews[r];
+                const tagNum = idx + 1;
+
+                return (
+                  <div
+                    key={r}
+                    style={{
+                      border: `3px solid ${quest.color}`,
+                      borderRadius: '14px',
+                      backgroundColor: '#fffdf8',
+                      backgroundImage: `
+                        radial-gradient(circle at 50% 0%, rgba(${r === 'fire' ? '255,59,48' : r === 'frost' ? '0,200,255' : r === 'venom' ? '57,255,20' : '191,90,242'}, 0.08) 0%, transparent 60%),
+                        linear-gradient(180deg, #ffffff 0%, #fdf8ee 100%)
+                      `,
+                      padding: '0.14in',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      boxSizing: 'border-box',
+                      boxShadow: 'inset 0 0 10px rgba(0,0,0,0.04)',
+                      position: 'relative'
+                    }}
+                  >
+                    {/* Header */}
+                    <div>
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        borderBottom: `2px solid ${quest.color}`,
+                        paddingBottom: '4px',
+                        marginBottom: '6px'
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <img
+                            src={quest.icon}
+                            alt={quest.title}
+                            style={{ width: '32px', height: '32px', filter: `drop-shadow(0 2px 4px ${quest.color})` }}
+                          />
+                          <div>
+                            <div style={{ fontSize: '0.64rem', fontWeight: 800, color: quest.color, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                              NFC RELIC #{tagNum} • {r.toUpperCase()}
+                            </div>
+                            <h4 style={{ margin: 0, fontSize: '0.96rem', fontWeight: 900, color: '#1e1b4b', lineHeight: 1.1 }}>
+                              {quest.title}
+                            </h4>
+                          </div>
+                        </div>
+                        <span style={{
+                          backgroundColor: '#0f172a',
+                          color: '#ffffff',
+                          padding: '2px 6px',
+                          borderRadius: '6px',
+                          fontSize: '0.64rem',
+                          fontWeight: 800
+                        }}>
+                          START QUEST
+                        </span>
+                      </div>
+
+                      <div style={{ fontSize: '0.72rem', color: '#78350f', fontWeight: 600, textAlign: 'center', marginBottom: '6px' }}>
+                        Choose this Totem to track your 6 elemental ingredients!
+                      </div>
+                    </div>
+
+                    {/* Dual Starter Center: Physical NFC Target + Camera QR */}
+                    <div style={{
+                      display: 'grid',
+                      gridTemplateColumns: '1fr 1fr',
+                      gap: '8px',
+                      alignItems: 'center',
+                      backgroundColor: 'rgba(255, 255, 255, 0.85)',
+                      border: '1.5px solid #d97706',
+                      borderRadius: '10px',
+                      padding: '6px'
+                    }}>
+                      {/* Left: NFC Circle Target */}
+                      <div style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        textAlign: 'center',
+                        justifyContent: 'center'
+                      }}>
+                        <div style={{
+                          width: '66px',
+                          height: '66px',
+                          borderRadius: '50%',
+                          border: `2px dashed ${quest.color}`,
+                          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          boxShadow: `0 0 10px rgba(0,0,0,0.06)`
+                        }}>
+                          <span style={{ fontSize: '1.1rem' }}>📱</span>
+                          <span style={{ fontSize: '0.55rem', fontWeight: 900, color: '#1e1b4b', textTransform: 'uppercase' }}>
+                            TAP NFC
+                          </span>
+                          <span style={{ fontSize: '0.48rem', color: quest.color, fontWeight: 800 }}>
+                            TAG #{tagNum}
+                          </span>
+                        </div>
+                        <span style={{ fontSize: '0.6rem', fontWeight: 800, color: '#451a03', marginTop: '3px' }}>
+                          Stick NFC Tag #{tagNum}
+                        </span>
+                      </div>
+
+                      {/* Right: Camera QR Code */}
+                      <div style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        textAlign: 'center',
+                        justifyContent: 'center'
+                      }}>
+                        {qrUrl ? (
+                          <img
+                            src={qrUrl}
+                            alt={`${r} quest QR`}
+                            title="Click to download 512x512 QR code PNG"
+                            onClick={() => {
+                              playBloop(1.1);
+                              downloadTotemQrCode(r, scanBaseUrl);
+                            }}
+                            style={{
+                              width: '64px',
+                              height: '64px',
+                              border: '1px solid #78350f',
+                              borderRadius: '6px',
+                              backgroundColor: '#ffffff',
+                              padding: '2px',
+                              cursor: 'pointer'
+                            }}
+                          />
+                        ) : (
+                          <div style={{ width: '64px', height: '64px', backgroundColor: '#e2e8f0', borderRadius: '6px' }} />
+                        )}
+                        <span style={{ fontSize: '0.6rem', fontWeight: 800, color: '#451a03', marginTop: '3px' }}>
+                          📷 Or Scan Camera
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Assigned Ingredients */}
+                    <div style={{ marginTop: '5px' }}>
+                      <div style={{
+                        fontSize: '0.64rem',
+                        fontWeight: 800,
+                        color: '#78350f',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px',
+                        marginBottom: '3px'
+                      }}>
+                        Hunt These 6 Ingredients:
+                      </div>
+                      <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: '1fr 1fr',
+                        gap: '2px 6px',
+                        fontSize: '0.63rem',
+                        color: '#1e1b4b',
+                        backgroundColor: '#fffbeb',
+                        padding: '4px 6px',
+                        borderRadius: '6px',
+                        border: '1px solid #fcd34d'
+                      }}>
+                        {questCards.map(c => (
+                          <div key={c.id} style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            <strong>#{c.number}</strong> {c.name}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Footer Instructions */}
+                    <div style={{
+                      fontSize: '0.6rem',
+                      color: '#92400e',
+                      textAlign: 'center',
+                      fontWeight: 600,
+                      borderTop: '1px dashed #d97706',
+                      paddingTop: '3px',
+                      marginTop: '4px'
+                    }}>
+                      Tap phone or scan QR to start. Return Totem after brewing! 🎃
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* VIEW: Realm Setup Checklist */}
         {viewMode === 'checklist' && (
           <div style={{ maxWidth: '8.5in', margin: '0 auto', width: '100%' }}>
@@ -1058,7 +1381,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                     THE GREAT ALCHEMY QUEST • SETUP CHECKLIST
                   </h1>
                   <p style={{ margin: 0, fontSize: '0.82rem', color: '#78350f', fontWeight: 600 }}>
-                    12 Stations Readiness • Wall Mounting & NFC Programming Verification
+                    12 Stations Readiness • Wall Mounting & Camera QR Verification
                   </p>
                 </div>
 
@@ -1075,7 +1398,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                       <th style={{ padding: '6px 8px', textAlign: 'left' }}>Ingredient & Totems</th>
                       <th style={{ padding: '6px 8px', textAlign: 'left' }}>Station Hiding Spot / Location</th>
                       <th style={{ padding: '6px 8px', textAlign: 'center', width: '70px' }}>Letter</th>
-                      <th style={{ padding: '6px 6px', textAlign: 'center', width: '60px' }}>NFC Tag</th>
+                      <th style={{ padding: '6px 6px', textAlign: 'center', width: '60px' }}>Printed</th>
                       <th style={{ padding: '6px 6px', textAlign: 'center', width: '60px' }}>Mounted</th>
                       <th style={{ padding: '6px 6px', textAlign: 'center', width: '60px' }}>QR Tested</th>
                     </tr>
@@ -1149,7 +1472,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                     <span style={{ fontSize: '1rem' }}>▢</span>
-                    <strong>Satchel Modal:</strong> Test NFC scan on iPhone & Android
+                    <strong>Satchel Modal:</strong> Test Camera QR Scans & Totem NFC Bonding
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                     <span style={{ fontSize: '1rem' }}>▢</span>
@@ -1294,63 +1617,202 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
           </div>
         )}
 
-        {/* VIEW 4: Printable Table Sign for iPad Desk */}
+        {/* VIEW 4: Printable Mythical Welcome Sign for iPad Desk */}
         {viewMode === 'table_sign' && (
-          <div style={{ maxWidth: '8.5in', margin: '0.1in auto', padding: '0.1in 0.15in' }}>
+          <div style={{ maxWidth: '8.5in', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem', alignItems: 'center', width: '100%' }}>
+            {/* Top Toolbar */}
+            <div className="no-print" style={{
+              backgroundColor: 'rgba(234, 179, 8, 0.12)',
+              border: '1.5px solid #eab308',
+              padding: '0.85rem 1.25rem',
+              borderRadius: '16px',
+              maxWidth: '8.5in',
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '1rem',
+              boxSizing: 'border-box'
+            }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.05rem', color: '#fde047', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span>📜</span>
+                  <span>Mythical Welcome Station Poster</span>
+                </h3>
+                <p style={{ margin: '3px 0 0 0', fontSize: '0.8rem', color: '#fef08a' }}>
+                  Print this 8.5" x 11" sign to frame or stand on the welcome table next to the iPad and the 4 Elemental Totems.
+                </p>
+              </div>
+              <button
+                onClick={handlePrint}
+                style={{
+                  backgroundColor: '#eab308',
+                  color: '#090714',
+                  border: 'none',
+                  borderRadius: '999px',
+                  padding: '0.55rem 1.3rem',
+                  fontWeight: 800,
+                  fontSize: '0.88rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.45rem',
+                  boxShadow: '0 0 16px rgba(234, 179, 8, 0.4)',
+                  flexShrink: 0
+                }}
+              >
+                <Printer size={16} />
+                <span>PRINT WELCOME SIGN (8.5" x 11")</span>
+              </button>
+            </div>
+
+            {/* Poster Print Page */}
             <div className="print-page-container" style={{
               width: '8.0in',
               height: '10.4in',
+              maxHeight: '10.4in',
+              maxWidth: '8.0in',
               margin: '0 auto',
-              backgroundColor: '#fbf7ea',
-              border: '12px solid #3d2314',
+              backgroundColor: '#fbf5e6',
+              backgroundImage: `
+                radial-gradient(circle at 50% 10%, rgba(217, 119, 6, 0.12) 0%, transparent 55%),
+                radial-gradient(circle at 50% 90%, rgba(180, 83, 9, 0.1) 0%, transparent 60%),
+                linear-gradient(180deg, #fcf7ed 0%, #f6edd6 40%, #edd9ad 100%)
+              `,
+              border: '12px solid #2d1408',
               borderRadius: '16px',
-              padding: '0.45in 0.4in',
+              padding: '0.38in 0.42in',
               color: '#2d1810',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
               textAlign: 'center',
-              boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
+              boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+              position: 'relative',
+              boxSizing: 'border-box',
+              overflow: 'hidden'
             }}>
-              <div>
-                <div style={{ fontSize: '1rem', fontWeight: 800, color: '#b45309', letterSpacing: '2px' }}>
-                  WELCOME TO THE ALCHEMY ADVENTURE
+              {/* Ornate Gold Filigree Inner Inset */}
+              <div style={{
+                position: 'absolute',
+                top: '10px',
+                left: '10px',
+                right: '10px',
+                bottom: '10px',
+                border: '2px solid #b45309',
+                borderRadius: '8px',
+                pointerEvents: 'none',
+                zIndex: 1
+              }} />
+
+              {/* Corner Filigree Flourishes */}
+              <div style={{ position: 'absolute', top: '14px', left: '16px', fontSize: '1.2rem', color: '#b45309', opacity: 0.7, zIndex: 2 }}>⚜</div>
+              <div style={{ position: 'absolute', top: '14px', right: '16px', fontSize: '1.2rem', color: '#b45309', opacity: 0.7, zIndex: 2 }}>⚜</div>
+              <div style={{ position: 'absolute', bottom: '14px', left: '16px', fontSize: '1.2rem', color: '#b45309', opacity: 0.7, zIndex: 2 }}>⚜</div>
+              <div style={{ position: 'absolute', bottom: '14px', right: '16px', fontSize: '1.2rem', color: '#b45309', opacity: 0.7, zIndex: 2 }}>⚜</div>
+
+              {/* Hero Header */}
+              <div style={{ position: 'relative', zIndex: 5 }}>
+                {/* Grand Medallion */}
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '4px' }}>
+                  <img
+                    src="/sprites/medallion_all.png"
+                    alt="Grand Alchemist Medallion"
+                    style={{
+                      width: '58px',
+                      height: '58px',
+                      filter: 'drop-shadow(0 4px 10px rgba(180, 83, 9, 0.45))'
+                    }}
+                  />
                 </div>
-                <h1 className="font-mystic" style={{ fontSize: '2.8rem', margin: '0.4rem 0', color: '#3d2314' }}>
+
+                <div style={{
+                  fontSize: '0.82rem',
+                  fontWeight: 900,
+                  color: '#92400e',
+                  letterSpacing: '2.5px',
+                  textTransform: 'uppercase',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.5rem'
+                }}>
+                  <span>★</span>
+                  <span>WELCOME TO THE ALCHEMY ADVENTURE</span>
+                  <span>★</span>
+                </div>
+
+                <h1 className="font-mystic" style={{
+                  fontSize: '2.6rem',
+                  margin: '0.3rem 0',
+                  color: '#2a1205',
+                  letterSpacing: '1px',
+                  lineHeight: 1.1,
+                  textShadow: '0 2px 4px rgba(180, 83, 9, 0.25)'
+                }}>
                   THE GREAT ALCHEMY QUEST
                 </h1>
-                <p style={{ fontSize: '1.2rem', color: '#78350f', margin: 0, fontWeight: 600 }}>
-                  Solve the riddles • Brew your potion • Win a 3D-Printed Mini Potion Clicker!
+
+                <p style={{
+                  fontSize: '1.05rem',
+                  color: '#78350f',
+                  margin: 0,
+                  fontWeight: 700,
+                  letterSpacing: '0.2px'
+                }}>
+                  Solve the riddles • Transmute the elements • Win a 3D-Printed Mini Potion Clicker!
                 </p>
               </div>
 
-              {/* 3 Simple Steps */}
+              {/* 3 Mythical Step Plaques */}
               <div style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(3, 1fr)',
-                gap: '1rem',
-                margin: '1.5rem 0'
+                gap: '0.85rem',
+                margin: '0.85rem 0',
+                position: 'relative',
+                zIndex: 5
               }}>
+                {/* Step 1: Pick a Totem */}
                 <div style={{
-                  background: '#ffffff',
+                  background: 'linear-gradient(180deg, #fffdf8 0%, #fdf5df 100%)',
                   border: '2px solid #b45309',
                   borderRadius: '16px',
-                  padding: '1.25rem',
+                  padding: '0.95rem 0.8rem',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
-                  gap: '0.5rem'
+                  justifyContent: 'space-between',
+                  boxShadow: '0 4px 12px rgba(61, 35, 20, 0.1), inset 0 1px 0 rgba(255,255,255,0.9)'
                 }}>
-                  <div style={{ fontSize: '2.5rem' }}>🏮</div>
-                  <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#3d2314' }}>1. Pick a Totem</h3>
-                  <p style={{ margin: 0, fontSize: '0.88rem', color: '#78350f', lineHeight: 1.35, textAlign: 'center' }}>
-                    Grab one available Elemental Totem from the desk:
+                  <div style={{
+                    width: '54px',
+                    height: '54px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: '4px'
+                  }}>
+                    <img
+                      src="/sprites/item_glow_lantern.png"
+                      alt="Alchemical Lantern"
+                      style={{ width: '48px', height: '48px', objectFit: 'contain', filter: 'drop-shadow(0 2px 6px rgba(57, 255, 20, 0.35))' }}
+                    />
+                  </div>
+
+                  <h3 style={{ margin: '0 0 4px 0', fontSize: '1.05rem', color: '#2a1205', fontWeight: 800 }}>
+                    1. Pick a Totem
+                  </h3>
+
+                  <p style={{ margin: 0, fontSize: '0.79rem', color: '#78350f', lineHeight: 1.35, textAlign: 'center' }}>
+                    Grab one available Elemental Totem. Tap phone (NFC) or scan its QR code to bond!
                   </p>
-                  <div style={{ display: 'flex', gap: '6px', marginTop: '4px' }}>
+
+                  <div style={{ display: 'flex', gap: '5px', marginTop: '8px' }}>
                     {(['fire', 'frost', 'venom', 'moon'] as RuneType[]).map(r => (
                       <div key={r} style={{
-                        width: '32px',
-                        height: '32px',
+                        width: '28px',
+                        height: '28px',
                         borderRadius: '50%',
                         backgroundColor: '#1e1b2e',
                         display: 'flex',
@@ -1358,75 +1820,170 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                         justifyContent: 'center',
                         filter: `drop-shadow(0 2px 4px ${QUESTS[r].color})`
                       }}>
-                        <img src={QUESTS[r].icon} alt={r} style={{ width: '26px', height: '26px', objectFit: 'contain' }} />
+                        <img src={QUESTS[r].icon} alt={r} style={{ width: '22px', height: '22px', objectFit: 'contain' }} />
                       </div>
                     ))}
                   </div>
                 </div>
 
+                {/* Step 2: Explore & Seek */}
                 <div style={{
-                  background: '#ffffff',
+                  background: 'linear-gradient(180deg, #fffdf8 0%, #fdf5df 100%)',
                   border: '2px solid #b45309',
                   borderRadius: '16px',
-                  padding: '1.25rem',
+                  padding: '0.95rem 0.8rem',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
-                  gap: '0.5rem'
+                  justifyContent: 'space-between',
+                  boxShadow: '0 4px 12px rgba(61, 35, 20, 0.1), inset 0 1px 0 rgba(255,255,255,0.9)'
                 }}>
-                  <div style={{ fontSize: '2.5rem' }}>🗺️</div>
-                  <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#3d2314' }}>2. Explore & Seek</h3>
-                  <p style={{ margin: 0, fontSize: '0.88rem', color: '#78350f', lineHeight: 1.35 }}>
+                  <div style={{
+                    width: '54px',
+                    height: '54px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: '4px'
+                  }}>
+                    <img
+                      src="/sprites/item_magical_compass.png"
+                      alt="Magical Compass"
+                      style={{ width: '50px', height: '50px', objectFit: 'contain', filter: 'drop-shadow(0 2px 6px rgba(0, 200, 255, 0.35))' }}
+                    />
+                  </div>
+
+                  <h3 style={{ margin: '0 0 4px 0', fontSize: '1.05rem', color: '#2a1205', fontWeight: 800 }}>
+                    2. Explore & Seek
+                  </h3>
+
+                  <p style={{ margin: 0, fontSize: '0.79rem', color: '#78350f', lineHeight: 1.35, textAlign: 'center' }}>
                     Walk around looking for posters bearing your Totem's Rune emblem in the corners.
                   </p>
+
+                  <div style={{
+                    backgroundColor: 'rgba(180, 83, 9, 0.1)',
+                    border: '1px solid rgba(180, 83, 9, 0.25)',
+                    borderRadius: '8px',
+                    padding: '3px 8px',
+                    fontSize: '0.72rem',
+                    color: '#78350f',
+                    fontWeight: 700,
+                    marginTop: '8px'
+                  }}>
+                    📷 Point Camera to Scan
+                  </div>
                 </div>
 
+                {/* Step 3: Brew & Claim */}
                 <div style={{
-                  background: '#ffffff',
+                  background: 'linear-gradient(180deg, #fffdf8 0%, #fdf5df 100%)',
                   border: '2px solid #b45309',
                   borderRadius: '16px',
-                  padding: '1.25rem',
+                  padding: '0.95rem 0.8rem',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
-                  gap: '0.5rem'
+                  justifyContent: 'space-between',
+                  boxShadow: '0 4px 12px rgba(61, 35, 20, 0.1), inset 0 1px 0 rgba(255,255,255,0.9)'
                 }}>
-                  <div style={{ fontSize: '2.5rem' }}>✨</div>
-                  <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#3d2314' }}>3. Brew & Claim!</h3>
-                  <p style={{ margin: 0, fontSize: '0.88rem', color: '#78350f', lineHeight: 1.35 }}>
+                  <div style={{
+                    width: '54px',
+                    height: '54px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: '4px'
+                  }}>
+                    <img
+                      src="/sprites/cauldron_bubble.png"
+                      alt="Bubbling Cauldron"
+                      style={{ width: '52px', height: '52px', objectFit: 'contain', filter: 'drop-shadow(0 2px 6px rgba(191, 90, 242, 0.35))' }}
+                    />
+                  </div>
+
+                  <h3 style={{ margin: '0 0 4px 0', fontSize: '1.05rem', color: '#2a1205', fontWeight: 800 }}>
+                    3. Brew & Claim!
+                  </h3>
+
+                  <p style={{ margin: 0, fontSize: '0.79rem', color: '#78350f', lineHeight: 1.35, textAlign: 'center' }}>
                     Return to this iPad, tap your Rune, solve the puzzle, and claim your Potion Clicker prize!
                   </p>
+
+                  <div style={{
+                    backgroundColor: 'rgba(191, 90, 242, 0.12)',
+                    border: '1px solid rgba(191, 90, 242, 0.3)',
+                    borderRadius: '8px',
+                    padding: '3px 8px',
+                    fontSize: '0.72rem',
+                    color: '#6b21a8',
+                    fontWeight: 700,
+                    marginTop: '8px'
+                  }}>
+                    ✨ 6-Letter Secret Brew
+                  </div>
                 </div>
               </div>
 
-              {/* 3D Printed Potion Callout */}
+              {/* 3D Printed Potion Callout (Enchanted Treasure Scroll) */}
               <div style={{
-                background: '#fffbeb',
-                border: '2px dashed #d97706',
-                borderRadius: '16px',
-                padding: '1rem',
+                background: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)',
+                border: '2.5px dashed #d97706',
+                borderRadius: '18px',
+                padding: '0.8rem 1.2rem',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '1.5rem'
+                gap: '1.4rem',
+                position: 'relative',
+                zIndex: 5,
+                boxShadow: '0 4px 12px rgba(217, 119, 6, 0.15)'
               }}>
-                <img
-                  src="/assets/3D_printed_potions.png"
-                  alt="Potion Clickers"
-                  style={{ width: '80px', height: '80px', borderRadius: '12px', objectFit: 'cover' }}
-                />
+                <div style={{
+                  padding: '3px',
+                  backgroundColor: '#ffffff',
+                  border: '2px solid #b45309',
+                  borderRadius: '14px',
+                  boxShadow: '0 4px 10px rgba(0,0,0,0.12)',
+                  flexShrink: 0
+                }}>
+                  <img
+                    src="/assets/3D_printed_potions.png"
+                    alt="Potion Clickers"
+                    style={{ width: '80px', height: '80px', borderRadius: '10px', objectFit: 'cover', display: 'block' }}
+                  />
+                </div>
+
                 <div style={{ textAlign: 'left' }}>
-                  <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#3d2314' }}>
-                    Real 3D-Printed Mini Potion Fidget Toys!
+                  <div style={{ fontSize: '1.12rem', fontWeight: 900, color: '#3d2314', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <span>✨</span>
+                    <span>Real 3D-Printed Mini Potion Fidget Toys!</span>
                   </div>
-                  <div style={{ fontSize: '0.9rem', color: '#92400e' }}>
-                    Collect all 4 elemental colors by solving additional quests throughout the day!
+                  <div style={{ fontSize: '0.84rem', color: '#92400e', marginTop: '3px', lineHeight: 1.35 }}>
+                    Collect all 4 elemental colors by solving additional quests throughout the day! Handcrafted with clicking corks!
                   </div>
                 </div>
               </div>
 
-              <div style={{ fontSize: '0.85rem', color: '#78350f', fontWeight: 600 }}>
-                Please return Totems to the Quest Master station after finishing your brew! Happy Halloween! 🎃
+              {/* Mystical Footer */}
+              <div style={{
+                fontSize: '0.85rem',
+                color: '#78350f',
+                fontWeight: 700,
+                position: 'relative',
+                zIndex: 5,
+                borderTop: '1.5px dashed rgba(180, 83, 9, 0.4)',
+                paddingTop: '0.45rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '2px'
+              }}>
+                <div>
+                  Please return Totems to the Quest Master station after finishing your brew! Happy Halloween! 🎃
+                </div>
+                <div style={{ fontSize: '0.72rem', color: '#92400e', letterSpacing: '1px' }}>
+                  🜂 Crimson Fire  •  🜄 Glacial Frost  •  🜁 Toxic Venom  •  🜃 Shadow Moon
+                </div>
               </div>
             </div>
           </div>

@@ -286,110 +286,72 @@ export const PrintablePoster: React.FC<PrintablePosterProps> = ({
           </div>
         </div>
 
-        {/* Explorer's Dual Scan Portal: NFC Tap & QR Code Scan */}
+        {/* Explorer's Camera QR Scan Portal */}
         <div style={{
-          marginTop: '0.75rem',
-          paddingTop: '0.6rem',
+          marginTop: '0.8rem',
+          paddingTop: '0.65rem',
           borderTop: '1.5px dashed rgba(180, 83, 9, 0.4)',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '0.8rem',
-          backgroundColor: 'rgba(255, 255, 255, 0.65)',
-          borderRadius: '12px',
-          padding: '0.5rem 0.9rem',
-          border: '1px solid rgba(180, 83, 9, 0.25)',
+          justifyContent: 'center',
+          gap: '1.25rem',
+          backgroundColor: 'rgba(255, 255, 255, 0.75)',
+          borderRadius: '14px',
+          padding: '0.65rem 1.4rem',
+          border: '1.5px solid rgba(180, 83, 9, 0.3)',
           boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.04)'
         }}>
-          {/* NFC Tap Side */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.65rem',
-            flex: 1
-          }}>
+          {qrCodeUrl ? (
             <div style={{
-              width: '44px',
-              height: '44px',
-              borderRadius: '50%',
-              backgroundColor: '#3d2314',
-              color: '#39ff14',
+              padding: '3px',
+              backgroundColor: '#ffffff',
+              border: '2px solid #78350f',
+              borderRadius: '8px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
+              flexShrink: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <img
+                src={qrCodeUrl}
+                alt={`QR code for card ${card.number}`}
+                style={{ width: '64px', height: '64px', display: 'block' }}
+              />
+            </div>
+          ) : (
+            <div style={{
+              width: '64px',
+              height: '64px',
+              backgroundColor: 'rgba(0,0,0,0.05)',
+              borderRadius: '8px',
+              border: '1px dashed #78350f',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '1.35rem',
-              boxShadow: '0 2px 6px rgba(0,0,0,0.25)',
-              border: '2px solid #b45309',
-              flexShrink: 0
+              fontSize: '0.65rem',
+              color: '#78350f'
             }}>
-              📱
+              QR Code
             </div>
-            <div style={{ textAlign: 'left', lineHeight: 1.2 }}>
-              <div style={{ fontSize: '0.84rem', fontWeight: 900, color: '#2d1810', letterSpacing: '0.4px' }}>
-                TAP PHONE (NFC)
-              </div>
-              <div style={{ fontSize: '0.72rem', color: '#78350f', fontWeight: 600 }}>
-                Hold top of phone here to claim
-              </div>
-            </div>
-          </div>
+          )}
 
-          {/* Central Divider */}
-          <div style={{
-            width: '1px',
-            height: '46px',
-            backgroundColor: 'rgba(180, 83, 9, 0.35)'
-          }} />
-
-          {/* QR Code Side */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.65rem',
-            flex: 1,
-            justifyContent: 'flex-end'
-          }}>
-            <div style={{ textAlign: 'right', lineHeight: 1.2 }}>
-              <div style={{ fontSize: '0.84rem', fontWeight: 900, color: '#2d1810', letterSpacing: '0.4px' }}>
-                SCAN QR CODE
-              </div>
-              <div style={{ fontSize: '0.72rem', color: '#78350f', fontWeight: 600 }}>
-                Point camera to capture ingredient
-              </div>
+          <div style={{ textAlign: 'left', lineHeight: 1.25 }}>
+            <div style={{
+              fontSize: '0.98rem',
+              fontWeight: 900,
+              color: '#2d1810',
+              letterSpacing: '0.5px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.35rem'
+            }}>
+              <span>📷</span>
+              <span>POINT CAMERA TO CAPTURE</span>
             </div>
-            {qrCodeUrl ? (
-              <div style={{
-                padding: '2px',
-                backgroundColor: '#ffffff',
-                border: '2px solid #78350f',
-                borderRadius: '6px',
-                boxShadow: '0 2px 6px rgba(0,0,0,0.18)',
-                flexShrink: 0,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-                <img
-                  src={qrCodeUrl}
-                  alt={`QR code for card ${card.number}`}
-                  style={{ width: '56px', height: '56px', display: 'block' }}
-                />
-              </div>
-            ) : (
-              <div style={{
-                width: '56px',
-                height: '56px',
-                backgroundColor: '#e2e8f0',
-                borderRadius: '6px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '0.65rem',
-                color: '#64748b'
-              }}>
-                QR
-              </div>
-            )}
+            <div style={{ fontSize: '0.78rem', color: '#78350f', fontWeight: 600, marginTop: '3px' }}>
+              Scan QR code with your phone camera to seal this ingredient into your satchel!
+            </div>
           </div>
         </div>
 

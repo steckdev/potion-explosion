@@ -24,7 +24,7 @@ import {
   ListChecks
 } from 'lucide-react';
 
-export type AdminViewMode = 'print_all' | 'totem_cards' | 'table_sign' | 'cheat_sheet' | 'checklist' | 'certificates' | 'plinko_discs' | 'nfc_tags' | 'editor' | 'prompts';
+export type AdminViewMode = 'print_all' | 'totem_cards' | 'map_guide' | 'table_sign' | 'cheat_sheet' | 'checklist' | 'certificates' | 'plinko_discs' | 'nfc_tags' | 'editor' | 'prompts';
 
 interface AdminPosterStudioProps {
   cards: CardData[];
@@ -43,6 +43,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
   const [isImporting, setIsImporting] = useState(false);
   const [jsonInput, setJsonInput] = useState('');
   const [saveToast, setSaveToast] = useState(false);
+  const [totemPrintLayout, setTotemPrintLayout] = useState<'full_page' | 'compact_4up'>('full_page');
   
   // Scanning Base Host / Domain configuration
   const [scanBaseUrl, setScanBaseUrl] = useState(() => (typeof window !== 'undefined' ? window.location.origin : 'https://potion-explosion.netlify.app'));
@@ -257,6 +258,26 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
             >
               <span>🏷️</span>
               <span>4 Totem NFC Cards</span>
+            </button>
+
+            <button
+              onClick={() => { playBloop(1.0); setViewMode('map_guide'); }}
+              style={{
+                padding: '0.35rem 0.75rem',
+                borderRadius: '999px',
+                border: viewMode === 'map_guide' ? '1px solid #f97316' : '1px solid rgba(255,255,255,0.1)',
+                cursor: 'pointer',
+                fontWeight: 700,
+                fontSize: '0.78rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+                backgroundColor: viewMode === 'map_guide' ? 'rgba(249, 115, 22, 0.25)' : 'rgba(255,255,255,0.06)',
+                color: viewMode === 'map_guide' ? '#fdba74' : '#cbd5e1'
+              }}
+            >
+              <span>🗺️</span>
+              <span>Map Backside Guide</span>
             </button>
 
             <button
@@ -1056,7 +1077,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
           </div>
         )}
 
-        {/* VIEW: 4 Totem NFC Cards / Quest Starters (8.5" x 11" 4-up sheet) */}
+        {/* VIEW: 4 Totem NFC Cards / Quest Starters (Full-Page Standees or 4-up Sheet) */}
         {viewMode === 'totem_cards' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', alignItems: 'center', width: '100%', maxWidth: '8.5in', margin: '0 auto' }}>
             {/* Action Bar */}
@@ -1070,7 +1091,8 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
               alignItems: 'center',
               justifyContent: 'space-between',
               gap: '1rem',
-              boxSizing: 'border-box'
+              boxSizing: 'border-box',
+              flexWrap: 'wrap'
             }}>
               <div>
                 <h3 style={{ margin: 0, fontSize: '1.05rem', color: '#86efac', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -1078,14 +1100,698 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                   <span>4 Elemental Totem NFC Cards (Quest Starters)</span>
                 </h3>
                 <p style={{ margin: '3px 0 0 0', fontSize: '0.8rem', color: '#cbd5e1' }}>
-                  Prints all 4 Totem desk cards on one 8.5" x 11" sheet. Stick your 4 physical NFC tags on the dashed circles or scan QR codes with camera to start the game!
+                  {totemPrintLayout === 'full_page'
+                    ? 'Prints 4 individual full-page 8.5" x 11" desk standees with large NFC targets, QR codes, and mystery clue slots. Zero ingredient spoilers!'
+                    : 'Prints all 4 Totem cards on one 8.5" x 11" sheet with cut guides and mystery clue slots. Zero ingredient spoilers!'}
                 </p>
               </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                {/* Layout Toggle */}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                  padding: '3px',
+                  borderRadius: '10px',
+                  border: '1px solid rgba(255, 255, 255, 0.15)'
+                }}>
+                  <button
+                    onClick={() => { playBloop(1.0); setTotemPrintLayout('full_page'); }}
+                    style={{
+                      padding: '0.35rem 0.75rem',
+                      borderRadius: '8px',
+                      border: 'none',
+                      backgroundColor: totemPrintLayout === 'full_page' ? '#39ff14' : 'transparent',
+                      color: totemPrintLayout === 'full_page' ? '#090714' : '#cbd5e1',
+                      fontWeight: 800,
+                      fontSize: '0.76rem',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.3rem'
+                    }}
+                  >
+                    <span>📄</span>
+                    <span>Full-Page (4 Pages)</span>
+                  </button>
+                  <button
+                    onClick={() => { playBloop(1.0); setTotemPrintLayout('compact_4up'); }}
+                    style={{
+                      padding: '0.35rem 0.75rem',
+                      borderRadius: '8px',
+                      border: 'none',
+                      backgroundColor: totemPrintLayout === 'compact_4up' ? '#39ff14' : 'transparent',
+                      color: totemPrintLayout === 'compact_4up' ? '#090714' : '#cbd5e1',
+                      fontWeight: 800,
+                      fontSize: '0.76rem',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.3rem'
+                    }}
+                  >
+                    <span>📇</span>
+                    <span>4-on-1 Sheet</span>
+                  </button>
+                </div>
+
+                <button
+                  onClick={handlePrint}
+                  style={{
+                    backgroundColor: '#39ff14',
+                    color: '#090714',
+                    border: 'none',
+                    borderRadius: '999px',
+                    padding: '0.55rem 1.3rem',
+                    fontWeight: 800,
+                    fontSize: '0.88rem',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.45rem',
+                    boxShadow: '0 0 16px rgba(57, 255, 20, 0.4)',
+                    flexShrink: 0
+                  }}
+                >
+                  <Printer size={16} />
+                  <span>
+                    {totemPrintLayout === 'full_page' ? 'PRINT 4 FULL-PAGE SIGNS' : 'PRINT 4-UP SHEET'}
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            {/* LAYOUT A: FULL-PAGE STANDS (4 Individual 8.5" x 11" Pages) */}
+            {totemPrintLayout === 'full_page' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', width: '100%', alignItems: 'center' }}>
+                {(['fire', 'frost', 'venom', 'moon'] as RuneType[]).map((r, idx) => {
+                  const quest = QUESTS[r];
+                  const qrUrl = totemQrPreviews[r];
+                  const tagNum = idx + 1;
+
+                  return (
+                    <div
+                      key={r}
+                      className="print-page-container"
+                      style={{
+                        width: '8.0in',
+                        minHeight: '10.4in',
+                        maxHeight: '10.4in',
+                        backgroundColor: '#fbf7ea',
+                        backgroundImage: `
+                          radial-gradient(circle at 50% 12%, rgba(${r === 'fire' ? '255,59,48' : r === 'frost' ? '0,200,255' : r === 'venom' ? '57,255,20' : '191,90,242'}, 0.12) 0%, transparent 65%),
+                          linear-gradient(180deg, #ffffff 0%, #fbf7ee 60%, #f7edd7 100%)
+                        `,
+                        border: '8px solid #3d2314',
+                        borderRadius: '16px',
+                        padding: '0.38in 0.45in',
+                        boxSizing: 'border-box',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                        position: 'relative',
+                        boxShadow: '0 10px 30px rgba(0,0,0,0.4)',
+                        color: '#2d1810',
+                        overflow: 'hidden'
+                      }}
+                    >
+                      {/* Inner Ornate Accent Border */}
+                      <div style={{
+                        position: 'absolute',
+                        top: '8px',
+                        left: '8px',
+                        right: '8px',
+                        bottom: '8px',
+                        border: `2px solid ${quest.color}`,
+                        borderRadius: '10px',
+                        pointerEvents: 'none',
+                        opacity: 0.8
+                      }} />
+
+                      {/* Header Section */}
+                      <div style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
+                        <div style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.5rem',
+                          backgroundColor: '#0f172a',
+                          color: '#ffffff',
+                          padding: '0.25rem 0.9rem',
+                          borderRadius: '999px',
+                          fontSize: '0.78rem',
+                          fontWeight: 800,
+                          letterSpacing: '1px',
+                          textTransform: 'uppercase',
+                          marginBottom: '0.5rem',
+                          boxShadow: `0 0 14px ${quest.color}`
+                        }}>
+                          <span>🏷️ NFC RELIC #{tagNum}</span>
+                          <span>•</span>
+                          <span style={{ color: quest.color }}>{r.toUpperCase()} RUNESTONE</span>
+                        </div>
+
+                        {/* Large Rune Emblem Icon */}
+                        <div style={{ display: 'flex', justifyContent: 'center', margin: '0.35rem 0' }}>
+                          <div style={{
+                            width: '88px',
+                            height: '88px',
+                            borderRadius: '50%',
+                            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                            border: `3px solid ${quest.color}`,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            boxShadow: `0 0 24px rgba(${r === 'fire' ? '255,59,48' : r === 'frost' ? '0,200,255' : r === 'venom' ? '57,255,20' : '191,90,242'}, 0.45)`
+                          }}>
+                            <img
+                              src={quest.icon}
+                              alt={quest.title}
+                              style={{ width: '64px', height: '64px', filter: `drop-shadow(0 3px 6px ${quest.color})` }}
+                            />
+                          </div>
+                        </div>
+
+                        <h2 className="font-mystic" style={{
+                          margin: '0.25rem 0 0.15rem 0',
+                          fontSize: '2.1rem',
+                          fontWeight: 900,
+                          color: '#1e1b4b',
+                          letterSpacing: '1px'
+                        }}>
+                          {quest.title}
+                        </h2>
+
+                        <p style={{
+                          margin: 0,
+                          fontSize: '0.92rem',
+                          color: '#78350f',
+                          fontWeight: 700,
+                          lineHeight: 1.3,
+                          maxWidth: '6.2in',
+                          marginLeft: 'auto',
+                          marginRight: 'auto'
+                        }}>
+                          Choose this Totem to bond your satchel and hunt your 6 elemental ingredients across the office!
+                        </p>
+                      </div>
+
+                      {/* Dual Starter Center: Physical NFC Target + Camera QR Code */}
+                      <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: '1fr 1fr',
+                        gap: '1rem',
+                        alignItems: 'center',
+                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                        border: `2px solid ${quest.color}`,
+                        borderRadius: '14px',
+                        padding: '0.9rem 1.1rem',
+                        margin: '0.5rem 0',
+                        boxShadow: 'inset 0 0 14px rgba(0,0,0,0.05)',
+                        position: 'relative',
+                        zIndex: 1
+                      }}>
+                        {/* Left: NFC Circle Target */}
+                        <div style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          textAlign: 'center',
+                          justifyContent: 'center',
+                          borderRight: '1.5px dashed #d97706',
+                          paddingRight: '0.75rem'
+                        }}>
+                          <div style={{
+                            width: '100px',
+                            height: '100px',
+                            borderRadius: '50%',
+                            border: `3px dashed ${quest.color}`,
+                            backgroundColor: '#ffffff',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            boxShadow: `0 0 16px rgba(${r === 'fire' ? '255,59,48' : r === 'frost' ? '0,200,255' : r === 'venom' ? '57,255,20' : '191,90,242'}, 0.35)`
+                          }}>
+                            <span style={{ fontSize: '1.75rem' }}>📱</span>
+                            <span style={{ fontSize: '0.68rem', fontWeight: 900, color: '#1e1b4b', textTransform: 'uppercase' }}>
+                              TAP NFC
+                            </span>
+                            <span style={{ fontSize: '0.58rem', color: quest.color, fontWeight: 900 }}>
+                              TAG #{tagNum}
+                            </span>
+                          </div>
+                          <span style={{ fontSize: '0.84rem', fontWeight: 900, color: '#451a03', marginTop: '6px' }}>
+                            Stick NFC Tag #{tagNum} Here
+                          </span>
+                          <span style={{ fontSize: '0.72rem', color: '#78350f', fontWeight: 600, marginTop: '2px' }}>
+                            Tap phone against Totem to bond satchel
+                          </span>
+                        </div>
+
+                        {/* Right: Camera QR Code */}
+                        <div style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          textAlign: 'center',
+                          justifyContent: 'center',
+                          paddingLeft: '0.75rem'
+                        }}>
+                          {qrUrl ? (
+                            <img
+                              src={qrUrl}
+                              alt={`${r} quest QR`}
+                              title="Click to download 512x512 QR code PNG"
+                              onClick={() => {
+                                playBloop(1.1);
+                                downloadTotemQrCode(r, scanBaseUrl);
+                              }}
+                              style={{
+                                width: '100px',
+                                height: '100px',
+                                border: '2px solid #78350f',
+                                borderRadius: '10px',
+                                backgroundColor: '#ffffff',
+                                padding: '4px',
+                                cursor: 'pointer',
+                                boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+                              }}
+                            />
+                          ) : (
+                            <div style={{ width: '100px', height: '100px', backgroundColor: '#e2e8f0', borderRadius: '10px' }} />
+                          )}
+                          <span style={{ fontSize: '0.84rem', fontWeight: 900, color: '#451a03', marginTop: '6px' }}>
+                            📷 Or Scan With Camera
+                          </span>
+                          <span style={{ fontSize: '0.72rem', color: '#78350f', fontWeight: 600, marginTop: '2px' }}>
+                            Scan QR code to launch quest satchel
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* 6 Mystery Quest Clue Slots (ZERO INGREDIENT SPOILERS!) */}
+                      <div style={{ position: 'relative', zIndex: 1 }}>
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          borderBottom: `2px solid ${quest.color}`,
+                          paddingBottom: '4px',
+                          marginBottom: '8px'
+                        }}>
+                          <div style={{
+                            fontSize: '0.82rem',
+                            fontWeight: 900,
+                            color: '#78350f',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px'
+                          }}>
+                            🔍 6 Mystery Ingredients to Discover in the Office:
+                          </div>
+                          <span style={{
+                            fontSize: '0.7rem',
+                            fontWeight: 800,
+                            color: quest.color,
+                            backgroundColor: '#0f172a',
+                            padding: '2px 8px',
+                            borderRadius: '6px'
+                          }}>
+                            SEALED QUEST
+                          </span>
+                        </div>
+
+                        <p style={{
+                          margin: '0 0 8px 0',
+                          fontSize: '0.74rem',
+                          color: '#451a03',
+                          fontWeight: 600,
+                          lineHeight: 1.3
+                        }}>
+                          Look for 8.5" x 11" clue posters hanging in rooms throughout the office. When you spot a poster with this Totem's <strong>{r.toUpperCase()} RUNE</strong> in the top corners, scan it with your phone camera to reveal the ingredient and collect its secret letter!
+                        </p>
+
+                        {/* 6 Mystery Cards Grid */}
+                        <div style={{
+                          display: 'grid',
+                          gridTemplateColumns: 'repeat(3, 1fr)',
+                          gap: '8px'
+                        }}>
+                          {[1, 2, 3, 4, 5, 6].map(num => (
+                            <div
+                              key={num}
+                              style={{
+                                backgroundColor: '#ffffff',
+                                border: '1.5px dashed #d97706',
+                                borderRadius: '8px',
+                                padding: '8px 10px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                boxShadow: '0 2px 5px rgba(0,0,0,0.04)'
+                              }}
+                            >
+                              <div style={{
+                                width: '32px',
+                                height: '32px',
+                                borderRadius: '50%',
+                                backgroundColor: 'rgba(255, 251, 235, 0.9)',
+                                border: `2px solid ${quest.color}`,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '1rem',
+                                color: quest.color,
+                                fontWeight: 900,
+                                flexShrink: 0
+                              }}>
+                                ❓
+                              </div>
+                              <div style={{ lineHeight: 1.2 }}>
+                                <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#1e1b4b' }}>
+                                  Clue #{num}
+                                </div>
+                                <div style={{ fontSize: '0.62rem', color: '#92400e', fontWeight: 600 }}>
+                                  Hidden in Rooms
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Footer Guidance */}
+                      <div style={{
+                        textAlign: 'center',
+                        borderTop: '1.5px dashed #d97706',
+                        paddingTop: '6px',
+                        marginTop: '6px',
+                        position: 'relative',
+                        zIndex: 1
+                      }}>
+                        <div style={{ fontSize: '0.76rem', color: '#78350f', fontWeight: 700 }}>
+                          🏆 Once all 6 ingredients are collected in your satchel, return this Totem to the High Alchemist at the Master Cauldron to brew your potion and claim your <strong>3D-Printed Mini Potion Fidget Toy!</strong> 🎃
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* LAYOUT B: 4-ON-1 SHEET (Compact Cutout with Scissor Lines) */}
+            {totemPrintLayout === 'compact_4up' && (
+              <div className="print-page-container print-grid-container" style={{
+                width: '8.0in',
+                height: '10.4in',
+                maxHeight: '10.4in',
+                maxWidth: '8.0in',
+                backgroundColor: '#fbf7ea',
+                border: '8px solid #3d2314',
+                borderRadius: '16px',
+                padding: '0.22in',
+                boxSizing: 'border-box',
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gridTemplateRows: '1fr 1fr',
+                gap: '0.22in',
+                position: 'relative',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.4)',
+                color: '#2d1810',
+                overflow: 'hidden'
+              }}>
+                {/* Center Scissors Guides */}
+                <div style={{
+                  position: 'absolute',
+                  top: '0.2in',
+                  bottom: '0.2in',
+                  left: '50%',
+                  width: '0',
+                  borderLeft: '1.5px dashed #b45309',
+                  pointerEvents: 'none',
+                  opacity: 0.6,
+                  zIndex: 10
+                }}>
+                  <span style={{ position: 'absolute', top: '48%', left: '-8px', fontSize: '14px', backgroundColor: '#fbf7ea' }}>✂</span>
+                </div>
+                <div style={{
+                  position: 'absolute',
+                  left: '0.2in',
+                  right: '0.2in',
+                  top: '50%',
+                  height: '0',
+                  borderTop: '1.5px dashed #b45309',
+                  pointerEvents: 'none',
+                  opacity: 0.6,
+                  zIndex: 10
+                }}>
+                  <span style={{ position: 'absolute', left: '48%', top: '-10px', fontSize: '14px', backgroundColor: '#fbf7ea' }}>✂</span>
+                </div>
+
+                {(['fire', 'frost', 'venom', 'moon'] as RuneType[]).map((r, idx) => {
+                  const quest = QUESTS[r];
+                  const qrUrl = totemQrPreviews[r];
+                  const tagNum = idx + 1;
+
+                  return (
+                    <div
+                      key={r}
+                      style={{
+                        border: `3px solid ${quest.color}`,
+                        borderRadius: '14px',
+                        backgroundColor: '#fffdf8',
+                        backgroundImage: `
+                          radial-gradient(circle at 50% 0%, rgba(${r === 'fire' ? '255,59,48' : r === 'frost' ? '0,200,255' : r === 'venom' ? '57,255,20' : '191,90,242'}, 0.08) 0%, transparent 60%),
+                          linear-gradient(180deg, #ffffff 0%, #fdf8ee 100%)
+                        `,
+                        padding: '0.14in',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                        boxSizing: 'border-box',
+                        boxShadow: 'inset 0 0 10px rgba(0,0,0,0.04)',
+                        position: 'relative'
+                      }}
+                    >
+                      {/* Header */}
+                      <div>
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          borderBottom: `2px solid ${quest.color}`,
+                          paddingBottom: '4px',
+                          marginBottom: '6px'
+                        }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <img
+                              src={quest.icon}
+                              alt={quest.title}
+                              style={{ width: '32px', height: '32px', filter: `drop-shadow(0 2px 4px ${quest.color})` }}
+                            />
+                            <div>
+                              <div style={{ fontSize: '0.64rem', fontWeight: 800, color: quest.color, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                NFC RELIC #{tagNum} • {r.toUpperCase()}
+                              </div>
+                              <h4 style={{ margin: 0, fontSize: '0.96rem', fontWeight: 900, color: '#1e1b4b', lineHeight: 1.1 }}>
+                                {quest.title}
+                              </h4>
+                            </div>
+                          </div>
+                          <span style={{
+                            backgroundColor: '#0f172a',
+                            color: '#ffffff',
+                            padding: '2px 6px',
+                            borderRadius: '6px',
+                            fontSize: '0.64rem',
+                            fontWeight: 800
+                          }}>
+                            START QUEST
+                          </span>
+                        </div>
+
+                        <div style={{ fontSize: '0.72rem', color: '#78350f', fontWeight: 600, textAlign: 'center', marginBottom: '6px' }}>
+                          Choose this Totem to track your 6 elemental ingredients!
+                        </div>
+                      </div>
+
+                      {/* Dual Starter Center: Physical NFC Target + Camera QR */}
+                      <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: '1fr 1fr',
+                        gap: '8px',
+                        alignItems: 'center',
+                        backgroundColor: 'rgba(255, 255, 255, 0.85)',
+                        border: '1.5px solid #d97706',
+                        borderRadius: '10px',
+                        padding: '6px'
+                      }}>
+                        {/* Left: NFC Circle Target */}
+                        <div style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          textAlign: 'center',
+                          justifyContent: 'center'
+                        }}>
+                          <div style={{
+                            width: '66px',
+                            height: '66px',
+                            borderRadius: '50%',
+                            border: `2px dashed ${quest.color}`,
+                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            boxShadow: `0 0 10px rgba(0,0,0,0.06)`
+                          }}>
+                            <span style={{ fontSize: '1.1rem' }}>📱</span>
+                            <span style={{ fontSize: '0.55rem', fontWeight: 900, color: '#1e1b4b', textTransform: 'uppercase' }}>
+                              TAP NFC
+                            </span>
+                            <span style={{ fontSize: '0.48rem', color: quest.color, fontWeight: 800 }}>
+                              TAG #{tagNum}
+                            </span>
+                          </div>
+                          <span style={{ fontSize: '0.6rem', fontWeight: 800, color: '#451a03', marginTop: '3px' }}>
+                            Stick NFC Tag #{tagNum}
+                          </span>
+                        </div>
+
+                        {/* Right: Camera QR Code */}
+                        <div style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          textAlign: 'center',
+                          justifyContent: 'center'
+                        }}>
+                          {qrUrl ? (
+                            <img
+                              src={qrUrl}
+                              alt={`${r} quest QR`}
+                              title="Click to download 512x512 QR code PNG"
+                              onClick={() => {
+                                playBloop(1.1);
+                                downloadTotemQrCode(r, scanBaseUrl);
+                              }}
+                              style={{
+                                width: '64px',
+                                height: '64px',
+                                border: '1px solid #78350f',
+                                borderRadius: '6px',
+                                backgroundColor: '#ffffff',
+                                padding: '2px',
+                                cursor: 'pointer'
+                              }}
+                            />
+                          ) : (
+                            <div style={{ width: '64px', height: '64px', backgroundColor: '#e2e8f0', borderRadius: '6px' }} />
+                          )}
+                          <span style={{ fontSize: '0.6rem', fontWeight: 800, color: '#451a03', marginTop: '3px' }}>
+                            📷 Or Scan Camera
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* 6 Mystery Ingredients to Find (ZERO SPOILERS!) */}
+                      <div style={{ marginTop: '5px' }}>
+                        <div style={{
+                          fontSize: '0.64rem',
+                          fontWeight: 800,
+                          color: '#78350f',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.5px',
+                          marginBottom: '3px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between'
+                        }}>
+                          <span>6 Mystery Clues to Discover:</span>
+                          <span style={{ fontSize: '0.55rem', color: quest.color, fontWeight: 900 }}>FIND IN ROOMS</span>
+                        </div>
+                        <div style={{
+                          display: 'grid',
+                          gridTemplateColumns: 'repeat(3, 1fr)',
+                          gap: '4px',
+                          fontSize: '0.62rem',
+                          color: '#1e1b4b',
+                          backgroundColor: '#fffbeb',
+                          padding: '4px 6px',
+                          borderRadius: '6px',
+                          border: '1px solid #fcd34d'
+                        }}>
+                          {[1, 2, 3, 4, 5, 6].map(num => (
+                            <div key={num} style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '3px',
+                              backgroundColor: 'rgba(255, 255, 255, 0.85)',
+                              padding: '2px 4px',
+                              borderRadius: '4px',
+                              border: '1px dashed #d97706',
+                              boxSizing: 'border-box'
+                            }}>
+                              <span style={{ color: quest.color, fontWeight: 900, fontSize: '0.7rem' }}>❓</span>
+                              <span style={{ fontWeight: 700 }}>Clue #{num}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Footer Instructions */}
+                      <div style={{
+                        fontSize: '0.6rem',
+                        color: '#92400e',
+                        textAlign: 'center',
+                        fontWeight: 600,
+                        borderTop: '1px dashed #d97706',
+                        paddingTop: '3px',
+                        marginTop: '4px'
+                      }}>
+                        Tap phone or scan QR to start. Return Totem after brewing! 🎃
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* VIEW: Office Map Backside Guide & Candy Tracker (8.5" x 11") */}
+        {viewMode === 'map_guide' && (
+          <div style={{ maxWidth: '8.5in', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', gap: '1.5rem', alignItems: 'center' }}>
+            {/* Action Bar */}
+            <div className="no-print" style={{
+              backgroundColor: 'rgba(249, 115, 22, 0.1)',
+              border: '1.5px solid #f97316',
+              padding: '0.85rem 1.25rem',
+              borderRadius: '16px',
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '1rem',
+              boxSizing: 'border-box',
+              flexWrap: 'wrap'
+            }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.05rem', color: '#fdba74', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span>🗺️</span>
+                  <span>Office Map Backside Guide & Candy Tracker</span>
+                </h3>
+                <p style={{ margin: '3px 0 0 0', fontSize: '0.8rem', color: '#cbd5e1' }}>
+                  Print directly on the back of your office floor plan map! Introduces the quest, guides candy station visits, and lets explorers mark discoveries.
+                </p>
+              </div>
+
               <button
                 onClick={handlePrint}
                 style={{
-                  backgroundColor: '#39ff14',
-                  color: '#090714',
+                  backgroundColor: '#f97316',
+                  color: '#ffffff',
                   border: 'none',
                   borderRadius: '999px',
                   padding: '0.55rem 1.3rem',
@@ -1095,257 +1801,516 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.45rem',
-                  boxShadow: '0 0 16px rgba(57, 255, 20, 0.4)',
+                  boxShadow: '0 0 16px rgba(249, 115, 22, 0.4)',
                   flexShrink: 0
                 }}
               >
                 <Printer size={16} />
-                <span>PRINT 4 TOTEM CARDS (8.5" x 11")</span>
+                <span>PRINT MAP BACKSIDE GUIDE (8.5" x 11")</span>
               </button>
             </div>
 
-            {/* Printable 8.5" x 11" Page with 4 Totem Cards (2x2 Grid) */}
+            {/* Printable 8.5" x 11" Page */}
             <div className="print-page-container" style={{
               width: '8.0in',
-              height: '10.4in',
+              minHeight: '10.4in',
               maxHeight: '10.4in',
-              maxWidth: '8.0in',
               backgroundColor: '#fbf7ea',
+              backgroundImage: 'linear-gradient(180deg, #fbf7ea 0%, #f7edd7 50%, #f4e6c3 100%)',
+              color: '#2d1810',
               border: '8px solid #3d2314',
               borderRadius: '16px',
-              padding: '0.22in',
+              padding: '0.2in 0.35in',
               boxSizing: 'border-box',
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gridTemplateRows: '1fr 1fr',
-              gap: '0.22in',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
               position: 'relative',
               boxShadow: '0 10px 30px rgba(0,0,0,0.4)',
-              color: '#2d1810',
               overflow: 'hidden'
             }}>
-              {/* Center Scissors Guides */}
+              {/* Inner Decorative Accent Border */}
               <div style={{
                 position: 'absolute',
-                top: '0.2in',
-                bottom: '0.2in',
-                left: '50%',
-                width: '0',
-                borderLeft: '1.5px dashed #b45309',
+                top: '5px',
+                left: '5px',
+                right: '5px',
+                bottom: '5px',
+                border: '2px solid #b45309',
+                borderRadius: '10px',
                 pointerEvents: 'none',
-                opacity: 0.6,
-                zIndex: 10
-              }}>
-                <span style={{ position: 'absolute', top: '48%', left: '-8px', fontSize: '14px', backgroundColor: '#fbf7ea' }}>✂</span>
+                opacity: 0.65
+              }} />
+
+              {/* SECTION 1: HEADER & INTRO STORY */}
+              <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
+                <div style={{
+                  fontSize: '0.7rem',
+                  fontWeight: 900,
+                  color: '#b45309',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.4rem',
+                  marginBottom: '1px'
+                }}>
+                  <span>🎃</span>
+                  <span>OFFICE HALLOWEEN SCAVENGER HUNT • EXPLORER'S FIELD GUIDE</span>
+                  <span>🎃</span>
+                </div>
+
+                <h1 className="font-mystic" style={{
+                  margin: '1px 0',
+                  fontSize: '1.65rem',
+                  fontWeight: 900,
+                  color: '#1e1b4b',
+                  letterSpacing: '0.5px',
+                  lineHeight: 1.1
+                }}>
+                  THE GREAT ALCHEMY QUEST
+                </h1>
+
+                <p style={{
+                  margin: '1px auto 0 auto',
+                  fontSize: '0.73rem',
+                  color: '#78350f',
+                  fontWeight: 600,
+                  lineHeight: 1.25,
+                  maxWidth: '7.2in'
+                }}>
+                  Welcome, traveler! As you explore the office collecting candy at each trick-or-treat station, look closely — mystical alchemical secrets have been hidden across the realm! Some candy stations harbor ancient clue scrolls on the walls. Choose your Totem, mark your candy path, and uncover the ingredients needed to brew the legendary Master Potion!
+                </p>
               </div>
+
+              {/* SECTION 2: 4 ELEMENTAL RUNES SPOTTER GUIDE (CORNER SYMBOLS) */}
               <div style={{
-                position: 'absolute',
-                left: '0.2in',
-                right: '0.2in',
-                top: '50%',
-                height: '0',
-                borderTop: '1.5px dashed #b45309',
-                pointerEvents: 'none',
-                opacity: 0.6,
-                zIndex: 10
+                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                border: '1.5px solid #d97706',
+                borderRadius: '8px',
+                padding: '4px 8px',
+                position: 'relative',
+                zIndex: 1,
+                margin: '2px 0'
               }}>
-                <span style={{ position: 'absolute', left: '48%', top: '-10px', fontSize: '14px', backgroundColor: '#fbf7ea' }}>✂</span>
-              </div>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginBottom: '3px',
+                  borderBottom: '1px solid rgba(180, 83, 9, 0.25)',
+                  paddingBottom: '2px'
+                }}>
+                  <span style={{ fontSize: '0.66rem', fontWeight: 900, color: '#78350f', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    🔍 Totem Corner Symbols (Check Wall Poster Corners):
+                  </span>
+                  <span style={{ fontSize: '0.6rem', color: '#92400e', fontWeight: 700 }}>
+                    Match your Totem's Rune to collect your 6 ingredients!
+                  </span>
+                </div>
 
-              {(['fire', 'frost', 'venom', 'moon'] as RuneType[]).map((r, idx) => {
-                const quest = QUESTS[r];
-                const questCards = cards.filter(c => c.runes.includes(r));
-                const qrUrl = totemQrPreviews[r];
-                const tagNum = idx + 1;
-
-                return (
-                  <div
-                    key={r}
-                    style={{
-                      border: `3px solid ${quest.color}`,
-                      borderRadius: '14px',
-                      backgroundColor: '#fffdf8',
-                      backgroundImage: `
-                        radial-gradient(circle at 50% 0%, rgba(${r === 'fire' ? '255,59,48' : r === 'frost' ? '0,200,255' : r === 'venom' ? '57,255,20' : '191,90,242'}, 0.08) 0%, transparent 60%),
-                        linear-gradient(180deg, #ffffff 0%, #fdf8ee 100%)
-                      `,
-                      padding: '0.14in',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'space-between',
-                      boxSizing: 'border-box',
-                      boxShadow: 'inset 0 0 10px rgba(0,0,0,0.04)',
-                      position: 'relative'
-                    }}
-                  >
-                    {/* Header */}
-                    <div>
-                      <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        borderBottom: `2px solid ${quest.color}`,
-                        paddingBottom: '4px',
-                        marginBottom: '6px'
-                      }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <img
-                            src={quest.icon}
-                            alt={quest.title}
-                            style={{ width: '32px', height: '32px', filter: `drop-shadow(0 2px 4px ${quest.color})` }}
-                          />
-                          <div>
-                            <div style={{ fontSize: '0.64rem', fontWeight: 800, color: quest.color, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                              NFC RELIC #{tagNum} • {r.toUpperCase()}
-                            </div>
-                            <h4 style={{ margin: 0, fontSize: '0.96rem', fontWeight: 900, color: '#1e1b4b', lineHeight: 1.1 }}>
-                              {quest.title}
-                            </h4>
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(4, 1fr)',
+                  gap: '6px'
+                }}>
+                  {(['fire', 'frost', 'venom', 'moon'] as RuneType[]).map((r, i) => {
+                    const quest = QUESTS[r];
+                    return (
+                      <div
+                        key={r}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          backgroundColor: '#fffdf8',
+                          border: `1.5px solid ${quest.color}`,
+                          borderRadius: '6px',
+                          padding: '2px 5px',
+                          boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
+                        }}
+                      >
+                        <img
+                          src={quest.icon}
+                          alt={quest.title}
+                          style={{ width: '22px', height: '22px', filter: `drop-shadow(0 1px 2px ${quest.color})` }}
+                        />
+                        <div style={{ lineHeight: 1.1 }}>
+                          <div style={{ fontSize: '0.56rem', fontWeight: 900, color: quest.color, textTransform: 'uppercase' }}>
+                            #{i + 1} {r}
+                          </div>
+                          <div style={{ fontSize: '0.64rem', fontWeight: 800, color: '#1e1b4b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {quest.title}
                           </div>
                         </div>
-                        <span style={{
-                          backgroundColor: '#0f172a',
-                          color: '#ffffff',
-                          padding: '2px 6px',
-                          borderRadius: '6px',
-                          fontSize: '0.64rem',
-                          fontWeight: 800
-                        }}>
-                          START QUEST
-                        </span>
                       </div>
+                    );
+                  })}
+                </div>
+              </div>
 
-                      <div style={{ fontSize: '0.72rem', color: '#78350f', fontWeight: 600, textAlign: 'center', marginBottom: '6px' }}>
-                        Choose this Totem to track your 6 elemental ingredients!
-                      </div>
-                    </div>
+              {/* SECTION 3: 4 QUICK RULES / HOW TO PLAY */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(4, 1fr)',
+                gap: '5px',
+                position: 'relative',
+                zIndex: 1,
+                margin: '1px 0'
+              }}>
+                <div style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.75)',
+                  border: '1px solid #b45309',
+                  borderRadius: '6px',
+                  padding: '4px 6px',
+                  fontSize: '0.63rem',
+                  lineHeight: 1.2,
+                  color: '#2d1810'
+                }}>
+                  <div style={{ fontWeight: 900, color: '#b45309', marginBottom: '1px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                    <span>1.</span>
+                    <span>Pick Your Totem</span>
+                  </div>
+                  Tap your phone to your Totem's NFC tag or scan its QR code to open your satchel. (Or use this paper log!)
+                </div>
 
-                    {/* Dual Starter Center: Physical NFC Target + Camera QR */}
-                    <div style={{
-                      display: 'grid',
-                      gridTemplateColumns: '1fr 1fr',
-                      gap: '8px',
-                      alignItems: 'center',
-                      backgroundColor: 'rgba(255, 255, 255, 0.85)',
-                      border: '1.5px solid #d97706',
-                      borderRadius: '10px',
-                      padding: '6px'
-                    }}>
-                      {/* Left: NFC Circle Target */}
-                      <div style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        textAlign: 'center',
-                        justifyContent: 'center'
-                      }}>
-                        <div style={{
-                          width: '66px',
-                          height: '66px',
-                          borderRadius: '50%',
-                          border: `2px dashed ${quest.color}`,
-                          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                <div style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.75)',
+                  border: '1px solid #b45309',
+                  borderRadius: '6px',
+                  padding: '4px 6px',
+                  fontSize: '0.63rem',
+                  lineHeight: 1.2,
+                  color: '#2d1810'
+                }}>
+                  <div style={{ fontWeight: 900, color: '#b45309', marginBottom: '1px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                    <span>2.</span>
+                    <span>Trick-or-Treat</span>
+                  </div>
+                  Visit the sweet candy stations marked on your map. Check off each candy station as you collect treats!
+                </div>
+
+                <div style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.75)',
+                  border: '1px solid #b45309',
+                  borderRadius: '6px',
+                  padding: '4px 6px',
+                  fontSize: '0.63rem',
+                  lineHeight: 1.2,
+                  color: '#2d1810'
+                }}>
+                  <div style={{ fontWeight: 900, color: '#b45309', marginBottom: '1px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                    <span>3.</span>
+                    <span>Spot Room Clues</span>
+                  </div>
+                  Find 8.5" x 11" posters in rooms. If the top corner matches your Totem, scan with camera to claim it!
+                </div>
+
+                <div style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.75)',
+                  border: '1px solid #b45309',
+                  borderRadius: '6px',
+                  padding: '4px 6px',
+                  fontSize: '0.63rem',
+                  lineHeight: 1.2,
+                  color: '#2d1810'
+                }}>
+                  <div style={{ fontWeight: 900, color: '#b45309', marginBottom: '1px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                    <span>4.</span>
+                    <span>Win 3D Mini Potion</span>
+                  </div>
+                  Return your full satchel to the High Alchemist to spin Plinko and claim your 3D-printed potion fidget!
+                </div>
+              </div>
+
+              {/* SECTION 4: CANDY STATIONS & ROOM CLUES DISCOVERY TRACKER */}
+              <div style={{
+                position: 'relative',
+                zIndex: 1,
+                backgroundColor: 'rgba(255, 255, 255, 0.85)',
+                border: '1.5px solid #b45309',
+                borderRadius: '8px',
+                padding: '4px 6px',
+                margin: '2px 0'
+              }}>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginBottom: '2px',
+                  borderBottom: '1px solid rgba(180, 83, 9, 0.3)',
+                  paddingBottom: '2px'
+                }}>
+                  <div style={{ fontSize: '0.68rem', fontWeight: 900, color: '#78350f', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    🗺️ Office Stations & Room Discovery Log (Check off as you visit):
+                  </div>
+                  <div style={{ fontSize: '0.58rem', color: '#92400e', fontWeight: 700 }}>
+                    Mark candy visits & check off room clue posters found!
+                  </div>
+                </div>
+
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '8px'
+                }}>
+                  {/* Left Table: Stations 1-6 */}
+                  <table style={{
+                    width: '100%',
+                    borderCollapse: 'collapse',
+                    fontSize: '0.62rem'
+                  }}>
+                    <thead>
+                      <tr style={{ backgroundColor: '#3d2314', color: '#fef3c7' }}>
+                        <th style={{ padding: '2px 4px', textAlign: 'center', width: '22px' }}>#</th>
+                        <th style={{ padding: '2px 4px', textAlign: 'left' }}>Office Room Location</th>
+                        <th style={{ padding: '2px 2px', textAlign: 'center', width: '48px' }}>🍬 Candy</th>
+                        <th style={{ padding: '2px 2px', textAlign: 'center', width: '44px' }}>🔍 Clue</th>
+                        <th style={{ padding: '2px 2px', textAlign: 'center', width: '32px' }}>Letter</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {cards.slice(0, 6).map((c, i) => (
+                        <tr
+                          key={c.id}
+                          style={{
+                            backgroundColor: i % 2 === 0 ? 'rgba(255, 255, 255, 0.7)' : 'transparent',
+                            borderBottom: '1px solid rgba(180, 83, 9, 0.15)'
+                          }}
+                        >
+                          <td style={{ padding: '1.5px 3px', textAlign: 'center', fontWeight: 800, color: '#78350f' }}>
+                            #{c.number}
+                          </td>
+                          <td style={{ padding: '1.5px 4px', fontWeight: 700, color: '#1e1b4b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '145px' }} title={c.location}>
+                            📍 {c.location || `Office Station ${c.number}`}
+                          </td>
+                          <td style={{ padding: '1.5px 2px', textAlign: 'center', fontSize: '0.82rem', color: '#b45309' }}>
+                            ▢
+                          </td>
+                          <td style={{ padding: '1.5px 2px', textAlign: 'center', fontSize: '0.82rem', color: '#b45309' }}>
+                            ▢
+                          </td>
+                          <td style={{ padding: '1.5px 2px', textAlign: 'center' }}>
+                            <span style={{
+                              display: 'inline-block',
+                              width: '18px',
+                              height: '13px',
+                              border: '1px dashed #78350f',
+                              borderRadius: '3px',
+                              backgroundColor: '#ffffff'
+                            }} />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+
+                  {/* Right Table: Stations 7-12 */}
+                  <table style={{
+                    width: '100%',
+                    borderCollapse: 'collapse',
+                    fontSize: '0.62rem'
+                  }}>
+                    <thead>
+                      <tr style={{ backgroundColor: '#3d2314', color: '#fef3c7' }}>
+                        <th style={{ padding: '2px 4px', textAlign: 'center', width: '22px' }}>#</th>
+                        <th style={{ padding: '2px 4px', textAlign: 'left' }}>Office Room Location</th>
+                        <th style={{ padding: '2px 2px', textAlign: 'center', width: '48px' }}>🍬 Candy</th>
+                        <th style={{ padding: '2px 2px', textAlign: 'center', width: '44px' }}>🔍 Clue</th>
+                        <th style={{ padding: '2px 2px', textAlign: 'center', width: '32px' }}>Letter</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {cards.slice(6, 12).map((c, i) => (
+                        <tr
+                          key={c.id}
+                          style={{
+                            backgroundColor: i % 2 === 0 ? 'rgba(255, 255, 255, 0.7)' : 'transparent',
+                            borderBottom: '1px solid rgba(180, 83, 9, 0.15)'
+                          }}
+                        >
+                          <td style={{ padding: '1.5px 3px', textAlign: 'center', fontWeight: 800, color: '#78350f' }}>
+                            #{c.number}
+                          </td>
+                          <td style={{ padding: '1.5px 4px', fontWeight: 700, color: '#1e1b4b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '145px' }} title={c.location}>
+                            📍 {c.location || `Office Station ${c.number}`}
+                          </td>
+                          <td style={{ padding: '1.5px 2px', textAlign: 'center', fontSize: '0.82rem', color: '#b45309' }}>
+                            ▢
+                          </td>
+                          <td style={{ padding: '1.5px 2px', textAlign: 'center', fontSize: '0.82rem', color: '#b45309' }}>
+                            ▢
+                          </td>
+                          <td style={{ padding: '1.5px 2px', textAlign: 'center' }}>
+                            <span style={{
+                              display: 'inline-block',
+                              width: '18px',
+                              height: '13px',
+                              border: '1px dashed #78350f',
+                              borderRadius: '3px',
+                              backgroundColor: '#ffffff'
+                            }} />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* SECTION 5: PEN & PAPER PUZZLE SOLVER (POTION LETTER FLASKS & WORD UNSCRAMBLE) */}
+              <div style={{
+                backgroundColor: '#fffdf8',
+                border: '1.5px solid #d97706',
+                borderRadius: '8px',
+                padding: '4px 8px',
+                position: 'relative',
+                zIndex: 1,
+                margin: '2px 0'
+              }}>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginBottom: '3px'
+                }}>
+                  <div style={{ fontSize: '0.68rem', fontWeight: 900, color: '#78350f', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    ⚗️ Explorer's Riddle Solver (Record Your 6 Letters):
+                  </div>
+                  <div style={{ fontSize: '0.58rem', color: '#92400e', fontWeight: 700 }}>
+                    Letters found on your 6 matching quest posters:
+                  </div>
+                </div>
+
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '6px'
+                }}>
+                  {/* 6 Letter Flasks */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    {[1, 2, 3, 4, 5, 6].map(num => (
+                      <div
+                        key={num}
+                        style={{
                           display: 'flex',
                           flexDirection: 'column',
                           alignItems: 'center',
+                          backgroundColor: '#ffffff',
+                          border: '1.5px solid #b45309',
+                          borderRadius: '5px',
+                          padding: '2px 5px',
+                          boxShadow: '0 1px 2px rgba(0,0,0,0.04)'
+                        }}
+                      >
+                        <span style={{ fontSize: '0.52rem', fontWeight: 800, color: '#78350f' }}>
+                          #{num}
+                        </span>
+                        <div style={{
+                          width: '20px',
+                          height: '18px',
+                          borderBottom: '2px solid #3d2314',
+                          display: 'flex',
+                          alignItems: 'center',
                           justifyContent: 'center',
-                          boxShadow: `0 0 10px rgba(0,0,0,0.06)`
-                        }}>
-                          <span style={{ fontSize: '1.1rem' }}>📱</span>
-                          <span style={{ fontSize: '0.55rem', fontWeight: 900, color: '#1e1b4b', textTransform: 'uppercase' }}>
-                            TAP NFC
-                          </span>
-                          <span style={{ fontSize: '0.48rem', color: quest.color, fontWeight: 800 }}>
-                            TAG #{tagNum}
-                          </span>
-                        </div>
-                        <span style={{ fontSize: '0.6rem', fontWeight: 800, color: '#451a03', marginTop: '3px' }}>
-                          Stick NFC Tag #{tagNum}
-                        </span>
+                          fontWeight: 900,
+                          fontSize: '0.9rem',
+                          color: '#1e1b4b'
+                        }} />
                       </div>
+                    ))}
+                  </div>
 
-                      {/* Right: Camera QR Code */}
-                      <div style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        textAlign: 'center',
-                        justifyContent: 'center'
-                      }}>
-                        {qrUrl ? (
-                          <img
-                            src={qrUrl}
-                            alt={`${r} quest QR`}
-                            title="Click to download 512x512 QR code PNG"
-                            onClick={() => {
-                              playBloop(1.1);
-                              downloadTotemQrCode(r, scanBaseUrl);
-                            }}
-                            style={{
-                              width: '64px',
-                              height: '64px',
-                              border: '1px solid #78350f',
-                              borderRadius: '6px',
-                              backgroundColor: '#ffffff',
-                              padding: '2px',
-                              cursor: 'pointer'
-                            }}
-                          />
-                        ) : (
-                          <div style={{ width: '64px', height: '64px', backgroundColor: '#e2e8f0', borderRadius: '6px' }} />
-                        )}
-                        <span style={{ fontSize: '0.6rem', fontWeight: 800, color: '#451a03', marginTop: '3px' }}>
-                          📷 Or Scan Camera
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Assigned Ingredients */}
-                    <div style={{ marginTop: '5px' }}>
-                      <div style={{
-                        fontSize: '0.64rem',
-                        fontWeight: 800,
-                        color: '#78350f',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px',
-                        marginBottom: '3px'
-                      }}>
-                        Hunt These 6 Ingredients:
-                      </div>
-                      <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: '1fr 1fr',
-                        gap: '2px 6px',
-                        fontSize: '0.63rem',
-                        color: '#1e1b4b',
-                        backgroundColor: '#fffbeb',
-                        padding: '4px 6px',
-                        borderRadius: '6px',
-                        border: '1px solid #fcd34d'
-                      }}>
-                        {questCards.map(c => (
-                          <div key={c.id} style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            <strong>#{c.number}</strong> {c.name}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Footer Instructions */}
+                  {/* Secret Unscramble Word Blank */}
+                  <div style={{
+                    flex: 1,
+                    marginLeft: '6px',
+                    backgroundColor: 'rgba(255, 251, 235, 0.8)',
+                    border: '1px dashed #b45309',
+                    borderRadius: '6px',
+                    padding: '3px 6px',
+                    textAlign: 'center'
+                  }}>
+                    <span style={{ fontSize: '0.58rem', fontWeight: 900, color: '#78350f', textTransform: 'uppercase' }}>
+                      Unscrambled Secret Brew Word:
+                    </span>
                     <div style={{
-                      fontSize: '0.6rem',
-                      color: '#92400e',
-                      textAlign: 'center',
-                      fontWeight: 600,
-                      borderTop: '1px dashed #d97706',
-                      paddingTop: '3px',
-                      marginTop: '4px'
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '4px',
+                      marginTop: '2px'
                     }}>
-                      Tap phone or scan QR to start. Return Totem after brewing! 🎃
+                      {[1, 2, 3, 4, 5, 6].map(l => (
+                        <div
+                          key={l}
+                          style={{
+                            width: '18px',
+                            height: '18px',
+                            borderBottom: '2px solid #78350f',
+                            backgroundColor: '#ffffff',
+                            borderRadius: '3px'
+                          }}
+                        />
+                      ))}
                     </div>
                   </div>
-                );
-              })}
+                </div>
+              </div>
+
+              {/* SECTION 6: PRIZE SHOWCASE FOOTER */}
+              <div style={{
+                position: 'relative',
+                zIndex: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '0.6rem',
+                borderTop: '1.5px dashed #b45309',
+                paddingTop: '3px',
+                marginTop: '2px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <img
+                    src="/assets/3D_printed_potions.png"
+                    alt="3D Printed Potion Fidget Prize"
+                    style={{
+                      width: '38px',
+                      height: '38px',
+                      objectFit: 'contain',
+                      borderRadius: '5px',
+                      border: '1.5px solid #d97706',
+                      backgroundColor: '#ffffff',
+                      padding: '2px'
+                    }}
+                  />
+                  <div>
+                    <div style={{ fontSize: '0.7rem', fontWeight: 900, color: '#1e1b4b' }}>
+                      🎁 Win a Custom 3D-Printed Mini Potion Fidget Toy!
+                    </div>
+                    <div style={{ fontSize: '0.6rem', color: '#78350f', fontWeight: 600, lineHeight: 1.2 }}>
+                      Present your completed satchel or solved secret brew word to the High Alchemist at the Master Station to claim your prize & certificate!
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{
+                  fontSize: '0.6rem',
+                  fontWeight: 800,
+                  color: '#451a03',
+                  backgroundColor: 'rgba(255, 255, 255, 0.75)',
+                  border: '1px solid #b45309',
+                  borderRadius: '5px',
+                  padding: '3px 6px',
+                  textAlign: 'right',
+                  flexShrink: 0
+                }}>
+                  <div>Alchemist Name: _________________</div>
+                  <div style={{ marginTop: '1px' }}>Totem Chosen: 🔥 ❄️ 🌿 🌙</div>
+                </div>
+              </div>
             </div>
           </div>
         )}

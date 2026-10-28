@@ -393,9 +393,9 @@ export const SatchelModal: React.FC<SatchelModalProps> = ({
                 </div>
               </div>
 
-              {/* The 6 Ingredient Tracker Chips */}
+              {/* The 6 Ingredient Tracker Chips - Mystery until scanned */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '0.35rem' }}>
-                {activeQuestCards.map(c => {
+                {activeQuestCards.map((c, idx) => {
                   const isFound = scannedCardIds.includes(c.id);
                   return (
                     <div
@@ -405,6 +405,7 @@ export const SatchelModal: React.FC<SatchelModalProps> = ({
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
+                        justifyContent: 'center',
                         padding: '4px 2px',
                         borderRadius: '8px',
                         backgroundColor: isFound ? 'rgba(57, 255, 20, 0.15)' : 'rgba(0, 0, 0, 0.4)',
@@ -413,11 +414,15 @@ export const SatchelModal: React.FC<SatchelModalProps> = ({
                         opacity: isFound ? 1 : 0.65,
                         transition: 'all 0.2s ease'
                       }}
-                      title={`${c.name} - ${isFound ? 'Found!' : 'Not yet found (Tap to inspect riddle)'}`}
+                      title={isFound ? `${c.name} - Found!` : `Mystery Clue #${idx + 1} (Tap to inspect riddle)`}
                     >
-                      <img src={c.sprite} alt={c.name} style={{ width: '22px', height: '22px', objectFit: 'contain' }} />
+                      {isFound ? (
+                        <img src={c.sprite} alt={c.name} style={{ width: '22px', height: '22px', objectFit: 'contain' }} />
+                      ) : (
+                        <span style={{ fontSize: '1.1rem', lineHeight: 1 }}>❓</span>
+                      )}
                       <span style={{ fontSize: '0.62rem', color: isFound ? '#39ff14' : '#94a3b8', fontWeight: 700, marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
-                        #{c.number}
+                        {isFound ? `#${c.number}` : `Clue ${idx + 1}`}
                       </span>
                     </div>
                   );

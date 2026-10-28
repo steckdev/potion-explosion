@@ -181,9 +181,9 @@ export const RelicAttunementModal: React.FC<RelicAttunementModalProps> = ({
             </span>
           </div>
 
-          {/* 6 Ingredient Cards Grid */}
+          {/* 6 Ingredient Cards Grid - Mystery until scanned */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '0.35rem' }}>
-            {questCards.map(c => {
+            {questCards.map((c, idx) => {
               const isFound = scannedCardIds.includes(c.id);
               return (
                 <div
@@ -192,18 +192,23 @@ export const RelicAttunementModal: React.FC<RelicAttunementModalProps> = ({
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    padding: '4px 2px',
+                    justifyContent: 'center',
+                    padding: '6px 2px',
                     borderRadius: '8px',
-                    backgroundColor: isFound ? 'rgba(57, 255, 20, 0.15)' : 'rgba(0, 0, 0, 0.4)',
-                    border: `1px solid ${isFound ? '#39ff14' : 'rgba(255, 255, 255, 0.12)'}`,
-                    opacity: isFound ? 1 : 0.7
+                    backgroundColor: isFound ? 'rgba(57, 255, 20, 0.18)' : 'rgba(0, 0, 0, 0.45)',
+                    border: `1px solid ${isFound ? '#39ff14' : 'rgba(255, 255, 255, 0.15)'}`,
+                    opacity: isFound ? 1 : 0.75
                   }}
-                  title={`${c.name} - ${isFound ? 'Found!' : 'Look for this clue poster!'}`}
+                  title={isFound ? `${c.name} - Discovered!` : `Mystery Clue #${idx + 1} - Search the rooms for posters with the ${quest.rune} rune!`}
                 >
-                  <img src={c.sprite} alt={c.name} style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
+                  {isFound ? (
+                    <img src={c.sprite} alt={c.name} style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
+                  ) : (
+                    <span style={{ fontSize: '1.2rem', lineHeight: 1 }}>❓</span>
+                  )}
                   <span style={{
                     fontSize: '0.62rem',
-                    color: isFound ? '#39ff14' : '#e2e8f0',
+                    color: isFound ? '#39ff14' : '#cbd5e1',
                     fontWeight: 700,
                     marginTop: '2px',
                     whiteSpace: 'nowrap',
@@ -211,7 +216,7 @@ export const RelicAttunementModal: React.FC<RelicAttunementModalProps> = ({
                     textOverflow: 'ellipsis',
                     maxWidth: '100%'
                   }}>
-                    #{c.number}
+                    {isFound ? `#${c.number}` : `Clue ${idx + 1}`}
                   </span>
                 </div>
               );

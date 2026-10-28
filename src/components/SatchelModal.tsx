@@ -4,7 +4,7 @@ import { QUESTS } from '../data/quests';
 import { playBloop, playPoof, getAudioState, subscribeAudioState, toggleMusic } from '../utils/audio';
 import { findCardFromScanQuery } from '../utils/nfc';
 import { CameraQrScannerModal } from './CameraQrScannerModal';
-import { X, Sparkles, Lock, Radio, MapPin, Camera, Volume2, VolumeX } from 'lucide-react';
+import { X, Sparkles, Lock, Radio, Camera, Volume2, VolumeX } from 'lucide-react';
 
 interface SatchelModalProps {
   isOpen: boolean;
@@ -14,6 +14,7 @@ interface SatchelModalProps {
   onClearCollection: () => void;
   onCardScanned: (card: CardData) => void;
   onTriggerVictory: (rune: RuneType) => void;
+  activeQuestRune?: RuneType | null;
 }
 
 export const SatchelModal: React.FC<SatchelModalProps> = ({
@@ -23,7 +24,8 @@ export const SatchelModal: React.FC<SatchelModalProps> = ({
   onClose,
   onClearCollection,
   onCardScanned,
-  onTriggerVictory
+  onTriggerVictory,
+  activeQuestRune = null
 }) => {
   const [selectedInspectCard, setSelectedInspectCard] = useState<CardData | null>(null);
   const [isCameraScannerOpen, setIsCameraScannerOpen] = useState(false);
@@ -91,6 +93,11 @@ export const SatchelModal: React.FC<SatchelModalProps> = ({
       matchingCards: questCards
     };
   });
+
+  const activeQuest = activeQuestRune ? QUESTS[activeQuestRune] : null;
+  const activeQuestCards = activeQuestRune ? cards.filter(c => c.runes.includes(activeQuestRune)) : [];
+  const activeQuestCollected = activeQuestCards.filter(c => scannedCardIds.includes(c.id)).length;
+  const activeQuestComplete = activeQuestCards.length > 0 && activeQuestCollected === activeQuestCards.length;
 
   const grandMasterComplete = collectedCount === totalCount && totalCount > 0;
 
@@ -348,6 +355,76 @@ export const SatchelModal: React.FC<SatchelModalProps> = ({
               <span>📱 Tap with NFC</span>
             </button>
           </div>
+
+          {/* Active Relic Quest Ingredients Tracker (Pins the 6 items for player's bonded totem) */}
+          {activeQuest && (
+            <div style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.04)',
+              border: `1.5px solid ${activeQuest.color}`,
+              borderRadius: '16px',
+              padding: '0.75rem 0.9rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.5rem',
+              boxShadow: `0 0 15px ${activeQuest.glowColor}`
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                  <img src={activeQuest.icon} alt={activeQuest.rune} style={{ width: '22px', height: '22px' }} />
+                  <div>
+                    <div style={{ fontSize: '0.68rem', color: '#ffbe0b', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      Active Relic Quest Tracker
+                    </div>
+                    <strong style={{ fontSize: '0.9rem', color: '#ffffff' }}>
+                      {activeQuest.totemName}
+                    </strong>
+                  </div>
+                </div>
+                <div style={{
+                  backgroundColor: activeQuestComplete ? '#39ff14' : 'rgba(255, 255, 255, 0.1)',
+                  color: activeQuestComplete ? '#090714' : activeQuest.color,
+                  fontWeight: 900,
+                  fontSize: '0.78rem',
+                  padding: '3px 10px',
+                  borderRadius: '999px',
+                  border: `1px solid ${activeQuestComplete ? '#39ff14' : activeQuest.color}`
+                }}>
+                  {activeQuestCollected} / 6 Found
+                </div>
+              </div>
+
+              {/* The 6 Ingredient Tracker Chips */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '0.35rem' }}>
+                {activeQuestCards.map(c => {
+                  const isFound = scannedCardIds.includes(c.id);
+                  return (
+                    <div
+                      key={c.id}
+                      onClick={() => setSelectedInspectCard(c)}
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        padding: '4px 2px',
+                        borderRadius: '8px',
+                        backgroundColor: isFound ? 'rgba(57, 255, 20, 0.15)' : 'rgba(0, 0, 0, 0.4)',
+                        border: `1px solid ${isFound ? '#39ff14' : 'rgba(255, 255, 255, 0.12)'}`,
+                        cursor: 'pointer',
+                        opacity: isFound ? 1 : 0.65,
+                        transition: 'all 0.2s ease'
+                      }}
+                      title={`${c.name} - ${isFound ? 'Found!' : 'Not yet found (Tap to inspect riddle)'}`}
+                    >
+                      <img src={c.sprite} alt={c.name} style={{ width: '22px', height: '22px', objectFit: 'contain' }} />
+                      <span style={{ fontSize: '0.62rem', color: isFound ? '#39ff14' : '#94a3b8', fontWeight: 700, marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
+                        #{c.number}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Virtual Quest Mode: Enter Riddle Answer directly */}
           <div style={{
@@ -652,13 +729,6 @@ export const SatchelModal: React.FC<SatchelModalProps> = ({
                   ✕
                 </button>
               </div>
-
-              {selectedInspectCard.location && (
-                <div style={{ fontSize: '0.75rem', color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                  <MapPin size={12} />
-                  <span>{selectedInspectCard.location}</span>
-                </div>
-              )}
 
               <p style={{ margin: 0, fontSize: '0.85rem', color: '#e2e8f0', fontStyle: 'italic', lineHeight: 1.4 }}>
                 "{selectedInspectCard.riddle.replace(/\s*\(Take my 1st letter!\)/i, '')}"

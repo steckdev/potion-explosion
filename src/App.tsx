@@ -11,6 +11,7 @@ import { AdminPosterStudio } from './components/AdminPosterStudio';
 import { RulesModal } from './components/RulesModal';
 import { NfcScanClaimModal } from './components/NfcScanClaimModal';
 import { SatchelModal } from './components/SatchelModal';
+import { RelicAttunementModal } from './components/RelicAttunementModal';
 import { playMusic } from './utils/audio';
 
 export const App: React.FC = () => {
@@ -32,6 +33,7 @@ export const App: React.FC = () => {
   const [scannedCardIds, setScannedCardIds] = useState<string[]>(() => getScannedCardIds());
   const [nfcTargetCard, setNfcTargetCard] = useState<CardData | null>(null);
   const [isSatchelOpen, setIsSatchelOpen] = useState(false);
+  const [relicModalRune, setRelicModalRune] = useState<RuneType | null>(null);
 
   // Victory stats
   const [victoryStats, setVictoryStats] = useState({ attempts: 1, purity: 100 });
@@ -42,9 +44,36 @@ export const App: React.FC = () => {
   // Rules modal state
   const [isHelpOpen, setIsHelpOpen] = useState(false);
 
-  // Check URL search parameters for pre-programmed NFC scans (e.g. ?scan=card-11 or ?nfc=11)
+  // Check URL search parameters for pre-programmed NFC scans (e.g. ?quest=fire or ?scan=card-11)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
+
+    // 1. Check for 4 Physical NFC Relic Scans (one for each of the 4 Elemental Totems)
+    const questQuery = params.get('quest') ||
+                       params.get('relic') ||
+                       params.get('rune') ||
+                       params.get('totem');
+
+    if (questQuery) {
+      const q = questQuery.trim().toLowerCase();
+      let matchedRune: RuneType | null = null;
+      if (q === 'fire' || q === 'torch' || q === '1') matchedRune = 'fire';
+      else if (q === 'frost' || q === 'crystal' || q === 'ice' || q === '2') matchedRune = 'frost';
+      else if (q === 'venom' || q === 'leaf' || q === 'poison' || q === '3') matchedRune = 'venom';
+      else if (q === 'moon' || q === 'shadow' || q === 'dark' || q === '4') matchedRune = 'moon';
+
+      if (matchedRune) {
+        setSelectedQuestRune(matchedRune);
+        setRelicModalRune(matchedRune);
+
+        // Clean query parameter from URL so browser refresh doesn't trigger again
+        const cleanUrl = new URL(window.location.href);
+        ['quest', 'relic', 'rune', 'totem'].forEach(p => cleanUrl.searchParams.delete(p));
+        window.history.replaceState({}, '', cleanUrl.toString());
+      }
+    }
+
+    // 2. Check for individual ingredient card scans
     const scanQuery = params.get('scan') ||
                       params.get('nfc') ||
                       params.get('claim') ||
@@ -69,6 +98,28 @@ export const App: React.FC = () => {
     let stopNfc: (() => void) | null = null;
     if (isWebNfcSupported()) {
       startWebNfcScan((detectedQuery) => {
+        const q = detectedQuery.trim().toLowerCase();
+        if (q.includes('quest=fire') || q === 'fire') {
+          setSelectedQuestRune('fire');
+          setRelicModalRune('fire');
+          return;
+        }
+        if (q.includes('quest=frost') || q === 'frost') {
+          setSelectedQuestRune('frost');
+          setRelicModalRune('frost');
+          return;
+        }
+        if (q.includes('quest=venom') || q === 'venom') {
+          setSelectedQuestRune('venom');
+          setRelicModalRune('venom');
+          return;
+        }
+        if (q.includes('quest=moon') || q === 'moon') {
+          setSelectedQuestRune('moon');
+          setRelicModalRune('moon');
+          return;
+        }
+
         const matched = findCardFromScanQuery(detectedQuery, cards);
         if (matched) {
           setNfcTargetCard(matched);
@@ -293,10 +344,29 @@ export const App: React.FC = () => {
         isOpen={isSatchelOpen}
         cards={cards}
         scannedCardIds={scannedCardIds}
+        activeQuestRune={selectedQuestRune}
         onClose={() => setIsSatchelOpen(false)}
         onClearCollection={handleClearCollection}
         onCardScanned={handleCardScanned}
         onTriggerVictory={handleTriggerVictoryFromSatchel}
+      />
+
+      {/* 4 Physical NFC Relic Attunement Modal */}
+      <RelicAttunementModal
+        rune={relicModalRune}
+        isOpen={!!relicModalRune}
+        cards={cards}
+        scannedCardIds={scannedCardIds}
+        currentMode={selectedMode}
+        onStartQuest={(rune, mode) => {
+          setRelicModalRune(null);
+          handleSelectQuest(rune, mode);
+        }}
+        onOpenSatchel={() => {
+          setRelicModalRune(null);
+          setIsSatchelOpen(true);
+        }}
+        onClose={() => setRelicModalRune(null)}
       />
     </div>
   );

@@ -626,7 +626,7 @@ export const ScreenAdultsMode: React.FC<ScreenAdultsModeProps> = ({
             <img src={inspectedCard.sprite} alt={inspectedCard.name} style={{ width: '48px', height: '48px', objectFit: 'contain' }} />
             <div>
               <div style={{ fontSize: '0.75rem', color: quest.color, fontWeight: 700 }}>
-                CARD #{inspectedCard.number} • {inspectedCard.location || 'Realm Station'}
+                CARD #{inspectedCard.number} • {inspectedCard.name.toUpperCase()}
               </div>
               <div>
                 <div style={{ fontSize: '0.92rem', color: '#ffffff', fontWeight: 600, fontStyle: 'italic', lineHeight: 1.35 }}>

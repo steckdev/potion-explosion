@@ -2239,6 +2239,158 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
               </div>
             </div>
 
+            {/* FEATURED: 4 Physical NFC Relic Tags Setup (One for each Elemental Totem) */}
+            <div style={{
+              backgroundColor: 'rgba(57, 255, 20, 0.05)',
+              border: '2px solid #39ff14',
+              borderRadius: '20px',
+              padding: '1.25rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1rem',
+              boxShadow: '0 0 25px rgba(57, 255, 20, 0.2)'
+            }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '4px' }}>
+                  <span style={{ fontSize: '1.4rem' }}>⭐</span>
+                  <h3 style={{ margin: 0, fontSize: '1.15rem', color: '#39ff14', letterSpacing: '0.5px' }}>
+                    YOUR 4 PHYSICAL NFC RELIC TAGS (Elemental Quest Starters)
+                  </h3>
+                </div>
+                <p style={{ margin: 0, fontSize: '0.84rem', color: '#cbd5e1', lineHeight: 1.45 }}>
+                  Since you have <strong>4 physical NFC tags</strong>, program one for each of the 4 Elemental Totems! Stick one tag onto each handheld Totem or start station. When players tap their phone to a Totem, it <strong>bonds with that Relic Quest</strong> and displays their 6 assigned ingredients to hunt!
+                </p>
+              </div>
+
+              {/* 4 Totem Cards Grid */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                gap: '0.85rem'
+              }}>
+                {(['fire', 'frost', 'venom', 'moon'] as RuneType[]).map(r => {
+                  const q = QUESTS[r];
+                  const relicUrl = `${scanBaseUrl}/?quest=${r}`;
+                  const isCopied = copiedNfcUrl === `quest-${r}`;
+                  const qCards = cards.filter(c => c.runes.includes(r));
+
+                  return (
+                    <div
+                      key={r}
+                      style={{
+                        backgroundColor: 'rgba(0, 0, 0, 0.45)',
+                        border: `1.5px solid ${q.color}`,
+                        borderRadius: '16px',
+                        padding: '1rem',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '0.65rem',
+                        boxShadow: `0 0 15px ${q.glowColor}`
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <img src={q.icon} alt={q.title} style={{ width: '28px', height: '28px' }} />
+                          <div>
+                            <div style={{ fontSize: '0.68rem', color: q.color, fontWeight: 800, textTransform: 'uppercase' }}>
+                              NFC Tag #{r === 'fire' ? 1 : r === 'frost' ? 2 : r === 'venom' ? 3 : 4}
+                            </div>
+                            <strong style={{ fontSize: '0.95rem', color: '#ffffff' }}>
+                              {q.title}
+                            </strong>
+                          </div>
+                        </div>
+                        <span style={{ fontSize: '0.72rem', color: '#ffbe0b', fontWeight: 800, backgroundColor: 'rgba(255, 190, 11, 0.15)', padding: '2px 8px', borderRadius: '6px' }}>
+                          Word: {q.secretWord}
+                        </span>
+                      </div>
+
+                      <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                        Assigned 6 Cards: <strong>{qCards.map(c => `#${c.number} ${c.name}`).join(', ')}</strong>
+                      </div>
+
+                      {/* URL Code snippet */}
+                      <div style={{
+                        backgroundColor: '#090714',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        borderRadius: '8px',
+                        padding: '6px 10px',
+                        fontSize: '0.75rem',
+                        fontFamily: 'monospace',
+                        color: '#38bdf8',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
+                      }}>
+                        {relicUrl}
+                      </div>
+
+                      {/* Copy Action */}
+                      <div style={{ display: 'flex', gap: '0.4rem' }}>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(relicUrl);
+                            setCopiedNfcUrl(`quest-${r}`);
+                            setTimeout(() => setCopiedNfcUrl(null), 2000);
+                          }}
+                          style={{
+                            flex: 1,
+                            backgroundColor: isCopied ? '#39ff14' : 'rgba(255, 255, 255, 0.1)',
+                            color: isCopied ? '#090714' : '#ffffff',
+                            border: `1px solid ${isCopied ? '#39ff14' : 'rgba(255, 255, 255, 0.2)'}`,
+                            borderRadius: '8px',
+                            padding: '6px 12px',
+                            fontSize: '0.78rem',
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '4px'
+                          }}
+                        >
+                          <Copy size={13} />
+                          <span>{isCopied ? 'Copied to Clipboard!' : 'Copy NFC Tag URL'}</span>
+                        </button>
+                        <a
+                          href={relicUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{
+                            backgroundColor: 'rgba(56, 189, 248, 0.15)',
+                            color: '#38bdf8',
+                            border: '1px solid rgba(56, 189, 248, 0.3)',
+                            borderRadius: '8px',
+                            padding: '6px 10px',
+                            fontSize: '0.76rem',
+                            fontWeight: 700,
+                            textDecoration: 'none',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }}
+                        >
+                          Test
+                        </a>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Section 2: 12 Clue Posters (Individual Camera QR Codes) */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '0.5rem' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.05rem', color: '#ffbe0b' }}>
+                  📷 12 Wall Posters (Camera QR Codes)
+                </h3>
+                <p style={{ margin: '2px 0 0 0', fontSize: '0.78rem', color: '#94a3b8' }}>
+                  Players point their phone camera at each printed poster to collect individual ingredient tokens into their satchel.
+                </p>
+              </div>
+            </div>
+
             {/* List of 12 Cards with URLs & QR Codes */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
               {cards.map(card => {

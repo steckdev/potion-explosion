@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import type { CardData, RuneType } from '../types';
 import { QUESTS } from '../data/quests';
-import { playBloop, playNfcHum, playNfcClaimSuccess, playStoneLock, playPoof, getAudioState, subscribeAudioState, toggleMusic } from '../utils/audio';
-import { Check, X, BookOpen, MapPin, Radio, KeyRound, Volume2, VolumeX } from 'lucide-react';
+import { playBloop, playNfcClaimSuccess, playStoneLock, getAudioState, subscribeAudioState, toggleMusic } from '../utils/audio';
+import { Check, X, BookOpen, Radio, Sparkles, Volume2, VolumeX } from 'lucide-react';
 
 interface NfcScanClaimModalProps {
   card: CardData | null;
@@ -13,7 +13,7 @@ interface NfcScanClaimModalProps {
   onOpenSatchel: () => void;
 }
 
-const HOLD_REQUIRED_MS = 1400; // 1.4 seconds intentional hold to prevent accidental claims
+const AUTO_CLAIM_MS = 3000; // 3 seconds auto-claim if not tapped manually
 
 export const NfcScanClaimModal: React.FC<NfcScanClaimModalProps> = ({
   card,
@@ -23,18 +23,14 @@ export const NfcScanClaimModal: React.FC<NfcScanClaimModalProps> = ({
   onClose,
   onOpenSatchel
 }) => {
-  // Hold state
-  const [isHolding, setIsHolding] = useState(false);
-  const [holdProgress, setHoldProgress] = useState(0); // 0.0 to 1.0
   const [isJustClaimed, setIsJustClaimed] = useState(false);
-  const [holdHint, setHoldHint] = useState<string | null>(null);
+  const [timeRemainingMs, setTimeRemainingMs] = useState(AUTO_CLAIM_MS);
+  const [isPressed, setIsPressed] = useState(false);
   const [isAudioMuted, setIsAudioMuted] = useState(() => getAudioState().isMuted);
 
-  const holdStartRef = useRef<number | null>(null);
-  const animFrameRef = useRef<number | null>(null);
-  const soundThrottleRef = useRef<number>(0);
-  const progressRef = useRef<number>(0);
-  const isHoldingRef = useRef<boolean>(false);
+  const autoClaimTimerRef = useRef<number | null>(null);
+  const startTimeRef = useRef<number | null>(null);
+  const hasClaimedRef = useRef(false);
 
   useEffect(() => {
     return subscribeAudioState(state => {
@@ -42,101 +38,80 @@ export const NfcScanClaimModal: React.FC<NfcScanClaimModalProps> = ({
     });
   }, []);
 
-  // Reset state when card or open changes
-  useEffect(() => {
-    if (isOpen) {
-      setHoldProgress(0);
-      progressRef.current = 0;
-      setIsHolding(false);
-      isHoldingRef.current = false;
-      setIsJustClaimed(false);
-      setHoldHint(null);
+  const executeClaim = () => {
+    if (hasClaimedRef.current || isAlreadyClaimed) return;
+    hasClaimedRef.current = true;
+
+    if (autoClaimTimerRef.current) {
+      cancelAnimationFrame(autoClaimTimerRef.current);
+      autoClaimTimerRef.current = null;
     }
-  }, [isOpen, card?.id]);
 
-  // Primary rune theme for styling
-  const primaryRune: RuneType = card?.runes[0] || 'fire';
-  const primaryQuest = QUESTS[primaryRune];
-
-  const handlePointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {
-    if (isAlreadyClaimed || isJustClaimed) return;
+    setIsJustClaimed(true);
+    playStoneLock();
+    playNfcClaimSuccess();
 
     try {
-      e.currentTarget.setPointerCapture(e.pointerId);
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate([40, 60, 100]);
+      }
     } catch {}
 
-    setIsHolding(true);
-    isHoldingRef.current = true;
-    setHoldHint(null);
-    holdStartRef.current = performance.now();
+    if (card) {
+      onClaim(card);
+    }
+  };
 
-    playBloop(1.1);
+  // Reset and start 3-second auto-claim countdown when modal opens
+  useEffect(() => {
+    if (isOpen && card) {
+      setIsJustClaimed(false);
+      hasClaimedRef.current = isAlreadyClaimed;
+      setTimeRemainingMs(AUTO_CLAIM_MS);
+      setIsPressed(false);
 
-    const step = (now: number) => {
-      if (!isHoldingRef.current || !holdStartRef.current) return;
-      const elapsed = now - holdStartRef.current;
-      const progress = Math.min(1.0, elapsed / HOLD_REQUIRED_MS);
-      progressRef.current = progress;
-      setHoldProgress(progress);
+      if (!isAlreadyClaimed) {
+        startTimeRef.current = performance.now();
 
-      // Play rising hum sound every 220ms
-      if (now - soundThrottleRef.current > 220) {
-        soundThrottleRef.current = now;
-        playNfcHum(progress);
+        const tick = (now: number) => {
+          if (hasClaimedRef.current) return;
+          if (!startTimeRef.current) startTimeRef.current = now;
+
+          const elapsed = now - startTimeRef.current;
+          const remaining = Math.max(0, AUTO_CLAIM_MS - elapsed);
+          setTimeRemainingMs(remaining);
+
+          if (remaining <= 0) {
+            executeClaim();
+          } else {
+            autoClaimTimerRef.current = requestAnimationFrame(tick);
+          }
+        };
+
+        autoClaimTimerRef.current = requestAnimationFrame(tick);
       }
+    }
 
-      if (progress >= 1.0) {
-        // Complete claim!
-        isHoldingRef.current = false;
-        setIsHolding(false);
-        setIsJustClaimed(true);
-        holdStartRef.current = null;
-        playStoneLock();
-        playNfcClaimSuccess();
-        if (card) {
-          onClaim(card);
-        }
-      } else {
-        animFrameRef.current = requestAnimationFrame(step);
+    return () => {
+      if (autoClaimTimerRef.current) {
+        cancelAnimationFrame(autoClaimTimerRef.current);
+        autoClaimTimerRef.current = null;
       }
     };
-
-    animFrameRef.current = requestAnimationFrame(step);
-  };
-
-  const handlePointerUpOrCancel = (e: React.PointerEvent<HTMLButtonElement>) => {
-    try {
-      if (e.currentTarget.hasPointerCapture(e.pointerId)) {
-        e.currentTarget.releasePointerCapture(e.pointerId);
-      }
-    } catch {}
-
-    if (animFrameRef.current) {
-      cancelAnimationFrame(animFrameRef.current);
-      animFrameRef.current = null;
-    }
-    holdStartRef.current = null;
-    isHoldingRef.current = false;
-    setIsHolding(false);
-
-    if (progressRef.current < 1.0 && !isJustClaimed && !isAlreadyClaimed) {
-      if (progressRef.current > 0.12) {
-        playPoof();
-        setHoldHint('✋ Keep holding for 1.5 seconds to seal the ingredient!');
-      }
-      progressRef.current = 0;
-      setHoldProgress(0);
-    }
-  };
+  }, [isOpen, card?.id, isAlreadyClaimed]);
 
   if (!isOpen || !card) return null;
 
   const showSecured = isAlreadyClaimed || isJustClaimed;
+  const primaryRune: RuneType = card.runes[0] || 'fire';
+  const primaryQuest = QUESTS[primaryRune];
 
-  // SVG circular gauge math
-  const ringRadius = 54;
+  // SVG circular countdown gauge math (3 seconds ring)
+  const ringRadius = 52;
   const circumference = 2 * Math.PI * ringRadius;
-  const strokeDashoffset = circumference - holdProgress * circumference;
+  const progressRatio = showSecured ? 1 : Math.max(0, Math.min(1, (AUTO_CLAIM_MS - timeRemainingMs) / AUTO_CLAIM_MS));
+  const strokeDashoffset = circumference - progressRatio * circumference;
+  const secondsDisplay = Math.max(1, Math.ceil(timeRemainingMs / 1000));
 
   return (
     <div
@@ -167,7 +142,7 @@ export const NfcScanClaimModal: React.FC<NfcScanClaimModalProps> = ({
           WebkitOverflowScrolling: 'touch',
           overscrollBehavior: 'contain',
           borderRadius: '24px',
-          padding: '1.25rem 1.1rem calc(1.75rem + env(safe-area-inset-bottom, 20px)) 1.1rem',
+          padding: '1.1rem 1.1rem calc(1.75rem + env(safe-area-inset-bottom, 20px)) 1.1rem',
           position: 'relative',
           display: 'flex',
           flexDirection: 'column',
@@ -179,89 +154,86 @@ export const NfcScanClaimModal: React.FC<NfcScanClaimModalProps> = ({
           textAlign: 'center'
         }}
       >
-        {/* Quick Audio Mute / Unmute Button */}
-        <button
-          onClick={() => {
-            playBloop(1.0);
-            toggleMusic();
-          }}
-          aria-label={isAudioMuted ? "Unmute room music" : "Mute room music"}
-          title={isAudioMuted ? "Unmute room music" : "Mute room music (Silent Mode)"}
-          style={{
-            position: 'absolute',
-            top: '14px',
-            left: '14px',
-            background: isAudioMuted ? 'rgba(239, 68, 68, 0.2)' : 'rgba(255, 255, 255, 0.1)',
-            border: isAudioMuted ? '1px solid rgba(239, 68, 68, 0.4)' : '1px solid rgba(255, 255, 255, 0.15)',
-            borderRadius: '999px',
-            padding: '4px 10px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '4px',
-            color: isAudioMuted ? '#f87171' : '#cbd5e1',
-            cursor: 'pointer',
-            transition: 'all 0.2s ease',
-            zIndex: 10,
-            fontSize: '0.74rem',
-            fontWeight: 700
-          }}
-        >
-          {isAudioMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
-          <span>{isAudioMuted ? 'Muted' : 'Music'}</span>
-        </button>
+        {/* Top Control Bar: Audio + Resonance Status + Close (Clean flex row, zero overlap) */}
+        <div style={{
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '0.4rem',
+          marginBottom: '0.15rem'
+        }}>
+          {/* Quick Audio Mute / Unmute Button */}
+          <button
+            onClick={() => {
+              playBloop(1.0);
+              toggleMusic();
+            }}
+            aria-label={isAudioMuted ? "Unmute room music" : "Mute room music"}
+            title={isAudioMuted ? "Unmute room music" : "Mute room music (Silent Mode)"}
+            style={{
+              background: isAudioMuted ? 'rgba(239, 68, 68, 0.2)' : 'rgba(255, 255, 255, 0.1)',
+              border: isAudioMuted ? '1px solid rgba(239, 68, 68, 0.4)' : '1px solid rgba(255, 255, 255, 0.15)',
+              borderRadius: '999px',
+              padding: '4px 10px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              color: isAudioMuted ? '#f87171' : '#cbd5e1',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              fontSize: '0.74rem',
+              fontWeight: 700,
+              flexShrink: 0
+            }}
+          >
+            {isAudioMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
+            <span>{isAudioMuted ? 'Muted' : 'Music'}</span>
+          </button>
 
-        {/* Close Button */}
-        <button
-          onClick={() => {
-            playBloop(0.9);
-            onClose();
-          }}
-          aria-label="Close NFC scan modal"
-          style={{
-            position: 'absolute',
-            top: '14px',
-            right: '14px',
-            background: 'rgba(255, 255, 255, 0.1)',
-            border: 'none',
-            borderRadius: '50%',
-            width: '34px',
-            height: '34px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#cbd5e1',
-            cursor: 'pointer',
-            transition: 'all 0.2s ease',
-            zIndex: 10
-          }}
-        >
-          <X size={18} />
-        </button>
-
-        {/* Top NFC Beacon Banner */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          {/* Center Resonance Badge */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
-            width: '28px',
-            height: '28px',
-            borderRadius: '50%',
-            backgroundColor: showSecured ? 'rgba(57, 255, 20, 0.2)' : 'rgba(255, 190, 11, 0.2)',
+            gap: '0.35rem',
+            padding: '3px 10px',
+            borderRadius: '999px',
+            backgroundColor: showSecured ? 'rgba(57, 255, 20, 0.15)' : 'rgba(255, 190, 11, 0.15)',
             border: `1px solid ${showSecured ? '#39ff14' : '#ffbe0b'}`,
-            animation: 'pulseGlow 2s infinite ease-in-out'
-          }}>
-            <Radio size={16} color={showSecured ? '#39ff14' : '#ffbe0b'} />
-          </div>
-          <span style={{
-            fontSize: '0.82rem',
+            fontSize: '0.72rem',
             fontWeight: 800,
-            letterSpacing: '1.5px',
-            textTransform: 'uppercase',
-            color: showSecured ? '#39ff14' : '#ffbe0b'
+            letterSpacing: '0.5px',
+            color: showSecured ? '#39ff14' : '#ffbe0b',
+            whiteSpace: 'nowrap'
           }}>
-            {showSecured ? 'NFC TOKEN IN SATCHEL' : 'NFC INGREDIENT RESONANCE'}
-          </span>
+            <Radio size={13} color={showSecured ? '#39ff14' : '#ffbe0b'} />
+            <span>{showSecured ? 'TOKEN IN SATCHEL' : 'INGREDIENT RESONANCE'}</span>
+          </div>
+
+          {/* Close Button */}
+          <button
+            onClick={() => {
+              playBloop(0.9);
+              onClose();
+            }}
+            aria-label="Close modal"
+            style={{
+              background: 'rgba(255, 255, 255, 0.1)',
+              border: 'none',
+              borderRadius: '50%',
+              width: '32px',
+              height: '32px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#cbd5e1',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              flexShrink: 0
+            }}
+          >
+            <X size={16} />
+          </button>
         </div>
 
         {/* Card Number & Name */}
@@ -316,12 +288,12 @@ export const NfcScanClaimModal: React.FC<NfcScanClaimModalProps> = ({
         <div
           style={{
             position: 'relative',
-            width: '180px',
-            height: '180px',
+            width: '170px',
+            height: '170px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            margin: '0.25rem 0'
+            margin: '0.15rem 0'
           }}
         >
           {/* Pulsing Aura Rings */}
@@ -331,9 +303,9 @@ export const NfcScanClaimModal: React.FC<NfcScanClaimModalProps> = ({
               inset: '-10px',
               borderRadius: '50%',
               background: `radial-gradient(circle, ${primaryQuest.glowColor} 0%, transparent 70%)`,
-              opacity: isHolding ? 0.9 : 0.45,
-              transform: `scale(${1 + holdProgress * 0.25})`,
-              transition: 'transform 0.1s linear, opacity 0.2s ease',
+              opacity: isPressed ? 0.95 : 0.5,
+              transform: `scale(${1 + progressRatio * 0.15})`,
+              transition: 'transform 0.15s ease, opacity 0.2s ease',
               pointerEvents: 'none'
             }}
           />
@@ -343,14 +315,14 @@ export const NfcScanClaimModal: React.FC<NfcScanClaimModalProps> = ({
             src={card.sprite}
             alt={card.name}
             style={{
-              width: '140px',
-              height: '140px',
+              width: '135px',
+              height: '135px',
               objectFit: 'contain',
               filter: showSecured
                 ? 'drop-shadow(0 0 16px rgba(57, 255, 20, 0.6))'
                 : `drop-shadow(0 0 14px ${primaryQuest.color})`,
               transition: 'transform 0.2s ease',
-              transform: isHolding ? 'scale(1.08)' : 'scale(1)',
+              transform: isPressed ? 'scale(1.08)' : 'scale(1)',
               zIndex: 2
             }}
           />
@@ -360,8 +332,8 @@ export const NfcScanClaimModal: React.FC<NfcScanClaimModalProps> = ({
             <div
               style={{
                 position: 'absolute',
-                bottom: '10px',
-                right: '10px',
+                bottom: '8px',
+                right: '8px',
                 width: '42px',
                 height: '42px',
                 borderRadius: '50%',
@@ -380,78 +352,54 @@ export const NfcScanClaimModal: React.FC<NfcScanClaimModalProps> = ({
           )}
         </div>
 
-        {/* Station Location Tag */}
-        {card.location && (
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            fontSize: '0.8rem',
-            color: '#cbd5e1',
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-            padding: '4px 12px',
-            borderRadius: '8px',
-            border: '1px solid rgba(255, 255, 255, 0.1)'
-          }}>
-            <MapPin size={14} color="#38bdf8" />
-            <span>{card.location}</span>
-          </div>
-        )}
-
-        {/* Interactive Claim Section */}
+        {/* Interactive Claim Section with 3-Second Auto-Accept and Enhanced Sparkle Button */}
         {!showSecured ? (
-          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
-            {/* Accidental Claim Prevention Warning */}
-            <div style={{
-              fontSize: '0.78rem',
-              color: '#94a3b8',
-              lineHeight: 1.4,
-              maxWidth: '340px'
-            }}>
-              Press and hold for <strong>1.5 seconds</strong> to attune your phone and claim this ingredient token.
-            </div>
-
-            {/* Hold Button with Circular SVG Progress Gauge */}
-            <div style={{ position: 'relative', width: '130px', height: '130px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="130" height="130" style={{ transform: 'rotate(-90deg)', position: 'absolute', inset: 0 }}>
+          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.65rem' }}>
+            {/* Circular Progress Gauge with Touch Button */}
+            <div style={{ position: 'relative', width: '124px', height: '124px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="124" height="124" style={{ transform: 'rotate(-90deg)', position: 'absolute', inset: 0 }}>
                 {/* Background Ring */}
                 <circle
-                  cx="65"
-                  cy="65"
+                  cx="62"
+                  cy="62"
                   r={ringRadius}
                   stroke="rgba(255, 255, 255, 0.15)"
-                  strokeWidth="8"
+                  strokeWidth="7"
                   fill="none"
                 />
-                {/* Animated Progress Ring */}
+                {/* Animated 3-Second Countdown Progress Ring */}
                 <circle
-                  cx="65"
-                  cy="65"
+                  cx="62"
+                  cy="62"
                   r={ringRadius}
                   stroke="#39ff14"
-                  strokeWidth="8"
+                  strokeWidth="7"
                   fill="none"
                   strokeDasharray={circumference}
                   strokeDashoffset={strokeDashoffset}
                   strokeLinecap="round"
                   style={{
                     filter: 'drop-shadow(0 0 8px #39ff14)',
-                    transition: isHolding ? 'none' : 'stroke-dashoffset 0.25s ease'
+                    transition: 'stroke-dashoffset 0.1s linear'
                   }}
                 />
               </svg>
 
-              {/* The Interactive Hold Touch Target */}
+              {/* Intuitive Magical Attune Touch Button */}
               <button
-                onPointerDown={handlePointerDown}
-                onPointerUp={handlePointerUpOrCancel}
-                onPointerCancel={handlePointerUpOrCancel}
+                onClick={() => {
+                  playBloop(1.1);
+                  executeClaim();
+                }}
+                onPointerDown={() => setIsPressed(true)}
+                onPointerUp={() => setIsPressed(false)}
+                onPointerCancel={() => setIsPressed(false)}
                 style={{
-                  width: '96px',
-                  height: '96px',
+                  width: '92px',
+                  height: '92px',
                   borderRadius: '50%',
                   border: 'none',
-                  background: isHolding
+                  background: isPressed
                     ? `radial-gradient(circle, #39ff14 0%, #15803d 100%)`
                     : `radial-gradient(circle, #8338ec 0%, #3d1b7a 100%)`,
                   color: '#ffffff',
@@ -462,37 +410,39 @@ export const NfcScanClaimModal: React.FC<NfcScanClaimModalProps> = ({
                   cursor: 'pointer',
                   userSelect: 'none',
                   WebkitUserSelect: 'none',
-                  transform: isHolding ? 'scale(0.94)' : 'scale(1)',
+                  transform: isPressed ? 'scale(0.94)' : 'scale(1)',
                   transition: 'all 0.15s ease',
-                  boxShadow: isHolding ? '0 0 25px #39ff14' : '0 6px 20px rgba(131, 56, 236, 0.5)',
+                  boxShadow: isPressed ? '0 0 25px #39ff14' : '0 6px 20px rgba(131, 56, 236, 0.5)',
                   zIndex: 4
                 }}
+                title="Tap to claim immediately, or auto-claims in 3 seconds"
               >
-                <KeyRound size={26} color={isHolding ? '#090714' : '#ffffff'} />
+                <Sparkles size={28} color={isPressed ? '#090714' : '#ffffff'} />
                 <span style={{
-                  fontSize: '0.68rem',
+                  fontSize: '0.72rem',
                   fontWeight: 900,
                   textTransform: 'uppercase',
-                  letterSpacing: '0.5px',
+                  letterSpacing: '0.6px',
                   marginTop: '2px',
-                  color: isHolding ? '#090714' : '#ffffff'
+                  color: isPressed ? '#090714' : '#ffffff'
                 }}>
-                  {isHolding ? `${Math.round(holdProgress * 100)}%` : 'HOLD'}
+                  ATTUNE
                 </span>
               </button>
             </div>
 
-            {/* Early Release Hint */}
-            {holdHint && (
-              <div style={{
-                fontSize: '0.8rem',
-                color: '#ffbe0b',
-                fontWeight: 600,
-                animation: 'shake 0.4s ease'
-              }}>
-                {holdHint}
-              </div>
-            )}
+            {/* 3-Second Auto-Accept Status Caption */}
+            <div style={{
+              fontSize: '0.8rem',
+              color: '#38bdf8',
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.35rem'
+            }}>
+              <span>✨</span>
+              <span>Auto-attuning in <strong>{secondsDisplay}s</strong>... (or tap to claim)</span>
+            </div>
           </div>
         ) : (
           /* Post-Claim Revealed Clue Box */
@@ -553,7 +503,7 @@ export const NfcScanClaimModal: React.FC<NfcScanClaimModalProps> = ({
         )}
 
         {/* Footer Actions */}
-        <div style={{ width: '100%', display: 'flex', gap: '0.65rem', marginTop: '0.25rem' }}>
+        <div style={{ width: '100%', display: 'flex', gap: '0.65rem', marginTop: '0.2rem' }}>
           <button
             onClick={() => {
               playBloop(1.0);
@@ -571,7 +521,7 @@ export const NfcScanClaimModal: React.FC<NfcScanClaimModalProps> = ({
               cursor: 'pointer'
             }}
           >
-            {showSecured ? 'Keep Hunting' : 'Cancel'}
+            {showSecured ? 'Keep Hunting' : 'Dismiss'}
           </button>
 
           {showSecured && (

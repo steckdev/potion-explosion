@@ -1370,9 +1370,6 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                           ) : (
                             <div style={{ width: '100px', height: '100px', backgroundColor: '#e2e8f0', borderRadius: '10px' }} />
                           )}
-                          <span style={{ fontSize: '0.84rem', fontWeight: 900, color: '#451a03', marginTop: '6px' }}>
-                            📷 Or Scan With Camera
-                          </span>
                           <span style={{ fontSize: '0.72rem', color: '#78350f', fontWeight: 600, marginTop: '2px' }}>
                             Scan QR code to launch quest satchel
                           </span>
@@ -1722,17 +1719,9 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                             justifyContent: 'center',
                             boxShadow: `0 0 10px rgba(0,0,0,0.06)`
                           }}>
-                            <span style={{ fontSize: '1.1rem' }}>📱</span>
-                            <span style={{ fontSize: '0.55rem', fontWeight: 900, color: '#1e1b4b', textTransform: 'uppercase' }}>
-                              TAP NFC
-                            </span>
-                            <span style={{ fontSize: '0.48rem', color: quest.color, fontWeight: 800 }}>
-                              TAG #{tagNum}
-                            </span>
+ 
                           </div>
-                          <span style={{ fontSize: '0.6rem', fontWeight: 800, color: '#451a03', marginTop: '3px' }}>
-                            Stick NFC Tag #{tagNum}
-                          </span>
+            
                         </div>
 
                         {/* Right: Camera QR Code */}
@@ -1753,8 +1742,8 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                                 downloadTotemQrCode(r, scanBaseUrl);
                               }}
                               style={{
-                                width: '64px',
-                                height: '64px',
+                                width: '100px',
+                                height: '100px',
                                 border: '1px solid #78350f',
                                 borderRadius: '6px',
                                 backgroundColor: '#ffffff',
@@ -1765,9 +1754,6 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                           ) : (
                             <div style={{ width: '64px', height: '64px', backgroundColor: '#e2e8f0', borderRadius: '6px' }} />
                           )}
-                          <span style={{ fontSize: '0.6rem', fontWeight: 800, color: '#451a03', marginTop: '3px' }}>
-                            📷 Or Scan Camera
-                          </span>
                         </div>
                       </div>
 
@@ -2069,13 +2055,13 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
 
                 <p style={{
                   margin: '3px auto 0 auto',
-                  fontSize: '0.67rem',
+                  fontSize: '0.9rem',
                   color: '#292524',
                   fontWeight: 600,
                   lineHeight: 1.25,
                   maxWidth: '6.8in'
                 }}>
-                  Seeker of elixirs, your journey begins! Search the office to discover 6 ingredients that match your rune. Unscramble the letters to reveal the potion!
+                  Seeker of elixirs, your journey begins! Search the office to discover 6 ingredients that match your rune. For a greater challenge you can solve the riddles and unscramble the letters to reveal the potion!
                 </p>
               </div>
 
@@ -2158,7 +2144,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                   }}>
                     <div style={{ fontWeight: 900, display: 'flex', alignItems: 'center', gap: '3px', marginBottom: '1px', color: '#15803d' }}>
                       <span>🌿</span>
-                      <span>3. Ages 3–9 Track</span>
+                      <span>3A. Ages 3–9 Path</span>
                     </div>
                     Spot the ingredient on the poster! Write or draw it in your log below (or tap to register).
                   </div>
@@ -2175,7 +2161,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                   }}>
                     <div style={{ fontWeight: 900, display: 'flex', alignItems: 'center', gap: '3px', marginBottom: '1px', color: '#b45309' }}>
                       <span>⭐</span>
-                      <span>4. Age 9+ Track</span>
+                      <span>3B. Age 9+ Path</span>
                     </div>
                     Read the riddle, note your answer, collect the secret letter, and unscramble the brew word!
                   </div>

@@ -64,7 +64,7 @@ export async function downloadTotemQrCode(rune: string, baseUrl?: string): Promi
 
   const a = document.createElement('a');
   a.href = dataUrl;
-  a.download = `AlchemyQuest_Totem_${rune.toUpperCase()}_QR.png`;
+  a.download = `AlchemyQuest_Rune_${rune.toUpperCase()}_QR.png`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);

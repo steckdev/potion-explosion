@@ -139,7 +139,7 @@ export const RelicAttunementModal: React.FC<RelicAttunementModalProps> = ({
           }} />
           <img
             src={quest.icon}
-            alt={quest.totemName}
+            alt={quest.title}
             style={{
               width: '90px',
               height: '90px',

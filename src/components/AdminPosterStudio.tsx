@@ -257,7 +257,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
               }}
             >
               <span>🏷️</span>
-              <span>4 Totem NFC Cards</span>
+              <span>4 Rune NFC Cards</span>
             </button>
 
             <button
@@ -1097,12 +1097,12 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
               <div>
                 <h3 style={{ margin: 0, fontSize: '1.05rem', color: '#86efac', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <span>🏷️</span>
-                  <span>4 Elemental Totem NFC Cards (Quest Starters)</span>
+                  <span>4 Elemental Rune NFC Cards (Quest Starters)</span>
                 </h3>
                 <p style={{ margin: '3px 0 0 0', fontSize: '0.8rem', color: '#cbd5e1' }}>
                   {totemPrintLayout === 'full_page'
                     ? 'Prints 4 individual full-page 8.5" x 11" desk standees with large NFC targets, QR codes, and mystery clue slots. Zero ingredient spoilers!'
-                    : 'Prints all 4 Totem cards on one 8.5" x 11" sheet with cut guides and mystery clue slots. Zero ingredient spoilers!'}
+                    : 'Prints all 4 Rune cards on one 8.5" x 11" sheet with cut guides and mystery clue slots. Zero ingredient spoilers!'}
                 </p>
               </div>
 
@@ -1185,10 +1185,9 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
             {/* LAYOUT A: FULL-PAGE STANDS (4 Individual 8.5" x 11" Pages) */}
             {totemPrintLayout === 'full_page' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', width: '100%', alignItems: 'center' }}>
-                {(['fire', 'frost', 'venom', 'moon'] as RuneType[]).map((r, idx) => {
+                {(['fire', 'frost', 'venom', 'moon'] as RuneType[]).map((r) => {
                   const quest = QUESTS[r];
                   const qrUrl = totemQrPreviews[r];
-                  const tagNum = idx + 1;
 
                   return (
                     <div
@@ -1246,8 +1245,6 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                           marginBottom: '0.5rem',
                           boxShadow: `0 0 14px ${quest.color}`
                         }}>
-                          <span>🏷️ NFC RELIC #{tagNum}</span>
-                          <span>•</span>
                           <span style={{ color: quest.color }}>{r.toUpperCase()} RUNESTONE</span>
                         </div>
 
@@ -1292,7 +1289,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                           marginLeft: 'auto',
                           marginRight: 'auto'
                         }}>
-                          Choose this Totem to bond your satchel and hunt your 6 elemental ingredients across the office!
+                          Bond your satchel and hunt your 6 elemental ingredients across the office!
                         </p>
                       </div>
 
@@ -1333,19 +1330,11 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                             justifyContent: 'center',
                             boxShadow: `0 0 16px rgba(${r === 'fire' ? '255,59,48' : r === 'frost' ? '0,200,255' : r === 'venom' ? '57,255,20' : '191,90,242'}, 0.35)`
                           }}>
-                            <span style={{ fontSize: '1.75rem' }}>📱</span>
-                            <span style={{ fontSize: '0.68rem', fontWeight: 900, color: '#1e1b4b', textTransform: 'uppercase' }}>
-                              TAP NFC
-                            </span>
-                            <span style={{ fontSize: '0.58rem', color: quest.color, fontWeight: 900 }}>
-                              TAG #{tagNum}
-                            </span>
+
                           </div>
-                          <span style={{ fontSize: '0.84rem', fontWeight: 900, color: '#451a03', marginTop: '6px' }}>
-                            Stick NFC Tag #{tagNum} Here
-                          </span>
-                          <span style={{ fontSize: '0.72rem', color: '#78350f', fontWeight: 600, marginTop: '2px' }}>
-                            Tap phone against Totem to bond satchel
+
+                          <span style={{ fontSize: '0.72rem', color: '#78350f', fontWeight: 600, marginTop: '10px' }}>
+                            Tap phone against Rune to bond satchel
                           </span>
                         </div>
 
@@ -1577,7 +1566,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                         zIndex: 1
                       }}>
                         <div style={{ fontSize: '0.76rem', color: '#78350f', fontWeight: 700 }}>
-                          🏆 Once all 6 ingredients are collected in your satchel, return this Totem to the High Alchemist at the Master Cauldron to brew your potion and claim your <strong>3D-Printed Mini Potion Fidget Toy!</strong> 🎃
+                          🏆 Once all 6 ingredients are collected in your satchel, return to the Master Cauldron to brew your potion and claim your <strong>3D-Printed Mini Potion Fidget Toy!</strong> 🎃
                         </div>
                       </div>
                     </div>
@@ -1698,7 +1687,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                         </div>
 
                         <div style={{ fontSize: '0.72rem', color: '#78350f', fontWeight: 600, textAlign: 'center', marginBottom: '6px' }}>
-                          Choose this Totem to track your 6 elemental ingredients!
+                          Bond your satchel to this Rune to track your 6 elemental ingredients!
                         </div>
                       </div>
 
@@ -1908,7 +1897,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                         paddingTop: '3px',
                         marginTop: '4px'
                       }}>
-                        Tap phone or scan QR to start. Return Totem after brewing! 🎃
+                        Tap phone or scan QR to start. Return to the Alchemy lab for brewing! 🎃
                       </div>
                     </div>
                   );
@@ -2137,7 +2126,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                       <span>🔮</span>
                       <span>1. Choose a Rune</span>
                     </div>
-                    Allow fate to guide your rune by playing a quick game in the Alchemy Lab.
+                    Fate decides your rune when you play the game in the Alchemy Lab (Software R&D).
                   </div>
 
                   {/* Step 2: All Explorers */}
@@ -2154,7 +2143,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                       <span>📜</span>
                       <span>2. Find Posters</span>
                     </div>
-                    Search rooms for hidden posters marked with your Totem's Rune.
+                    Search rooms for hidden posters marked with your Rune.
                   </div>
 
                   {/* Step 3: Age 3-9 Apprentice Track */}
@@ -2373,12 +2362,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                   maxWidth: '7.2in',
                   margin: '0 auto'
                 }}>
-                  {/* Left Scroll Curled Roll */}
-                  <svg width="22" height="66" viewBox="0 0 22 66" fill="none" style={{ flexShrink: 0 }}>
-                    <path d="M18,4 C10,4 4,10 4,18 L4,48 C4,56 10,62 18,62 L22,62 L22,4 L18,4 Z" fill="#fbf9f2" stroke="#1c1917" strokeWidth="1.5" />
-                    <path d="M18,4 C14,4 10,8 10,14 C10,20 14,22 18,22" stroke="#1c1917" strokeWidth="1.2" />
-                    <path d="M18,44 C14,44 10,46 10,52 C10,58 14,62 18,62" stroke="#1c1917" strokeWidth="1.2" />
-                  </svg>
+        
 
                   {/* Center Scroll Body */}
                   <div style={{
@@ -2429,12 +2413,6 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                     </div>
                   </div>
 
-                  {/* Right Scroll Curled Roll */}
-                  <svg width="22" height="66" viewBox="0 0 22 66" fill="none" style={{ flexShrink: 0 }}>
-                    <path d="M4,4 C12,4 18,10 18,18 L18,48 C18,56 12,62 4,62 L0,62 L0,4 L4,4 Z" fill="#fbf9f2" stroke="#1c1917" strokeWidth="1.5" />
-                    <path d="M4,4 C8,4 12,8 12,14 C12,20 8,22 4,22" stroke="#1c1917" strokeWidth="1.2" />
-                    <path d="M4,44 C8,44 12,46 12,52 C12,58 8,62 4,62" stroke="#1c1917" strokeWidth="1.2" />
-                  </svg>
                 </div>
               </div>
 
@@ -2453,7 +2431,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                 fontWeight: 800,
                 color: '#1c1917'
               }}>
-                Please return Totems to the Quest Master station after finishing! Happy Halloween! 🎃
+                Please return to the Master Cauldron after finishing! Happy Halloween! 🎃
               </div>
             </div>
           </div>
@@ -2504,7 +2482,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                   <thead>
                     <tr style={{ backgroundColor: '#3d2314', color: '#fef3c7' }}>
                       <th style={{ padding: '6px 8px', textAlign: 'center', width: '35px' }}>#</th>
-                      <th style={{ padding: '6px 8px', textAlign: 'left' }}>Ingredient & Totems</th>
+                      <th style={{ padding: '6px 8px', textAlign: 'left' }}>Ingredient & Runes</th>
                       <th style={{ padding: '6px 8px', textAlign: 'left' }}>Station Hiding Spot / Location</th>
                       <th style={{ padding: '6px 8px', textAlign: 'center', width: '70px' }}>Letter</th>
                       <th style={{ padding: '6px 6px', textAlign: 'center', width: '60px' }}>Printed</th>
@@ -2581,7 +2559,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                     <span style={{ fontSize: '1rem' }}>▢</span>
-                    <strong>Satchel Modal:</strong> Test Camera QR Scans & Totem NFC Bonding
+                    <strong>Satchel Modal:</strong> Test Camera QR Scans & Rune NFC Bonding
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                     <span style={{ fontSize: '1rem' }}>▢</span>
@@ -2634,11 +2612,11 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                   THE GREAT ALCHEMY QUEST • MASTER CHEAT SHEET
                 </h1>
                 <p style={{ margin: '4px 0 0 0', fontSize: '0.9rem', color: '#92400e', fontWeight: 600 }}>
-                  iPad Station Facilitator Reference • 4 Elemental Totems & Secret Solutions
+                  iPad Station Facilitator Reference • 4 Elemental Runes & Secret Solutions
                 </p>
               </div>
 
-              {/* 4 Totems Table */}
+              {/* 4 Runes Table */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {(['fire', 'frost', 'venom', 'moon'] as RuneType[]).map(r => {
                   const quest = QUESTS[r];
@@ -2674,7 +2652,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                           </div>
                           <div>
                             <strong style={{ fontSize: '1.15rem', color: '#1e1b4b', display: 'block' }}>
-                              {quest.title} ({quest.totemName})
+                              {quest.title}
                             </strong>
                             <span style={{ fontSize: '0.75rem', fontWeight: 700, color: quest.color, textTransform: 'uppercase' }}>
                               {quest.rune} Rune • {quest.color}
@@ -2749,7 +2727,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                   <span>Mythical Welcome Station Poster</span>
                 </h3>
                 <p style={{ margin: '3px 0 0 0', fontSize: '0.8rem', color: '#fef08a' }}>
-                  Print this 8.5" x 11" sign to frame or stand on the welcome table next to the iPad and the 4 Elemental Totems.
+                  Print this 8.5" x 11" sign to frame or stand on the welcome table next to the iPad in the Alchemy Lab (Software R&D).
                 </p>
               </div>
               <button
@@ -2914,7 +2892,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                   </h3>
 
                   <p style={{ margin: 0, fontSize: '0.79rem', color: '#78350f', lineHeight: 1.35, textAlign: 'center' }}>
-                    Grab one available Elemental Totem. Tap phone (NFC) or scan its QR code to bond!
+                    Allow fate to decide your Rune! Tap phone (NFC) or scan its QR code to bond your satchel!
                   </p>
 
                   <div style={{ display: 'flex', gap: '5px', marginTop: '8px' }}>
@@ -2967,7 +2945,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                   </h3>
 
                   <p style={{ margin: 0, fontSize: '0.79rem', color: '#78350f', lineHeight: 1.35, textAlign: 'center' }}>
-                    Walk around looking for posters bearing your Totem's Rune emblem in the corners.
+                    Walk around looking for posters bearing your Rune emblem in the corners.
                   </p>
 
                   <div style={{
@@ -3088,7 +3066,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                 gap: '2px'
               }}>
                 <div>
-                  Please return Totems to the Quest Master station after finishing your brew! Happy Halloween! 🎃
+                  Please return to the Master Cauldron to finish your brew! Happy Halloween! 🎃
                 </div>
                 <div style={{ fontSize: '0.72rem', color: '#92400e', letterSpacing: '1px' }}>
                   🜂 Crimson Fire  •  🜄 Glacial Frost  •  🜁 Toxic Venom  •  🜃 Shadow Moon
@@ -3905,7 +3883,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
               </div>
             </div>
 
-            {/* FEATURED: 4 Physical NFC Relic Tags Setup (One for each Elemental Totem) */}
+            {/* FEATURED: 4 Physical NFC Relic Tags Setup (One for each Elemental Rune) */}
             <div style={{
               backgroundColor: 'rgba(57, 255, 20, 0.05)',
               border: '2px solid #39ff14',
@@ -3924,11 +3902,11 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                   </h3>
                 </div>
                 <p style={{ margin: 0, fontSize: '0.84rem', color: '#cbd5e1', lineHeight: 1.45 }}>
-                  Since you have <strong>4 physical NFC tags</strong>, program one for each of the 4 Elemental Totems! Stick one tag onto each handheld Totem or start station. When players tap their phone to a Totem, it <strong>bonds with that Relic Quest</strong> and displays their 6 assigned ingredients to hunt!
+                  Since you have <strong>4 physical NFC tags</strong>, program one for each of the 4 Elemental Runes! Stick one tag onto each Rune sign or start station in the Alchemy Lab (Software R&D). When players tap their phone to a Rune, it <strong>bonds with that Relic Quest</strong> and displays their 6 assigned ingredients to hunt!
                 </p>
               </div>
 
-              {/* 4 Totem Cards Grid */}
+              {/* 4 Rune Cards Grid */}
               <div style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',

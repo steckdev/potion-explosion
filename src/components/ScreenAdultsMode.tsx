@@ -321,7 +321,7 @@ export const ScreenAdultsMode: React.FC<ScreenAdultsModeProps> = ({
               justifyContent: 'center',
               cursor: 'pointer'
             }}
-            title="Return to Totem Hub"
+            title="Return to Alchemy Lab (R&D)"
           >
             <ArrowLeft size={20} />
           </button>
@@ -551,7 +551,7 @@ export const ScreenAdultsMode: React.FC<ScreenAdultsModeProps> = ({
           textAlign: 'center',
           letterSpacing: '0.5px'
         }}>
-          CARDS WITH {quest.totemName.toUpperCase()} RUNE (TAP TO VIEW RIDDLE CLUE):
+          CARDS WITH {quest.title.toUpperCase()} RUNE (TAP TO VIEW RIDDLE CLUE):
         </div>
         <div style={{
           display: 'grid',

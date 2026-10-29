@@ -94,9 +94,9 @@ export const RulesModal: React.FC<RulesModalProps> = ({ isOpen, onClose }) => {
           }}>
             <span style={{ fontSize: '1.4rem' }}>🏮</span>
             <div>
-              <strong style={{ color: '#ffbe0b' }}>Step 1: Grab a Totem</strong>
+              <strong style={{ color: '#ffbe0b' }}>Step 1: Choose Your Rune</strong>
               <div style={{ color: '#cbd5e1', marginTop: '2px' }}>
-                Pick up 1 of the 4 Elemental Totems from the iPad station: 🔴 Fire, 🔵 Frost, 🟢 Venom, or 🟣 Moon. Each totem represents a unique quest in the room!
+                Choose 1 of the 4 Elemental Runes in the Alchemy Lab (Software R&D): 🔴 Fire, 🔵 Frost, 🟢 Venom, or 🟣 Moon. Each rune represents a unique quest in the realm!
               </div>
             </div>
           </div>
@@ -113,7 +113,7 @@ export const RulesModal: React.FC<RulesModalProps> = ({ isOpen, onClose }) => {
             <div>
               <strong style={{ color: '#00c8ff' }}>Step 2: Hunt for Clue Posters</strong>
               <div style={{ color: '#cbd5e1', marginTop: '2px' }}>
-                Seek out the 12 magical clue posters. Only focus on posters that have your Totem's Rune emblem in the top corners!
+                Seek out the 12 magical clue posters. Only focus on posters that have your Rune emblem in the top corners!
               </div>
             </div>
           </div>

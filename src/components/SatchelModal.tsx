@@ -376,7 +376,7 @@ export const SatchelModal: React.FC<SatchelModalProps> = ({
                       Active Relic Quest Tracker
                     </div>
                     <strong style={{ fontSize: '0.9rem', color: '#ffffff' }}>
-                      {activeQuest.totemName}
+                      {activeQuest.title}
                     </strong>
                   </div>
                 </div>
@@ -498,7 +498,7 @@ export const SatchelModal: React.FC<SatchelModalProps> = ({
           {/* Quest Readiness Cards */}
           <div>
             <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem', color: '#ffbe0b', textTransform: 'uppercase', letterSpacing: '1px' }}>
-              Elemental Totem Quests
+              Elemental Rune Quests
             </h3>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.65rem' }}>
               {questStatus.map(q => (

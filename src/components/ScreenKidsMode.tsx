@@ -87,7 +87,7 @@ export const ScreenKidsMode: React.FC<ScreenKidsModeProps> = ({
 
       if (correctIds.length === 0) {
         setFeedbackMessage(
-          `🧪 The cauldron fizzled! 0 of those ingredients match your ${quest.totemName} recipe. Look for posters with the ${quest.totemName} rune!`
+          `🧪 The cauldron fizzled! 0 of those ingredients match your ${quest.title} recipe. Look for posters with the ${quest.title} rune!`
         );
       } else {
         setFeedbackMessage(
@@ -139,7 +139,7 @@ export const ScreenKidsMode: React.FC<ScreenKidsModeProps> = ({
               justifyContent: 'center',
               cursor: 'pointer'
             }}
-            title="Return to Totem Hub"
+            title="Return to Alchemy Lab (R&D)"
           >
             <ArrowLeft size={18} />
           </button>

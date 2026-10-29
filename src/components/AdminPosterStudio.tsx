@@ -1973,11 +1973,11 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
               width: '8.0in',
               minHeight: '10.4in',
               maxHeight: '10.4in',
-              backgroundColor: '#faf7ee',
+              backgroundColor: '#ffffff',
               color: '#1c1917',
               border: '2.5px solid #1c1917',
               borderRadius: '2px',
-              padding: '0.22in 0.35in',
+              padding: '0.2in 0.32in',
               boxSizing: 'border-box',
               display: 'flex',
               flexDirection: 'column',
@@ -2031,8 +2031,8 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                 <path d="M50,70 Q52,52 70,50 M30,70 Q34,34 70,30 M10,70 Q16,16 70,10" stroke="#1c1917" strokeWidth="0.9" fill="none" />
                 {/* Cute Ghost icon */}
                 <path d="M42,28 C42,20 54,20 54,28 C55,34 56,40 54,42 C52,40 50,42 48,40 C46,42 44,40 42,42 C40,40 41,34 42,28 Z" fill="#1c1917" />
-                <circle cx="46" cy="25" r="1.2" fill="#faf7ee" />
-                <circle cx="50" cy="25" r="1.2" fill="#faf7ee" />
+                <circle cx="46" cy="25" r="1.2" fill="#ffffff" />
+                <circle cx="50" cy="25" r="1.2" fill="#ffffff" />
                 <polygon points="20,45 21,48 24,48 21.5,50 22.5,53 20,51 17.5,53 18.5,50 16,48 19,48" fill="#1c1917" />
               </svg>
 
@@ -2086,27 +2086,31 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                   lineHeight: 1.25,
                   maxWidth: '6.8in'
                 }}>
-                  Gatherer of elixirs, your journey begins! Search the office to discover 6 hidden clue scrolls that match your Totem's Rune. Find the ingredients, and unscramble the secret letters to reveal the potion's true name! (absolutely no room or solution spoilers!)
+                  Seeker of elixirs, your journey begins! Search the office to discover 6 ingredients that match your rune. Unscramble the letters to reveal the potion!
                 </p>
               </div>
 
-              {/* SECTION 2: HOW TO PLAY */}
+              {/* SECTION 2: HOW TO PLAY (WITH VINTAGE NON-WHITE PARCHMENT ACCENT) */}
               <div style={{
                 margin: '2px 0',
                 position: 'relative',
                 zIndex: 1,
-                textAlign: 'center'
+                backgroundColor: '#fbf9f2',
+                border: '1.5px solid #1c1917',
+                borderRadius: '6px',
+                padding: '4px 8px 5px 8px'
               }}>
                 <div style={{
-                  display: 'inline-flex',
+                  display: 'flex',
                   alignItems: 'center',
+                  justifyContent: 'center',
                   gap: '6px',
-                  fontSize: '0.82rem',
+                  fontSize: '0.78rem',
                   fontWeight: 900,
                   color: '#1c1917',
                   textTransform: 'uppercase',
                   letterSpacing: '1px',
-                  marginBottom: '2px'
+                  marginBottom: '3px'
                 }}>
                   <span>📜</span>
                   <span>HOW TO PLAY</span>
@@ -2116,148 +2120,230 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                 <div style={{
                   display: 'grid',
                   gridTemplateColumns: 'repeat(4, 1fr)',
-                  gap: '6px',
+                  gap: '5px',
                   textAlign: 'left'
                 }}>
-                  <div style={{ fontSize: '0.62rem', lineHeight: 1.2, color: '#1c1917' }}>
-                    <div style={{ fontWeight: 900, display: 'flex', alignItems: 'center', gap: '3px', marginBottom: '1px' }}>
+                  {/* Step 1: All Explorers */}
+                  <div style={{
+                    backgroundColor: '#ffffff',
+                    border: '1px solid #78716c',
+                    borderRadius: '4px',
+                    padding: '3px 5px',
+                    fontSize: '0.59rem',
+                    lineHeight: 1.2,
+                    color: '#1c1917'
+                  }}>
+                    <div style={{ fontWeight: 900, display: 'flex', alignItems: 'center', gap: '3px', marginBottom: '1px', color: '#1c1917' }}>
                       <span>🔮</span>
-                      <span>1. Pick a Totem</span>
+                      <span>1. Choose a Rune</span>
                     </div>
-                    Grab one available Elemental Totem from the Master Cauldron desk.
+                    Allow fate to guide your rune by playing a quick game in the Alchemy Lab.
                   </div>
 
-                  <div style={{ fontSize: '0.62rem', lineHeight: 1.2, color: '#1c1917' }}>
-                    <div style={{ fontWeight: 900, display: 'flex', alignItems: 'center', gap: '3px', marginBottom: '1px' }}>
+                  {/* Step 2: All Explorers */}
+                  <div style={{
+                    backgroundColor: '#ffffff',
+                    border: '1px solid #78716c',
+                    borderRadius: '4px',
+                    padding: '3px 5px',
+                    fontSize: '0.59rem',
+                    lineHeight: 1.2,
+                    color: '#1c1917'
+                  }}>
+                    <div style={{ fontWeight: 900, display: 'flex', alignItems: 'center', gap: '3px', marginBottom: '1px', color: '#1c1917' }}>
                       <span>📜</span>
                       <span>2. Find Posters</span>
                     </div>
-                    Search rooms for hidden posters marked with your Totem's Rune in the corners.
+                    Search rooms for hidden posters marked with your Totem's Rune.
                   </div>
 
-                  <div style={{ fontSize: '0.62rem', lineHeight: 1.2, color: '#1c1917' }}>
-                    <div style={{ fontWeight: 900, display: 'flex', alignItems: 'center', gap: '3px', marginBottom: '1px' }}>
-                      <span>📱</span>
-                      <span>3. Read & Solve</span>
+                  {/* Step 3: Age 3-9 Apprentice Track */}
+                  <div style={{
+                    backgroundColor: '#ffffff',
+                    border: '1px solid #15803d',
+                    borderRadius: '4px',
+                    padding: '3px 5px',
+                    fontSize: '0.59rem',
+                    lineHeight: 1.2,
+                    color: '#1c1917'
+                  }}>
+                    <div style={{ fontWeight: 900, display: 'flex', alignItems: 'center', gap: '3px', marginBottom: '1px', color: '#15803d' }}>
+                      <span>🌿</span>
+                      <span>3. Ages 3–9 Track</span>
                     </div>
-                    Scan QR or tap to register, but read the Alchemist's Riddle on the poster carefully!
+                    Spot the ingredient on the poster! Write or draw it in your log below (or tap to register).
                   </div>
 
-                  <div style={{ fontSize: '0.62rem', lineHeight: 1.2, color: '#1c1917' }}>
-                    <div style={{ fontWeight: 900, display: 'flex', alignItems: 'center', gap: '3px', marginBottom: '1px' }}>
-                      <span>🧪</span>
-                      <span>4. Unscramble</span>
+                  {/* Step 4: Age 9+ Master Alchemist Track */}
+                  <div style={{
+                    backgroundColor: '#ffffff',
+                    border: '1px solid #b45309',
+                    borderRadius: '4px',
+                    padding: '3px 5px',
+                    fontSize: '0.59rem',
+                    lineHeight: 1.2,
+                    color: '#1c1917'
+                  }}>
+                    <div style={{ fontWeight: 900, display: 'flex', alignItems: 'center', gap: '3px', marginBottom: '1px', color: '#b45309' }}>
+                      <span>⭐</span>
+                      <span>4. Age 9+ Track</span>
                     </div>
-                    Write answers & secret letters below. Find all 6 to crack the code and claim prize!
+                    Read the riddle, note your answer, collect the secret letter, and unscramble the brew word!
                   </div>
                 </div>
               </div>
 
-              {/* SECTION 3: 2. THE QUEST LOG (6 INGREDIENT DISCOVERIES) */}
-              <div style={{ position: 'relative', zIndex: 1, margin: '2px 0' }}>
-                <div style={{ textAlign: 'center', marginBottom: '2px' }}>
-                  <h3 style={{
-                    margin: 0,
-                    fontSize: '0.88rem',
-                    fontWeight: 900,
-                    color: '#1c1917',
-                    letterSpacing: '1px',
-                    textTransform: 'uppercase'
-                  }}>
-                    2. THE QUEST LOG
-                  </h3>
-                </div>
-
+              {/* SECTION 3: 2. THE QUEST LOG (PERFECTLY ALIGNED DUAL-AGE TABLE) */}
+              <div style={{ position: 'relative', zIndex: 1, margin: '1px 0' }}>
                 <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginBottom: '4px',
-                  borderBottom: '1px solid #1c1917',
-                  paddingBottom: '2px'
+                  border: '1.5px solid #1c1917',
+                  borderRadius: '6px',
+                  overflow: 'hidden',
+                  backgroundColor: '#ffffff'
                 }}>
-                  <span style={{ fontSize: '0.68rem', fontWeight: 900, color: '#1c1917', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    ✍️ YOUR DISCOVERIES (WRITE NOTES HERE!):
-                  </span>
-                  <span style={{ fontSize: '0.62rem', color: '#1c1917', fontWeight: 800 }}>
-                    ★ Age 9+: Keep track of the secret letter on each poster!
-                  </span>
-                </div>
+                  {/* Table Header Bar */}
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: '70px 1fr 1.15fr',
+                    backgroundColor: '#f5efe4',
+                    borderBottom: '1.5px solid #1c1917'
+                  }}>
+                    <div style={{
+                      padding: '4px 6px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontWeight: 900,
+                      fontSize: '0.68rem',
+                      color: '#1c1917',
+                      letterSpacing: '0.5px',
+                      textTransform: 'uppercase',
+                      borderRight: '1px solid #1c1917'
+                    }}>
+                      SLOT
+                    </div>
 
-                {/* 6 Heroic Ingredient Discoveries */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                  {[1, 2, 3, 4, 5, 6].map((slot) => (
+                    <div style={{
+                      padding: '3px 8px',
+                      borderRight: '1px solid #1c1917',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center'
+                    }}>
+                      <div style={{ fontSize: '0.68rem', fontWeight: 900, color: '#15803d', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <span>🌿</span>
+                        <span>AGES 3–9 • APPRENTICE QUEST</span>
+                      </div>
+                      <div style={{ fontSize: '0.56rem', color: '#44403c', fontWeight: 600 }}>
+                        What ingredient did you discover? (write or draw)
+                      </div>
+                    </div>
+
+                    <div style={{
+                      padding: '3px 8px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center'
+                    }}>
+                      <div style={{ fontSize: '0.68rem', fontWeight: 900, color: '#b45309', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <span>⭐</span>
+                        <span>AGES 9+ • MASTER ALCHEMIST QUEST</span>
+                      </div>
+                      <div style={{ fontSize: '0.56rem', color: '#44403c', fontWeight: 600 }}>
+                        Solve the riddle & record the secret letter
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 6 Aligned Ingredient Rows */}
+                  {[1, 2, 3, 4, 5, 6].map((slot, index) => (
                     <div
                       key={slot}
                       style={{
-                        border: '1px solid #78716c',
-                        borderRadius: '4px',
-                        padding: '3px 8px',
-                        backgroundColor: '#ffffff',
-                        boxShadow: '0 1px 2px rgba(0,0,0,0.03)'
+                        display: 'grid',
+                        gridTemplateColumns: '70px 1fr 1.15fr',
+                        borderBottom: index < 5 ? '1px solid #e7e5e4' : 'none',
+                        minHeight: '34px',
+                        backgroundColor: index % 2 === 0 ? '#ffffff' : '#faf9f5'
                       }}
                     >
-                      {/* Line 1: Ingredient Slot & Room Found */}
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexShrink: 0 }}>
-                          <span style={{ fontSize: '0.74rem', fontWeight: 900, color: '#1c1917' }}>
-                            🔍 INGREDIENT #{slot}
-                          </span>
-                        </div>
-
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flex: 1, minWidth: 0 }}>
-                          <span style={{ fontSize: '0.66rem', fontWeight: 700, color: '#44403c', whiteSpace: 'nowrap' }}>
-                            Where did you find it?
-                          </span>
-                          <div style={{ flex: 1, borderBottom: '1px solid #1c1917', minWidth: '40px' }} />
-                        </div>
-
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '3px', flexShrink: 0 }}>
-                          <div style={{
-                            width: '15px',
-                            height: '15px',
-                            border: '1.5px solid #1c1917',
-                            borderRadius: '2px',
-                            backgroundColor: '#fffdf8'
-                          }} title="Mark collected" />
-                          <span style={{ fontSize: '0.58rem', fontWeight: 800, color: '#1c1917' }}>Found</span>
-                        </div>
+                      {/* Col 1: Ingredient Slot Badge */}
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '3px 4px',
+                        borderRight: '1px solid #1c1917',
+                        backgroundColor: '#fbf9f2'
+                      }}>
+                        <span style={{
+                          fontSize: '0.68rem',
+                          fontWeight: 900,
+                          color: '#1c1917',
+                          backgroundColor: '#ffffff',
+                          border: '1px solid #1c1917',
+                          borderRadius: '3px',
+                          padding: '1px 5px',
+                          whiteSpace: 'nowrap'
+                        }}>
+                          🔍 #{slot}
+                        </span>
                       </div>
 
-                      {/* Line 2: The Two Separate Spaces for the Two Age Groups */}
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginTop: '2px' }}>
-                        {/* Space 1: Younger Explorers (< 9 Years) */}
-                        <div style={{ flex: 1.15, display: 'flex', alignItems: 'center', gap: '4px', minWidth: 0 }}>
-                          <span style={{ fontSize: '0.64rem', fontWeight: 800, color: '#1c1917', whiteSpace: 'nowrap' }}>
-                            🌿 <span style={{ color: '#15803d' }}>Age &lt;9:</span> What ingredient did you discover?
-                          </span>
-                          <div style={{ flex: 1, borderBottom: '1px solid #1c1917', minWidth: '30px' }} />
-                        </div>
+                      {/* Col 2: Age 3-9 Writing Area */}
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        padding: '3px 8px',
+                        borderRight: '1px solid #1c1917',
+                        gap: '6px'
+                      }}>
+                        <span style={{ fontSize: '0.64rem', fontWeight: 700, color: '#1c1917', whiteSpace: 'nowrap' }}>
+                          Ingredient:
+                        </span>
+                        <div style={{
+                          flex: 1,
+                          borderBottom: '1.2px solid #1c1917',
+                          height: '14px',
+                          minWidth: '40px'
+                        }} />
+                      </div>
 
-                        {/* Space 2: Older Alchemists (Age 9+) */}
-                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
-                          <span style={{ fontSize: '0.64rem', fontWeight: 800, color: '#1c1917', whiteSpace: 'nowrap' }}>
-                            ⭐ <span style={{ color: '#b45309' }}>Age 9+:</span> Riddle Answer:
-                          </span>
-                          <div style={{ width: '85px', borderBottom: '1px solid #1c1917' }} />
+                      {/* Col 3: Age 9+ Riddle & Letter Area */}
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        padding: '3px 8px',
+                        gap: '6px'
+                      }}>
+                        <span style={{ fontSize: '0.64rem', fontWeight: 700, color: '#1c1917', whiteSpace: 'nowrap' }}>
+                          Riddle Answer:
+                        </span>
+                        <div style={{
+                          flex: 1,
+                          borderBottom: '1.2px solid #1c1917',
+                          height: '14px',
+                          minWidth: '35px'
+                        }} />
 
-                          <span style={{ fontSize: '0.64rem', fontWeight: 900, color: '#1c1917', whiteSpace: 'nowrap', marginLeft: '4px' }}>
-                            Secret Letter:
-                          </span>
-                          <div style={{
-                            width: '18px',
-                            height: '18px',
-                            border: '1.5px solid #1c1917',
-                            borderRadius: '3px',
-                            backgroundColor: '#ffffff',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontWeight: 900,
-                            fontSize: '0.75rem',
-                            color: '#1c1917'
-                          }} />
-                        </div>
+                        <span style={{ fontSize: '0.62rem', fontWeight: 900, color: '#1c1917', whiteSpace: 'nowrap', marginLeft: '3px' }}>
+                          Letter:
+                        </span>
+                        <div style={{
+                          width: '20px',
+                          height: '20px',
+                          border: '1.5px solid #1c1917',
+                          borderRadius: '3px',
+                          backgroundColor: '#ffffff',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontWeight: 900,
+                          fontSize: '0.78rem',
+                          color: '#1c1917',
+                          boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.06)',
+                          flexShrink: 0
+                        }} />
                       </div>
                     </div>
                   ))}
@@ -2275,11 +2361,11 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                     letterSpacing: '1px',
                     textTransform: 'uppercase'
                   }}>
-                    3. UNSCRAMBLE THE SECRET WORD
+                    3. UNSCRAMBLE THE SECRET WORD (AGE 9+)
                   </h3>
                 </div>
 
-                {/* Parchment Scroll with Curled Ends */}
+                {/* Parchment Scroll with Curled Ends (Non-White Vintage Parchment Accent) */}
                 <div style={{
                   display: 'flex',
                   alignItems: 'stretch',
@@ -2289,7 +2375,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                 }}>
                   {/* Left Scroll Curled Roll */}
                   <svg width="22" height="66" viewBox="0 0 22 66" fill="none" style={{ flexShrink: 0 }}>
-                    <path d="M18,4 C10,4 4,10 4,18 L4,48 C4,56 10,62 18,62 L22,62 L22,4 L18,4 Z" fill="#ffffff" stroke="#1c1917" strokeWidth="1.5" />
+                    <path d="M18,4 C10,4 4,10 4,18 L4,48 C4,56 10,62 18,62 L22,62 L22,4 L18,4 Z" fill="#fbf9f2" stroke="#1c1917" strokeWidth="1.5" />
                     <path d="M18,4 C14,4 10,8 10,14 C10,20 14,22 18,22" stroke="#1c1917" strokeWidth="1.2" />
                     <path d="M18,44 C14,44 10,46 10,52 C10,58 14,62 18,62" stroke="#1c1917" strokeWidth="1.2" />
                   </svg>
@@ -2297,7 +2383,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                   {/* Center Scroll Body */}
                   <div style={{
                     flex: 1,
-                    backgroundColor: '#ffffff',
+                    backgroundColor: '#fbf9f2',
                     borderTop: '1.5px solid #1c1917',
                     borderBottom: '1.5px solid #1c1917',
                     padding: '4px 12px',
@@ -2321,7 +2407,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                       <span>THE SECRET BREW WORD (6 LETTERS):</span>
                     </div>
 
-                    {/* 6 Large Letter Boxes */}
+                    {/* 6 Large Letter Boxes in Crisp Pure White */}
                     <div style={{ display: 'flex', gap: '8px', margin: '1px 0' }}>
                       {[1, 2, 3, 4, 5, 6].map((i) => (
                         <div
@@ -2331,7 +2417,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                             height: '32px',
                             border: '2px solid #1c1917',
                             borderRadius: '4px',
-                            backgroundColor: '#faf7ee',
+                            backgroundColor: '#ffffff',
                             boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.08)'
                           }}
                         />
@@ -2345,7 +2431,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
 
                   {/* Right Scroll Curled Roll */}
                   <svg width="22" height="66" viewBox="0 0 22 66" fill="none" style={{ flexShrink: 0 }}>
-                    <path d="M4,4 C12,4 18,10 18,18 L18,48 C18,56 12,62 4,62 L0,62 L0,4 L4,4 Z" fill="#ffffff" stroke="#1c1917" strokeWidth="1.5" />
+                    <path d="M4,4 C12,4 18,10 18,18 L18,48 C18,56 12,62 4,62 L0,62 L0,4 L4,4 Z" fill="#fbf9f2" stroke="#1c1917" strokeWidth="1.5" />
                     <path d="M4,4 C8,4 12,8 12,14 C12,20 8,22 4,22" stroke="#1c1917" strokeWidth="1.2" />
                     <path d="M4,44 C8,44 12,46 12,52 C12,58 8,62 4,62" stroke="#1c1917" strokeWidth="1.2" />
                   </svg>
@@ -2362,7 +2448,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                 padding: '3px 14px',
                 margin: '2px auto 0 auto',
                 maxWidth: '5.2in',
-                backgroundColor: '#ffffff',
+                backgroundColor: '#fbf9f2',
                 fontSize: '0.62rem',
                 fontWeight: 800,
                 color: '#1c1917'
@@ -2824,7 +2910,7 @@ export const AdminPosterStudio: React.FC<AdminPosterStudioProps> = ({
                   </div>
 
                   <h3 style={{ margin: '0 0 4px 0', fontSize: '1.05rem', color: '#2a1205', fontWeight: 800 }}>
-                    1. Pick a Totem
+                    1. Choose a Rune
                   </h3>
 
                   <p style={{ margin: 0, fontSize: '0.79rem', color: '#78350f', lineHeight: 1.35, textAlign: 'center' }}>
